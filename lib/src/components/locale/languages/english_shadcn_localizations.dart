@@ -137,6 +137,9 @@ class EnglishShadcnLocalizations extends ShadcnLocalizations {
   String formLengthGreaterThan(int value) => 'Must be at most $value characters';
 
   @override
+  String formEqualTo(value) => 'The entered value does not match.';
+
+  @override
   String get formPasswordDigits => 'Must contain at least one digit';
 
   @override

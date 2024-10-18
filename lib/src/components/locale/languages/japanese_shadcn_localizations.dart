@@ -137,6 +137,9 @@ class JapaneseShadcnLocalizations extends ShadcnLocalizations {
   String formLengthGreaterThan(int value) => '最大$value文字までである必要があります';
 
   @override
+  String formEqualTo(value) => '入力した値が一致しません。';
+
+  @override
   String get formPasswordDigits => '少なくとも1つの数字を含める必要があります。';
 
   @override

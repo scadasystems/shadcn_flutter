@@ -135,6 +135,9 @@ class KoreanShadcnLocalizations extends ShadcnLocalizations {
   String formLengthGreaterThan(int value) => '최대 $value자 이하여야 합니다';
 
   @override
+  String formEqualTo(value) => '입력한 값이 일치하지 않습니다.';
+
+  @override
   String get formPasswordDigits => '최소한 하나의 숫자가 포함되어야 합니다.';
 
   @override

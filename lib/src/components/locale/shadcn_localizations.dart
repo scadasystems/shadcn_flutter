@@ -87,6 +87,8 @@ abstract class ShadcnLocalizations {
   String formLengthLessThan(int value);
   String formLengthGreaterThan(int value);
 
+  String formEqualTo(dynamic value);
+
   String get formPasswordDigits;
   String get formPasswordLowercase;
   String get formPasswordUppercase;
