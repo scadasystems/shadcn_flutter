@@ -201,8 +201,8 @@ class RecentColorsScopeState extends State<RecentColorsScope>
 
   @override
   void dispose() {
-    (this as State).dispose();
     super.dispose();
+    _recentColors.dispose();
   }
 
   @override
