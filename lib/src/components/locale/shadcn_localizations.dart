@@ -19,9 +19,9 @@ class ShadcnLocalizationsDelegate extends LocalizationsDelegate<ShadcnLocalizati
   @override
   Future<ShadcnLocalizations> load(Locale locale) {
     return SynchronousFuture<ShadcnLocalizations>(
-      locale == const Locale('ko')
+      locale == const Locale('ko', 'KR')
           ? const KoreanShadcnLocalizations()
-          : locale == const Locale('ja')
+          : locale == const Locale('ja', 'JP')
               ? const JapaneseShadcnLocalizations()
               : EnglishShadcnLocalizations.instance,
     );
@@ -86,6 +86,7 @@ abstract class ShadcnLocalizations {
   String formBetweenExclusively(double min, double max);
   String formLengthLessThan(int value);
   String formLengthGreaterThan(int value);
+
   String get formPasswordDigits;
   String get formPasswordLowercase;
   String get formPasswordUppercase;
