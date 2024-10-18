@@ -23,7 +23,7 @@ class AlertDialog extends StatefulWidget {
   });
 
   @override
-  _AlertDialogState createState() => _AlertDialogState();
+  State<AlertDialog> createState() => _AlertDialogState();
 }
 
 class _AlertDialogState extends State<AlertDialog> {
@@ -31,6 +31,7 @@ class _AlertDialogState extends State<AlertDialog> {
   Widget build(BuildContext context) {
     var themeData = Theme.of(context);
     var scaling = themeData.scaling;
+
     return IntrinsicWidth(
       child: ModalContainer(
         borderRadius: themeData.borderRadiusXxl,
@@ -52,23 +53,19 @@ class _AlertDialogState extends State<AlertDialog> {
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      if (widget.leading != null)
-                        widget.leading!.iconXLarge().iconMutedForeground(),
+                      if (widget.leading != null) widget.leading!.iconXLarge().iconMutedForeground(),
                       if (widget.title != null || widget.content != null)
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              if (widget.title != null)
-                                widget.title!.large().semiBold(),
-                              if (widget.content != null)
-                                widget.content!.small().muted(),
+                              if (widget.title != null) widget.title!.large().semiBold(),
+                              if (widget.content != null) Expanded(child: widget.content!.small().muted()),
                             ],
                           ).gap(8 * scaling),
                         ),
-                      if (widget.trailing != null)
-                        widget.trailing!.iconXLarge().iconMutedForeground(),
+                      if (widget.trailing != null) widget.trailing!.iconXLarge().iconMutedForeground(),
                     ],
                   ).gap(16 * scaling),
                 ),
@@ -78,9 +75,7 @@ class _AlertDialogState extends State<AlertDialog> {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       mainAxisAlignment: MainAxisAlignment.end,
                       // children: widget.actions!,
-                      children:
-                          join(widget.actions!, SizedBox(width: 8 * scaling))
-                              .toList(),
+                      children: join(widget.actions!, SizedBox(width: 8 * scaling)).toList(),
                     ),
                   ),
               ],
