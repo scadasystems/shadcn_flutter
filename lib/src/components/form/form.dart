@@ -45,8 +45,7 @@ class ValidationMode<T> extends Validator<T> {
   final Validator<T> validator;
   final Set<FormValidationMode> mode;
 
-  const ValidationMode(this.validator,
-      {this.mode = const {FormValidationMode.changed, FormValidationMode.submitted, FormValidationMode.initial}});
+  const ValidationMode(this.validator, {this.mode = const {FormValidationMode.submitted}});
 
   @override
   FutureOr<ValidationResult?> validate(BuildContext context, T? value, FormValidationMode lifecycle) {
