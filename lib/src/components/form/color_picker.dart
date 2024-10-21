@@ -46,8 +46,7 @@ class ColorHistoryGrid extends StatelessWidget {
     return Container(
       decoration: selectedColor != null && color == selectedColor
           ? BoxDecoration(
-              border: Border.all(
-                  color: theme.colorScheme.primary, width: 2 * theme.scaling),
+              border: Border.all(color: theme.colorScheme.primary, width: 2 * theme.scaling),
               borderRadius: BorderRadius.circular(theme.radiusMd),
             )
           : null,
@@ -80,9 +79,7 @@ class ColorHistoryGrid extends StatelessWidget {
             List<Widget> tiles = [];
             for (int j = 0; j < crossAxisCount; j++) {
               final index = i + j;
-              final color = index < storage.recentColors.length
-                  ? storage.recentColors[index]
-                  : null;
+              final color = index < storage.recentColors.length ? storage.recentColors[index] : null;
               if (index >= storage.capacity) {
                 tiles.add(
                   const Expanded(
@@ -168,8 +165,7 @@ class _ColorListNotifier extends ChangeNotifier {
   }
 }
 
-class RecentColorsScopeState extends State<RecentColorsScope>
-    implements ColorHistoryStorage {
+class RecentColorsScopeState extends State<RecentColorsScope> implements ColorHistoryStorage {
   late _ColorListNotifier _recentColors;
 
   @override
@@ -182,8 +178,7 @@ class RecentColorsScopeState extends State<RecentColorsScope>
   }
 
   @override
-  List<Color> get recentColors =>
-      List.unmodifiable(_recentColors._recentColors);
+  List<Color> get recentColors => List.unmodifiable(_recentColors._recentColors);
 
   @override
   void addHistory(Color color) {
@@ -238,8 +233,7 @@ class RecentColorsScopeState extends State<RecentColorsScope>
   }
 }
 
-typedef PreviewLabelBuilder = Widget Function(
-    BuildContext context, Color color);
+typedef PreviewLabelBuilder = Widget Function(BuildContext context, Color color);
 
 class ColorPickingLayer extends StatefulWidget {
   final Widget child;
@@ -271,8 +265,7 @@ class _ScreenshotResult {
   _ScreenshotResult(this.colors, this.size, this.image);
 
   Color operator [](Offset position) {
-    int index =
-        (position.dy.floor() * size.width + position.dx.floor()).toInt();
+    int index = (position.dy.floor() * size.width + position.dx.floor()).toInt();
     return colors[index];
   }
 }
@@ -291,12 +284,10 @@ class _ScreenshotImage extends ImageProvider<_ScreenshotImage> {
   }
 
   @override
-  ImageStreamCompleter loadImage(
-      _ScreenshotImage key, ImageDecoderCallback decode) {
+  ImageStreamCompleter loadImage(_ScreenshotImage key, ImageDecoderCallback decode) {
     Completer<ui.Image> completer = Completer<ui.Image>();
     ui.decodeImageFromPixels(bytes, width, height, format, completer.complete);
-    return OneFrameImageStreamCompleter(
-        completer.future.then((ui.Image image) => ImageInfo(image: image)));
+    return OneFrameImageStreamCompleter(completer.future.then((ui.Image image) => ImageInfo(image: image)));
   }
 }
 
@@ -307,8 +298,7 @@ class _ColorPickingCompleter {
   _ColorPickingCompleter(this.completer, this.recentColorsScope);
 }
 
-class _ColorPickingLayerState extends State<ColorPickingLayer>
-    implements ColorPickingLayerScope {
+class _ColorPickingLayerState extends State<ColorPickingLayer> implements ColorPickingLayerScope {
   final GlobalKey _repaintKey = GlobalKey();
   _ScreenshotResult? _currentPicking;
   ColorPickingResult? _preview;
@@ -328,8 +318,7 @@ class _ColorPickingLayerState extends State<ColorPickingLayer>
       return Future.value(null);
     }
     if (_session != null) {
-      if (historyStorage != null &&
-          _session!.recentColorsScope.add(historyStorage)) {
+      if (historyStorage != null && _session!.recentColorsScope.add(historyStorage)) {
         return _session!.completer.future.then((value) {
           if (value != null) {
             historyStorage.addHistory(value);
@@ -370,10 +359,8 @@ class _ColorPickingLayerState extends State<ColorPickingLayer>
       final a = byteData.getUint8(i + 3);
       colors.add(Color.fromARGB(a, r, g, b));
     }
-    final img = _ScreenshotImage(byteData.buffer.asUint8List(), image.width,
-        image.height, ui.PixelFormat.rgba8888);
-    return _ScreenshotResult(
-        colors, Size(image.width.toDouble(), image.height.toDouble()), img);
+    final img = _ScreenshotImage(byteData.buffer.asUint8List(), image.width, image.height, ui.PixelFormat.rgba8888);
+    return _ScreenshotResult(colors, Size(image.width.toDouble(), image.height.toDouble()), img);
   }
 
   ColorPickingResult? _getPreview(Offset globalPosition, Size size) {
@@ -382,8 +369,7 @@ class _ColorPickingLayerState extends State<ColorPickingLayer>
     final colors = <Color>[];
     for (int y = -size.height ~/ 2; y < size.height ~/ 2; y++) {
       for (int x = -size.width ~/ 2; x < size.width ~/ 2; x++) {
-        final localPosition =
-            globalPosition.translate(x.toDouble(), y.toDouble());
+        final localPosition = globalPosition.translate(x.toDouble(), y.toDouble());
         if (localPosition.dx < 0 ||
             localPosition.dy < 0 ||
             localPosition.dx >= image.size.width ||
@@ -394,8 +380,7 @@ class _ColorPickingLayerState extends State<ColorPickingLayer>
         }
       }
     }
-    final globalIndex = globalPosition.dy.floor() * image.size.width.floor() +
-        globalPosition.dx.floor();
+    final globalIndex = globalPosition.dy.floor() * image.size.width.floor() + globalPosition.dx.floor();
     final pickedColor = image.colors[globalIndex];
     return ColorPickingResult(colors, size, pickedColor);
   }
@@ -403,8 +388,7 @@ class _ColorPickingLayerState extends State<ColorPickingLayer>
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final previewSize =
-        widget.previewSize ?? const Size(100, 100) * theme.scaling;
+    final previewSize = widget.previewSize ?? const Size(100, 100) * theme.scaling;
     return Data<ColorPickingLayerScope>.inherit(
       data: this,
       child: GestureDetector(
@@ -450,9 +434,7 @@ class _ColorPickingLayerState extends State<ColorPickingLayer>
                     image: _currentPicking!.image!,
                     fit: BoxFit.fill,
                   )),
-                if (widget.showPreview &&
-                    _preview != null &&
-                    widget.previewAlignment != null)
+                if (widget.showPreview && _preview != null && widget.previewAlignment != null)
                   Positioned(
                     top: 0,
                     left: 0,
@@ -493,9 +475,7 @@ class _ColorPickingLayerState extends State<ColorPickingLayer>
                       ),
                     ),
                   ),
-                if (widget.showPreview &&
-                    _preview != null &&
-                    widget.previewAlignment == null)
+                if (widget.showPreview && _preview != null && widget.previewAlignment == null)
                   Positioned(
                     top: _currentPosition!.dy,
                     left: _currentPosition!.dx,
@@ -537,8 +517,7 @@ class _ColorPickingLayerState extends State<ColorPickingLayer>
   }
 }
 
-Future<Color?> pickColorFromScreen(BuildContext context,
-    [ColorHistoryStorage? storage]) {
+Future<Color?> pickColorFromScreen(BuildContext context, [ColorHistoryStorage? storage]) {
   final scope = ColorPickingLayerScope.find(context);
   return scope.promptPickColor(storage);
 }
@@ -563,24 +542,18 @@ class _ColorPreviewPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     // clip it to circle
-    final clipPath = Path()
-      ..addOval(Rect.fromLTWH(
-          0, 0, size.width.floorToDouble(), size.height.floorToDouble()));
+    final clipPath = Path()..addOval(Rect.fromLTWH(0, 0, size.width.floorToDouble(), size.height.floorToDouble()));
     canvas.clipPath(clipPath);
     final paint = Paint();
-    final cellSize = Size(size.width.floor() / this.size.width.floor(),
-        size.height.floor() / this.size.height.floor());
+    final cellSize = Size(size.width.floor() / this.size.width.floor(), size.height.floor() / this.size.height.floor());
     for (int y = 0; y < this.size.height.floor(); y++) {
       for (int x = 0; x < this.size.width.floor(); x++) {
         final color = colors[y * this.size.width.floor() + x];
         paint.color = color;
         paint.style = PaintingStyle.fill;
         canvas.drawRect(
-          Rect.fromLTWH(
-              (x * cellSize.width).floorToDouble(),
-              (y * cellSize.height).floorToDouble(),
-              cellSize.width.floorToDouble(),
-              cellSize.height.floorToDouble()),
+          Rect.fromLTWH((x * cellSize.width).floorToDouble(), (y * cellSize.height).floorToDouble(),
+              cellSize.width.floorToDouble(), cellSize.height.floorToDouble()),
           paint,
         );
         paint.color = borderColor;
@@ -588,11 +561,8 @@ class _ColorPreviewPainter extends CustomPainter {
         paint.strokeWidth = borderWidth;
         // draw a border
         canvas.drawRect(
-          Rect.fromLTWH(
-                  (x * cellSize.width).floorToDouble(),
-                  (y * cellSize.height).floorToDouble(),
-                  cellSize.width.floorToDouble(),
-                  cellSize.height.floorToDouble())
+          Rect.fromLTWH((x * cellSize.width).floorToDouble(), (y * cellSize.height).floorToDouble(),
+                  cellSize.width.floorToDouble(), cellSize.height.floorToDouble())
               .inflate(paint.strokeWidth / 2),
           paint,
         );
@@ -619,10 +589,7 @@ class _ColorPreviewPainter extends CustomPainter {
     paint.color = borderColor;
     paint.style = PaintingStyle.stroke;
     paint.strokeWidth = borderWidth;
-    canvas.drawOval(
-        Rect.fromLTWH(
-            0, 0, size.width.floorToDouble(), size.height.floorToDouble()),
-        paint);
+    canvas.drawOval(Rect.fromLTWH(0, 0, size.width.floorToDouble(), size.height.floorToDouble()), paint);
   }
 
   @override
@@ -655,8 +622,7 @@ class ColorPickingResult {
   const ColorPickingResult(this.colors, this.size, this.pickedColor);
 
   Color operator [](Offset position) {
-    int index =
-        (position.dy.floor() * size.width + position.dx.floor()).toInt();
+    int index = (position.dy.floor() * size.width + position.dx.floor()).toInt();
     return colors[index];
   }
 }
@@ -709,8 +675,7 @@ class _ColorInputSetState extends State<ColorInputSet> {
                 Text(localizations.colorPickerTabRGB),
                 Text(localizations.colorPickerTabHSL),
                 Text(localizations.colorPickerTabHSV),
-                if (widget.storage != null)
-                  Text(localizations.colorPickerTabRecent),
+                if (widget.storage != null) Text(localizations.colorPickerTabRecent),
               ]),
           Gap(theme.scaling * 16),
           _buildContent(context, theme),
@@ -842,8 +807,7 @@ class _ColorPickerSetState extends State<ColorPickerSet> {
       if (widget.showAlpha) {
         _hexController.text = '#${rgbColor.value.toRadixString(16)}';
       } else {
-        _hexController.text =
-            '#${rgbColor.value.toRadixString(16).substring(2)}';
+        _hexController.text = '#${rgbColor.value.toRadixString(16).substring(2)}';
       }
       switch (widget.mode) {
         case ColorPickerMode.rgb:
@@ -989,17 +953,14 @@ class _ColorPickerSetState extends State<ColorPickerSet> {
                           : HSVColorPickerArea(
                               color: color.toHSVColor(),
                               onColorChanged: (value) {
-                                widget.onColorChanged?.call(widget.color
-                                    .changeToHSVValue(value.value)
-                                    .changeToHSVSaturation(value.saturation));
+                                widget.onColorChanged?.call(
+                                    widget.color.changeToHSVValue(value.value).changeToHSVSaturation(value.saturation));
                               },
                               sliderType: HSVColorSliderType.satVal,
                               reverse: true,
                               onColorEnd: (value) {
                                 widget.onColorChangeEnd?.call(
-                                  widget.color
-                                      .changeToHSVValue(value.value)
-                                      .changeToHSVSaturation(value.saturation),
+                                  widget.color.changeToHSVValue(value.value).changeToHSVSaturation(value.saturation),
                                 );
                               },
                             ),
@@ -1039,15 +1000,13 @@ class _ColorPickerSetState extends State<ColorPickerSet> {
                               0.5,
                             ),
                             onColorEnd: (value) {
-                              widget.onColorChangeEnd?.call(
-                                  widget.color.changeToHSLHue(value.hue));
+                              widget.onColorChangeEnd?.call(widget.color.changeToHSLHue(value.hue));
                             },
                             sliderType: HSLColorSliderType.hue,
                             radius: Radius.circular(theme.radiusLg),
                             reverse: true,
                             onColorChanged: (value) {
-                              widget.onColorChanged?.call(
-                                  widget.color.changeToHSLHue(value.hue));
+                              widget.onColorChanged?.call(widget.color.changeToHSLHue(value.hue));
                             },
                           )
                         : HSVColorPickerArea(
@@ -1059,14 +1018,12 @@ class _ColorPickerSetState extends State<ColorPickerSet> {
                             ),
                             radius: Radius.circular(theme.radiusLg),
                             onColorChanged: (value) {
-                              widget.onColorChanged?.call(
-                                  widget.color.changeToHSVHue(value.hue));
+                              widget.onColorChanged?.call(widget.color.changeToHSVHue(value.hue));
                             },
                             sliderType: HSVColorSliderType.hue,
                             reverse: true,
                             onColorEnd: (value) {
-                              widget.onColorChangeEnd?.call(
-                                  widget.color.changeToHSVHue(value.hue));
+                              widget.onColorChangeEnd?.call(widget.color.changeToHSVHue(value.hue));
                             },
                           ),
                   ),
@@ -1095,12 +1052,10 @@ class _ColorPickerSetState extends State<ColorPickerSet> {
                               reverse: true,
                               radius: Radius.circular(theme.radiusLg),
                               onColorChanged: (value) {
-                                widget.onColorChanged?.call(
-                                    widget.color.changeToAlpha(value.alpha));
+                                widget.onColorChanged?.call(widget.color.changeToAlpha(value.alpha));
                               },
                               onColorEnd: (value) {
-                                widget.onColorChangeEnd?.call(
-                                    widget.color.changeToAlpha(value.alpha));
+                                widget.onColorChangeEnd?.call(widget.color.changeToAlpha(value.alpha));
                               },
                             )
                           : HSVColorPickerArea(
@@ -1111,8 +1066,7 @@ class _ColorPickerSetState extends State<ColorPickerSet> {
                                 1,
                               ),
                               onColorChanged: (value) {
-                                widget.onColorChanged?.call(
-                                    widget.color.changeToAlpha(value.alpha));
+                                widget.onColorChanged?.call(widget.color.changeToAlpha(value.alpha));
                               },
                               sliderType: HSVColorSliderType.alpha,
                               radius: Radius.circular(theme.radiusLg),
@@ -1141,15 +1095,12 @@ class _ColorPickerSetState extends State<ColorPickerSet> {
                     } else {
                       color = widget.color.toColor();
                       if (widget.showAlpha) {
-                        _hexController.text =
-                            '#${color.value.toRadixString(16)}';
+                        _hexController.text = '#${color.value.toRadixString(16)}';
                       } else {
-                        _hexController.text =
-                            '#${color.value.toRadixString(16).substring(2)}';
+                        _hexController.text = '#${color.value.toRadixString(16).substring(2)}';
                       }
                     }
-                    widget.onColorChanged
-                        ?.call(ColorDerivative.fromColor(color));
+                    widget.onColorChanged?.call(ColorDerivative.fromColor(color));
                   },
                 ),
                 Gap(theme.scaling * 16),
@@ -1338,8 +1289,7 @@ class ColorInput extends StatelessWidget {
                 if (result != null) {
                   storage?.addHistory(result);
                 }
-                handler.prompt(
-                    result != null ? ColorDerivative.fromColor(result) : null);
+                handler.prompt(result != null ? ColorDerivative.fromColor(result) : null);
               },
             ),
         ];
@@ -2017,12 +1967,9 @@ class _HSVColorPickerAreaState extends State<HSVColorPickerArea> {
   }
 
   void _updateColor(Offset localPosition, Size size) {
-    _currentHorizontal = ((localPosition.dx - widget.padding.left) /
-            (size.width - widget.padding.horizontal))
-        .clamp(0, 1);
-    _currentVertical = ((localPosition.dy - widget.padding.top) /
-            (size.height - widget.padding.vertical))
-        .clamp(0, 1);
+    _currentHorizontal =
+        ((localPosition.dx - widget.padding.left) / (size.width - widget.padding.horizontal)).clamp(0, 1);
+    _currentVertical = ((localPosition.dy - widget.padding.top) / (size.height - widget.padding.vertical)).clamp(0, 1);
     if (widget.reverse) {
       if (widget.sliderType == HSVColorSliderType.hueSat) {
         _hue = _currentHorizontal * 360;
@@ -2194,8 +2141,7 @@ class _HSVColorPickerAreaState extends State<HSVColorPickerArea> {
                         ),
                         child: Align(
                           alignment: Alignment(
-                              (_currentHorizontal.clamp(0, 1) * 2) - 1,
-                              (_currentVertical.clamp(0, 1) * 2) - 1),
+                              (_currentHorizontal.clamp(0, 1) * 2) - 1, (_currentVertical.clamp(0, 1) * 2) - 1),
                           child: Container(
                             width: cursorRadius,
                             height: double.infinity,
@@ -2217,8 +2163,7 @@ class _HSVColorPickerAreaState extends State<HSVColorPickerArea> {
                         ),
                         child: Align(
                           alignment: Alignment(
-                              (_currentHorizontal.clamp(0, 1) * 2) - 1,
-                              (_currentVertical.clamp(0, 1) * 2) - 1),
+                              (_currentHorizontal.clamp(0, 1) * 2) - 1, (_currentVertical.clamp(0, 1) * 2) - 1),
                           child: Container(
                             height: cursorRadius,
                             width: double.infinity,
@@ -2236,9 +2181,8 @@ class _HSVColorPickerAreaState extends State<HSVColorPickerArea> {
                 : Padding(
                     padding: widget.padding,
                     child: Align(
-                      alignment: Alignment(
-                          (_currentHorizontal.clamp(0, 1) * 2) - 1,
-                          (_currentVertical.clamp(0, 1) * 2) - 1),
+                      alignment:
+                          Alignment((_currentHorizontal.clamp(0, 1) * 2) - 1, (_currentVertical.clamp(0, 1) * 2) - 1),
                       child: Container(
                         width: cursorRadius,
                         height: cursorRadius,
@@ -2405,12 +2349,9 @@ class _HSLColorPickerAreaState extends State<HSLColorPickerArea> {
   }
 
   void _updateColor(Offset localPosition, Size size) {
-    _currentHorizontal = ((localPosition.dx - widget.padding.left) /
-            (size.width - widget.padding.horizontal))
-        .clamp(0, 1);
-    _currentVertical = ((localPosition.dy - widget.padding.top) /
-            (size.height - widget.padding.vertical))
-        .clamp(0, 1);
+    _currentHorizontal =
+        ((localPosition.dx - widget.padding.left) / (size.width - widget.padding.horizontal)).clamp(0, 1);
+    _currentVertical = ((localPosition.dy - widget.padding.top) / (size.height - widget.padding.vertical)).clamp(0, 1);
     if (widget.reverse) {
       if (widget.sliderType == HSLColorSliderType.hueSat) {
         _hue = _currentHorizontal * 360;
@@ -2571,8 +2512,7 @@ class _HSLColorPickerAreaState extends State<HSLColorPickerArea> {
                         ),
                         child: Align(
                           alignment: Alignment(
-                              (_currentHorizontal.clamp(0, 1) * 2) - 1,
-                              (_currentVertical.clamp(0, 1) * 2) - 1),
+                              (_currentHorizontal.clamp(0, 1) * 2) - 1, (_currentVertical.clamp(0, 1) * 2) - 1),
                           child: Container(
                             width: cursorRadius,
                             height: double.infinity,
@@ -2594,8 +2534,7 @@ class _HSLColorPickerAreaState extends State<HSLColorPickerArea> {
                         ),
                         child: Align(
                           alignment: Alignment(
-                              (_currentHorizontal.clamp(0, 1) * 2) - 1,
-                              (_currentVertical.clamp(0, 1) * 2) - 1),
+                              (_currentHorizontal.clamp(0, 1) * 2) - 1, (_currentVertical.clamp(0, 1) * 2) - 1),
                           child: Container(
                             height: cursorRadius,
                             width: double.infinity,
@@ -2613,9 +2552,8 @@ class _HSLColorPickerAreaState extends State<HSLColorPickerArea> {
                 : Padding(
                     padding: widget.padding,
                     child: Align(
-                      alignment: Alignment(
-                          (_currentHorizontal.clamp(0, 1) * 2) - 1,
-                          (_currentVertical.clamp(0, 1) * 2) - 1),
+                      alignment:
+                          Alignment((_currentHorizontal.clamp(0, 1) * 2) - 1, (_currentVertical.clamp(0, 1) * 2) - 1),
                       child: Container(
                         width: cursorRadius,
                         height: cursorRadius,
@@ -2764,8 +2702,7 @@ class HSVColorPickerPainter extends CustomPainter {
         // vertical for hue and horizontal for saturation
         for (var i = 0; i < 360; i++) {
           for (var j = 0; j < 100; j++) {
-            final result =
-                HSVColor.fromAHSV(1, i.toDouble(), j / 100, color.value);
+            final result = HSVColor.fromAHSV(1, i.toDouble(), j / 100, color.value);
             final paint = pp
               ..color = result.toColor()
               ..style = PaintingStyle.fill;
@@ -2781,8 +2718,7 @@ class HSVColorPickerPainter extends CustomPainter {
         // horizontal for hue and vertical for saturation
         for (var i = 0; i < 100; i++) {
           for (var j = 0; j < 360; j++) {
-            final result =
-                HSVColor.fromAHSV(1, j.toDouble(), i / 100, color.value);
+            final result = HSVColor.fromAHSV(1, j.toDouble(), i / 100, color.value);
             final paint = pp
               ..color = result.toColor()
               ..style = PaintingStyle.fill;
@@ -2801,8 +2737,7 @@ class HSVColorPickerPainter extends CustomPainter {
         // vertical for hue and horizontal for value
         for (var i = 0; i < 360; i++) {
           for (var j = 0; j < 100; j++) {
-            final result =
-                HSVColor.fromAHSV(1, i.toDouble(), color.saturation, j / 100.0);
+            final result = HSVColor.fromAHSV(1, i.toDouble(), color.saturation, j / 100.0);
             final paint = pp
               ..color = result.toColor()
               ..style = PaintingStyle.fill;
@@ -2818,8 +2753,7 @@ class HSVColorPickerPainter extends CustomPainter {
         // horizontal for hue and vertical for value
         for (var i = 0; i < 100; i++) {
           for (var j = 0; j < 360; j++) {
-            final result =
-                HSVColor.fromAHSV(1, j.toDouble(), color.saturation, i / 100);
+            final result = HSVColor.fromAHSV(1, j.toDouble(), color.saturation, i / 100);
             final paint = pp
               ..color = result.toColor()
               ..style = PaintingStyle.fill;
@@ -2873,8 +2807,7 @@ class HSVColorPickerPainter extends CustomPainter {
         // vertical for hue and horizontal for alpha
         for (var i = 0; i < 360; i++) {
           for (var j = 0; j < 100; j++) {
-            final result = HSVColor.fromAHSV(
-                j / 100.0, i.toDouble(), color.saturation, color.value);
+            final result = HSVColor.fromAHSV(j / 100.0, i.toDouble(), color.saturation, color.value);
             final paint = pp
               ..color = result.toColor()
               ..style = PaintingStyle.fill;
@@ -2890,8 +2823,7 @@ class HSVColorPickerPainter extends CustomPainter {
         // horizontal for hue and vertical for alpha
         for (var i = 0; i < 100; i++) {
           for (var j = 0; j < 360; j++) {
-            final result = HSVColor.fromAHSV(
-                i / 100, j.toDouble(), color.saturation, color.value);
+            final result = HSVColor.fromAHSV(i / 100, j.toDouble(), color.saturation, color.value);
             final paint = pp
               ..color = result.toColor()
               ..style = PaintingStyle.fill;
@@ -2910,8 +2842,7 @@ class HSVColorPickerPainter extends CustomPainter {
         // horizontal for saturation and vertical for alpha
         for (var i = 0; i < 100; i++) {
           for (var j = 0; j < 100; j++) {
-            final result =
-                HSVColor.fromAHSV(j / 100, color.hue, i / 100, color.value);
+            final result = HSVColor.fromAHSV(j / 100, color.hue, i / 100, color.value);
             final paint = pp
               ..color = result.toColor()
               ..style = PaintingStyle.fill;
@@ -2927,8 +2858,7 @@ class HSVColorPickerPainter extends CustomPainter {
         // horizontal for saturation and vertical for alpha
         for (var i = 0; i < 100; i++) {
           for (var j = 0; j < 100; j++) {
-            final result =
-                HSVColor.fromAHSV(i / 100, color.hue, j / 100, color.value);
+            final result = HSVColor.fromAHSV(i / 100, color.hue, j / 100, color.value);
             final paint = pp
               ..color = result.toColor()
               ..style = PaintingStyle.fill;
@@ -2947,8 +2877,7 @@ class HSVColorPickerPainter extends CustomPainter {
         // horizontal for value and vertical for alpha
         for (var i = 0; i < 100; i++) {
           for (var j = 0; j < 100; j++) {
-            final result = HSVColor.fromAHSV(
-                j / 100, color.hue, color.saturation, i / 100);
+            final result = HSVColor.fromAHSV(j / 100, color.hue, color.saturation, i / 100);
             final paint = pp
               ..color = result.toColor()
               ..style = PaintingStyle.fill;
@@ -2964,8 +2893,7 @@ class HSVColorPickerPainter extends CustomPainter {
         // horizontal for value and vertical for alpha
         for (var i = 0; i < 100; i++) {
           for (var j = 0; j < 100; j++) {
-            final result = HSVColor.fromAHSV(
-                i / 100, color.hue, color.saturation, j / 100);
+            final result = HSVColor.fromAHSV(i / 100, color.hue, color.saturation, j / 100);
             final paint = pp
               ..color = result.toColor()
               ..style = PaintingStyle.fill;
@@ -2980,8 +2908,7 @@ class HSVColorPickerPainter extends CustomPainter {
       if (reverse) {
         double width = canvasWidth / 360;
         for (var i = 0; i < 360; i++) {
-          final result = HSVColor.fromAHSV(
-              1, i.toDouble(), color.saturation, color.value.clamp(0, 1));
+          final result = HSVColor.fromAHSV(1, i.toDouble(), color.saturation, color.value.clamp(0, 1));
           final paint = pp
             ..color = result.toColor()
             ..style = PaintingStyle.fill;
@@ -2993,8 +2920,7 @@ class HSVColorPickerPainter extends CustomPainter {
       } else {
         double height = canvasHeight / 360;
         for (var i = 0; i < 360; i++) {
-          final result = HSVColor.fromAHSV(
-              1, i.toDouble(), color.saturation, color.value.clamp(0, 1));
+          final result = HSVColor.fromAHSV(1, i.toDouble(), color.saturation, color.value.clamp(0, 1));
           final paint = pp
             ..color = result.toColor()
             ..style = PaintingStyle.fill;
@@ -3008,8 +2934,7 @@ class HSVColorPickerPainter extends CustomPainter {
       if (reverse) {
         double width = canvasWidth / 100;
         for (var i = 0; i < 100; i++) {
-          final result =
-              HSVColor.fromAHSV(1, color.hue, i / 100, color.value.clamp(0, 1));
+          final result = HSVColor.fromAHSV(1, color.hue, i / 100, color.value.clamp(0, 1));
           final paint = pp
             ..color = result.toColor()
             ..style = PaintingStyle.fill;
@@ -3021,8 +2946,7 @@ class HSVColorPickerPainter extends CustomPainter {
       } else {
         double height = canvasHeight / 100;
         for (var i = 0; i < 100; i++) {
-          final result =
-              HSVColor.fromAHSV(1, color.hue, i / 100, color.value.clamp(0, 1));
+          final result = HSVColor.fromAHSV(1, color.hue, i / 100, color.value.clamp(0, 1));
           final paint = pp
             ..color = result.toColor()
             ..style = PaintingStyle.fill;
@@ -3036,8 +2960,7 @@ class HSVColorPickerPainter extends CustomPainter {
       if (reverse) {
         double width = canvasWidth / 100;
         for (var i = 0; i < 100; i++) {
-          final result =
-              HSVColor.fromAHSV(1, color.hue, color.saturation, i / 100);
+          final result = HSVColor.fromAHSV(1, color.hue, color.saturation, i / 100);
           final paint = pp
             ..color = result.toColor()
             ..style = PaintingStyle.fill;
@@ -3049,8 +2972,7 @@ class HSVColorPickerPainter extends CustomPainter {
       } else {
         double height = canvasHeight / 100;
         for (var i = 0; i < 100; i++) {
-          final result =
-              HSVColor.fromAHSV(1, color.hue, color.saturation, i / 100);
+          final result = HSVColor.fromAHSV(1, color.hue, color.saturation, i / 100);
           final paint = pp
             ..color = result.toColor()
             ..style = PaintingStyle.fill;
@@ -3064,8 +2986,7 @@ class HSVColorPickerPainter extends CustomPainter {
       if (reverse) {
         double width = canvasWidth / 100;
         for (var i = 0; i < 100; i++) {
-          final result = HSVColor.fromAHSV(
-              i / 100, color.hue, color.saturation, color.value.clamp(0, 1));
+          final result = HSVColor.fromAHSV(i / 100, color.hue, color.saturation, color.value.clamp(0, 1));
           final paint = pp
             ..color = result.toColor()
             ..style = PaintingStyle.fill;
@@ -3077,8 +2998,7 @@ class HSVColorPickerPainter extends CustomPainter {
       } else {
         double height = canvasHeight / 100;
         for (var i = 0; i < 100; i++) {
-          final result = HSVColor.fromAHSV(
-              i / 100, color.hue, color.saturation, color.value.clamp(0, 1));
+          final result = HSVColor.fromAHSV(i / 100, color.hue, color.saturation, color.value.clamp(0, 1));
           final paint = pp
             ..color = result.toColor()
             ..style = PaintingStyle.fill;
@@ -3093,8 +3013,7 @@ class HSVColorPickerPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant HSVColorPickerPainter oldDelegate) {
-    if (oldDelegate.reverse != reverse ||
-        oldDelegate.sliderType != sliderType) {
+    if (oldDelegate.reverse != reverse || oldDelegate.sliderType != sliderType) {
       return true;
     }
     if (sliderType == HSVColorSliderType.hueSat) {
@@ -3108,14 +3027,11 @@ class HSVColorPickerPainter extends CustomPainter {
           oldDelegate.color.saturation != color.saturation ||
           oldDelegate.color.hue != color.hue;
     } else if (sliderType == HSVColorSliderType.hue) {
-      return oldDelegate.color.saturation != color.saturation ||
-          oldDelegate.color.value != color.value;
+      return oldDelegate.color.saturation != color.saturation || oldDelegate.color.value != color.value;
     } else if (sliderType == HSVColorSliderType.sat) {
-      return oldDelegate.color.hue != color.hue ||
-          oldDelegate.color.value != color.value;
+      return oldDelegate.color.hue != color.hue || oldDelegate.color.value != color.value;
     } else if (sliderType == HSVColorSliderType.val) {
-      return oldDelegate.color.hue != color.hue ||
-          oldDelegate.color.saturation != color.saturation;
+      return oldDelegate.color.hue != color.hue || oldDelegate.color.saturation != color.saturation;
     } else if (sliderType == HSVColorSliderType.hueAlpha) {
       return oldDelegate.color.value != color.value;
     } else if (sliderType == HSVColorSliderType.satAlpha) {
@@ -3154,8 +3070,7 @@ class HSLColorPickerPainter extends CustomPainter {
         // vertical for hue and horizontal for saturation
         for (var i = 0; i < 360; i++) {
           for (var j = 0; j < 100; j++) {
-            final result =
-                HSLColor.fromAHSL(1, i.toDouble(), j / 100, color.lightness);
+            final result = HSLColor.fromAHSL(1, i.toDouble(), j / 100, color.lightness);
             final paint = pp
               ..color = result.toColor()
               ..style = PaintingStyle.fill;
@@ -3171,8 +3086,7 @@ class HSLColorPickerPainter extends CustomPainter {
         // horizontal for hue and vertical for saturation
         for (var i = 0; i < 100; i++) {
           for (var j = 0; j < 360; j++) {
-            final result =
-                HSLColor.fromAHSL(1, j.toDouble(), i / 100, color.lightness);
+            final result = HSLColor.fromAHSL(1, j.toDouble(), i / 100, color.lightness);
             final paint = pp
               ..color = result.toColor()
               ..style = PaintingStyle.fill;
@@ -3191,8 +3105,7 @@ class HSLColorPickerPainter extends CustomPainter {
         // vertical for hue and horizontal for lightness
         for (var i = 0; i < 360; i++) {
           for (var j = 0; j < 100; j++) {
-            final result =
-                HSLColor.fromAHSL(1, i.toDouble(), color.saturation, j / 100.0);
+            final result = HSLColor.fromAHSL(1, i.toDouble(), color.saturation, j / 100.0);
             final paint = pp
               ..color = result.toColor()
               ..style = PaintingStyle.fill;
@@ -3208,8 +3121,7 @@ class HSLColorPickerPainter extends CustomPainter {
         // horizontal for hue and vertical for lightness
         for (var i = 0; i < 100; i++) {
           for (var j = 0; j < 360; j++) {
-            final result =
-                HSLColor.fromAHSL(1, j.toDouble(), color.saturation, i / 100);
+            final result = HSLColor.fromAHSL(1, j.toDouble(), color.saturation, i / 100);
             final paint = pp
               ..color = result.toColor()
               ..style = PaintingStyle.fill;
@@ -3263,8 +3175,7 @@ class HSLColorPickerPainter extends CustomPainter {
         // vertical for hue and horizontal for alpha
         for (var i = 0; i < 360; i++) {
           for (var j = 0; j < 100; j++) {
-            final result = HSLColor.fromAHSL(
-                j / 100.0, i.toDouble(), color.saturation, color.lightness);
+            final result = HSLColor.fromAHSL(j / 100.0, i.toDouble(), color.saturation, color.lightness);
             final paint = pp
               ..color = result.toColor()
               ..style = PaintingStyle.fill;
@@ -3280,8 +3191,7 @@ class HSLColorPickerPainter extends CustomPainter {
         // horizontal for hue and vertical for alpha
         for (var i = 0; i < 100; i++) {
           for (var j = 0; j < 360; j++) {
-            final result = HSLColor.fromAHSL(
-                i / 100, j.toDouble(), color.saturation, color.lightness);
+            final result = HSLColor.fromAHSL(i / 100, j.toDouble(), color.saturation, color.lightness);
             final paint = pp
               ..color = result.toColor()
               ..style = PaintingStyle.fill;
@@ -3300,8 +3210,7 @@ class HSLColorPickerPainter extends CustomPainter {
         // horizontal for saturation and vertical for alpha
         for (var i = 0; i < 100; i++) {
           for (var j = 0; j < 100; j++) {
-            final result =
-                HSLColor.fromAHSL(j / 100, color.hue, i / 100, color.lightness);
+            final result = HSLColor.fromAHSL(j / 100, color.hue, i / 100, color.lightness);
             final paint = pp
               ..color = result.toColor()
               ..style = PaintingStyle.fill;
@@ -3317,8 +3226,7 @@ class HSLColorPickerPainter extends CustomPainter {
         // horizontal for saturation and vertical for alpha
         for (var i = 0; i < 100; i++) {
           for (var j = 0; j < 100; j++) {
-            final result =
-                HSLColor.fromAHSL(i / 100, color.hue, j / 100, color.lightness);
+            final result = HSLColor.fromAHSL(i / 100, color.hue, j / 100, color.lightness);
             final paint = pp
               ..color = result.toColor()
               ..style = PaintingStyle.fill;
@@ -3337,8 +3245,7 @@ class HSLColorPickerPainter extends CustomPainter {
         // horizontal for lightness and vertical for alpha
         for (var i = 0; i < 100; i++) {
           for (var j = 0; j < 100; j++) {
-            final result = HSLColor.fromAHSL(
-                j / 100, color.hue, color.saturation, i / 100);
+            final result = HSLColor.fromAHSL(j / 100, color.hue, color.saturation, i / 100);
             final paint = pp
               ..color = result.toColor()
               ..style = PaintingStyle.fill;
@@ -3354,8 +3261,7 @@ class HSLColorPickerPainter extends CustomPainter {
         // horizontal for lightness and vertical for alpha
         for (var i = 0; i < 100; i++) {
           for (var j = 0; j < 100; j++) {
-            final result = HSLColor.fromAHSL(
-                i / 100, color.hue, color.saturation, j / 100);
+            final result = HSLColor.fromAHSL(i / 100, color.hue, color.saturation, j / 100);
             final paint = pp
               ..color = result.toColor()
               ..style = PaintingStyle.fill;
@@ -3370,8 +3276,7 @@ class HSLColorPickerPainter extends CustomPainter {
       if (reverse) {
         double width = canvasWidth / 360;
         for (var i = 0; i < 360; i++) {
-          final result = HSLColor.fromAHSL(
-              1, i.toDouble(), color.saturation, color.lightness.clamp(0, 1));
+          final result = HSLColor.fromAHSL(1, i.toDouble(), color.saturation, color.lightness.clamp(0, 1));
           final paint = pp
             ..color = result.toColor()
             ..style = PaintingStyle.fill;
@@ -3383,8 +3288,7 @@ class HSLColorPickerPainter extends CustomPainter {
       } else {
         double height = canvasHeight / 360;
         for (var i = 0; i < 360; i++) {
-          final result = HSLColor.fromAHSL(
-              1, i.toDouble(), color.saturation, color.lightness.clamp(0, 1));
+          final result = HSLColor.fromAHSL(1, i.toDouble(), color.saturation, color.lightness.clamp(0, 1));
           final paint = pp
             ..color = result.toColor()
             ..style = PaintingStyle.fill;
@@ -3398,8 +3302,7 @@ class HSLColorPickerPainter extends CustomPainter {
       if (reverse) {
         double width = canvasWidth / 100;
         for (var i = 0; i < 100; i++) {
-          final result = HSLColor.fromAHSL(
-              1, color.hue, i / 100, color.lightness.clamp(0, 1));
+          final result = HSLColor.fromAHSL(1, color.hue, i / 100, color.lightness.clamp(0, 1));
           final paint = pp
             ..color = result.toColor()
             ..style = PaintingStyle.fill;
@@ -3411,8 +3314,7 @@ class HSLColorPickerPainter extends CustomPainter {
       } else {
         double height = canvasHeight / 100;
         for (var i = 0; i < 100; i++) {
-          final result = HSLColor.fromAHSL(
-              1, color.hue, i / 100, color.lightness.clamp(0, 1));
+          final result = HSLColor.fromAHSL(1, color.hue, i / 100, color.lightness.clamp(0, 1));
           final paint = pp
             ..color = result.toColor()
             ..style = PaintingStyle.fill;
@@ -3426,8 +3328,7 @@ class HSLColorPickerPainter extends CustomPainter {
       if (reverse) {
         double width = canvasWidth / 100;
         for (var i = 0; i < 100; i++) {
-          final result =
-              HSLColor.fromAHSL(1, color.hue, color.saturation, i / 100);
+          final result = HSLColor.fromAHSL(1, color.hue, color.saturation, i / 100);
           final paint = pp
             ..color = result.toColor()
             ..style = PaintingStyle.fill;
@@ -3439,8 +3340,7 @@ class HSLColorPickerPainter extends CustomPainter {
       } else {
         double height = canvasHeight / 100;
         for (var i = 0; i < 100; i++) {
-          final result =
-              HSLColor.fromAHSL(1, color.hue, color.saturation, i / 100);
+          final result = HSLColor.fromAHSL(1, color.hue, color.saturation, i / 100);
           final paint = pp
             ..color = result.toColor()
             ..style = PaintingStyle.fill;
@@ -3454,8 +3354,7 @@ class HSLColorPickerPainter extends CustomPainter {
       if (reverse) {
         double width = canvasWidth / 100;
         for (var i = 0; i < 100; i++) {
-          final result = HSLColor.fromAHSL(i / 100, color.hue, color.saturation,
-              color.lightness.clamp(0, 1));
+          final result = HSLColor.fromAHSL(i / 100, color.hue, color.saturation, color.lightness.clamp(0, 1));
           final paint = pp
             ..color = result.toColor()
             ..style = PaintingStyle.fill;
@@ -3467,8 +3366,7 @@ class HSLColorPickerPainter extends CustomPainter {
       } else {
         double height = canvasHeight / 100;
         for (var i = 0; i < 100; i++) {
-          final result = HSLColor.fromAHSL(i / 100, color.hue, color.saturation,
-              color.lightness.clamp(0, 1));
+          final result = HSLColor.fromAHSL(i / 100, color.hue, color.saturation, color.lightness.clamp(0, 1));
           final paint = pp
             ..color = result.toColor()
             ..style = PaintingStyle.fill;
@@ -3483,8 +3381,7 @@ class HSLColorPickerPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant HSLColorPickerPainter oldDelegate) {
-    if (oldDelegate.reverse != reverse ||
-        oldDelegate.sliderType != sliderType) {
+    if (oldDelegate.reverse != reverse || oldDelegate.sliderType != sliderType) {
       return true;
     }
     if (sliderType == HSLColorSliderType.hueSat) {
@@ -3498,14 +3395,11 @@ class HSLColorPickerPainter extends CustomPainter {
           oldDelegate.color.saturation != color.saturation ||
           oldDelegate.color.hue != color.hue;
     } else if (sliderType == HSLColorSliderType.hue) {
-      return oldDelegate.color.lightness != color.lightness ||
-          oldDelegate.color.saturation != color.saturation;
+      return oldDelegate.color.lightness != color.lightness || oldDelegate.color.saturation != color.saturation;
     } else if (sliderType == HSLColorSliderType.sat) {
-      return oldDelegate.color.hue != color.hue ||
-          oldDelegate.color.lightness != color.lightness;
+      return oldDelegate.color.hue != color.hue || oldDelegate.color.lightness != color.lightness;
     } else if (sliderType == HSLColorSliderType.lum) {
-      return oldDelegate.color.hue != color.hue ||
-          oldDelegate.color.saturation != color.saturation;
+      return oldDelegate.color.hue != color.hue || oldDelegate.color.saturation != color.saturation;
     } else if (sliderType == HSLColorSliderType.hueAlpha) {
       return oldDelegate.color.lightness != color.lightness;
     } else if (sliderType == HSLColorSliderType.satAlpha) {
