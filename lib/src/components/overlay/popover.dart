@@ -48,12 +48,8 @@ class PopoverOverlayHandler extends OverlayHandler {
       Offset pos = renderBox.localToGlobal(Offset.zero);
       anchorSize ??= renderBox.size;
       position = Offset(
-        pos.dx +
-            anchorSize.width / 2 +
-            anchorSize.width / 2 * resolvedAnchorAlignment.x,
-        pos.dy +
-            anchorSize.height / 2 +
-            anchorSize.height / 2 * resolvedAnchorAlignment.y,
+        pos.dx + anchorSize.width / 2 + anchorSize.width / 2 * resolvedAnchorAlignment.x,
+        pos.dy + anchorSize.height / 2 + anchorSize.height / 2 * resolvedAnchorAlignment.y,
       );
     }
 
@@ -68,6 +64,9 @@ class PopoverOverlayHandler extends OverlayHandler {
               onTap: () {
                 isClosed.value = true;
               },
+              child: Container(
+                color: overlayBarrier?.barrierColor,
+              ),
             );
           },
         );
@@ -98,13 +97,10 @@ class PopoverOverlayHandler extends OverlayHandler {
                   return AnimatedValueBuilder.animation(
                       value: isClosed.value ? 0.0 : 1.0,
                       initialValue: 0.0,
-                      curve: isClosed.value
-                          ? const Interval(0, 2 / 3)
-                          : Curves.linear,
+                      curve: isClosed.value ? const Interval(0, 2 / 3) : Curves.linear,
                       duration: isClosed.value
                           ? (showDuration ?? kDefaultDuration)
-                          : (dismissDuration ??
-                              const Duration(milliseconds: 100)),
+                          : (dismissDuration ?? const Duration(milliseconds: 100)),
                       onEnd: (value) {
                         if (value == 0.0 && isClosed.value) {
                           popoverEntry.remove();
@@ -627,9 +623,9 @@ OverlayCompleter<T?> showPopover<T>({
   Duration? dismissDuration,
   OverlayBarrier? overlayBarrier,
   OverlayHandler? handler,
-  Color barrierColor = const Color(0x50000000),
 }) {
   handler ??= OverlayManager.of(context);
+
   return handler.show<T>(
     context: context,
     alignment: alignment,
@@ -725,7 +721,6 @@ class PopoverController extends ChangeNotifier {
     Duration? hideDuration,
     OverlayBarrier? overlayBarrier,
     OverlayHandler? handler,
-    Color barrierColor = const Color(0x50000000),
   }) async {
     if (closeOthers) {
       close();
@@ -755,7 +750,6 @@ class PopoverController extends ChangeNotifier {
       dismissDuration: hideDuration,
       overlayBarrier: overlayBarrier,
       handler: handler,
-      barrierColor: barrierColor,
     );
     var popover = Popover._(
       key,
@@ -1166,20 +1160,14 @@ class PopoverLayoutRender extends RenderShiftedBox {
       size.width / 2 + size.width / 2 * _anchorAlignment.x,
       size.height / 2 + size.height / 2 * _anchorAlignment.y,
     );
-    double x = position.dx -
-        childSize.width / 2 -
-        (childSize.width / 2 * _alignment.x);
-    double y = position.dy -
-        childSize.height / 2 -
-        (childSize.height / 2 * _alignment.y);
+    double x = position.dx - childSize.width / 2 - (childSize.width / 2 * _alignment.x);
+    double y = position.dy - childSize.height / 2 - (childSize.height / 2 * _alignment.y);
     double left = x - _margin.left;
     double top = y - _margin.top;
     double right = x + childSize.width + _margin.right;
     double bottom = y + childSize.height + _margin.bottom;
     if ((left < 0 || right > size.width) && _allowInvertHorizontal) {
-      x = position.dx -
-          childSize.width / 2 -
-          (childSize.width / 2 * -_alignment.x);
+      x = position.dx - childSize.width / 2 - (childSize.width / 2 * -_alignment.x);
       if (_anchorSize != null) {
         x -= _anchorSize!.width * _anchorAlignment.x;
       }
@@ -1191,9 +1179,7 @@ class PopoverLayoutRender extends RenderShiftedBox {
       _invertX = false;
     }
     if ((top < 0 || bottom > size.height) && _allowInvertVertical) {
-      y = position.dy -
-          childSize.height / 2 -
-          (childSize.height / 2 * -_alignment.y);
+      y = position.dy - childSize.height / 2 - (childSize.height / 2 * -_alignment.y);
       if (_anchorSize != null) {
         y -= _anchorSize!.height * _anchorAlignment.y;
       }

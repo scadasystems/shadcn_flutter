@@ -132,8 +132,7 @@ class OverlayManagerLayer extends StatefulWidget {
   State<OverlayManagerLayer> createState() => _OverlayManagerLayerState();
 }
 
-class _OverlayManagerLayerState extends State<OverlayManagerLayer>
-    implements OverlayManager {
+class _OverlayManagerLayerState extends State<OverlayManagerLayer> implements OverlayManager {
   @override
   Widget build(BuildContext context) {
     return Data<OverlayManager>.inherit(

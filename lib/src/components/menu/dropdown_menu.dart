@@ -23,6 +23,7 @@ void showDropdown({
   bool dismissBackdropFocus = true,
   Duration? showDuration,
   Duration? dismissDuration,
+  OverlayBarrier? overlayBarrier,
 }) {
   final theme = Theme.of(context);
   final scaling = theme.scaling;
@@ -46,11 +47,12 @@ void showDropdown({
     anchorAlignment: anchorAlignment,
     consumeOutsideTaps: false,
     regionGroupId: key,
-    modal: false,
+    modal: modal,
     dismissBackdropFocus: true,
-    overlayBarrier: OverlayBarrier(
-      borderRadius: BorderRadius.circular(theme.radiusMd),
-    ),
+    overlayBarrier: overlayBarrier ??
+        OverlayBarrier(
+          borderRadius: BorderRadius.circular(theme.radiusMd),
+        ),
     builder: (context) {
       return Data.inherit(
         data: DropdownMenuData(key),
