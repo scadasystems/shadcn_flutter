@@ -9,6 +9,31 @@ abstract class AvatarWidget extends Widget {
 
 class Avatar extends StatefulWidget implements AvatarWidget {
   static String getInitials(String name) {
+    // Remove all spaces
+    name = name.replaceAll(RegExp(r'\s'), '');
+
+    // Check if the name is English
+    bool isEnglish = RegExp(r'^[a-zA-Z]+$').hasMatch(name);
+
+    if (isEnglish) {
+      // If the name is English, keep the existing logic
+      if (name.length >= 2) {
+        return name.substring(0, 1).toUpperCase() + name.substring(1, 2).toUpperCase();
+      } else if (name.isNotEmpty) {
+        return name.substring(0, 1).toUpperCase();
+      }
+    } else {
+      // If the name is not English, return only the first character
+      if (name.isNotEmpty) {
+        return name.substring(0, 1);
+      }
+    }
+
+    // If the name is empty, return an empty string
+    return '';
+  }
+  /*
+  static String getInitials(String name) {
     // replace all non-alphabetic characters
     name = name.replaceAll(RegExp(r'[^a-zA-Z\s]'), '');
     final List<String> parts = name.split(' ');
@@ -34,6 +59,7 @@ class Avatar extends StatefulWidget implements AvatarWidget {
     }
     return first;
   }
+  */
 
   final String initials;
   final Color? backgroundColor;
@@ -190,8 +216,7 @@ class AvatarBadge extends StatelessWidget implements AvatarWidget {
       height: size,
       decoration: BoxDecoration(
         color: color ?? Theme.of(context).colorScheme.primary,
-        borderRadius:
-            BorderRadius.circular(borderRadius ?? theme.radius * size),
+        borderRadius: BorderRadius.circular(borderRadius ?? theme.radius * size),
       ),
       child: child,
     );
@@ -340,8 +365,7 @@ class AvatarGroup extends StatelessWidget {
         rect = Rect.fromLTWH(currentX, currentY, size, size);
         currentWidth = size;
         currentHeight = size;
-        currentBorderRadius =
-            avatar.borderRadius ?? Theme.of(context).radius * size;
+        currentBorderRadius = avatar.borderRadius ?? Theme.of(context).radius * size;
       } else {
         double width = size;
         double height = size;
@@ -353,8 +377,7 @@ class AvatarGroup extends StatelessWidget {
         var offsetWidthDiff = widthDiff * resolved.x;
         var offsetHeightDiff = heightDiff * resolved.y;
         double x = (widthDiff / 2) + offsetWidth + currentX + offsetWidthDiff;
-        double y =
-            (heightDiff / 2) + offsetHeight + currentY + offsetHeightDiff;
+        double y = (heightDiff / 2) + offsetHeight + currentY + offsetHeightDiff;
 
         // NOTE: child positions are not affected by gap
 
