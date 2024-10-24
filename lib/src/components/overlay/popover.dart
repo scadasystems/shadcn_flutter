@@ -6,7 +6,12 @@ import 'package:flutter/scheduler.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart';
 
 class PopoverOverlayHandler extends OverlayHandler {
-  const PopoverOverlayHandler();
+  PopoverOverlayHandler();
+
+  bool _blockDismiss = false;
+  void blockDismiss() => _blockDismiss = true;
+  void unblockDismiss() => _blockDismiss = false;
+
   @override
   OverlayCompleter<T> show<T>({
     required BuildContext context,
@@ -62,6 +67,9 @@ class PopoverOverlayHandler extends OverlayHandler {
           builder: (context) {
             return GestureDetector(
               onTap: () {
+                // FIXME: 블록 해제 처리
+                if (_blockDismiss) return;
+
                 isClosed.value = true;
               },
               child: Container(
@@ -76,6 +84,9 @@ class PopoverOverlayHandler extends OverlayHandler {
             return Listener(
               behavior: HitTestBehavior.translucent,
               onPointerDown: (event) {
+                // FIXME: 블록 해제 처리
+                if (_blockDismiss) return;
+
                 isClosed.value = true;
               },
             );
@@ -92,73 +103,74 @@ class PopoverOverlayHandler extends OverlayHandler {
           child: FocusScope(
             autofocus: dismissBackdropFocus,
             child: AnimatedBuilder(
-                animation: isClosed,
-                builder: (innerContext, child) {
-                  return AnimatedValueBuilder.animation(
-                      value: isClosed.value ? 0.0 : 1.0,
-                      initialValue: 0.0,
-                      curve: isClosed.value ? const Interval(0, 2 / 3) : Curves.linear,
-                      duration: isClosed.value
-                          ? (showDuration ?? kDefaultDuration)
-                          : (dismissDuration ?? const Duration(milliseconds: 100)),
-                      onEnd: (value) {
-                        if (value == 0.0 && isClosed.value) {
+              animation: isClosed,
+              builder: (innerContext, child) {
+                return AnimatedValueBuilder.animation(
+                    value: isClosed.value ? 0.0 : 1.0,
+                    initialValue: 0.0,
+                    curve: isClosed.value ? const Interval(0, 2 / 3) : Curves.linear,
+                    duration: isClosed.value
+                        ? (showDuration ?? kDefaultDuration)
+                        : (dismissDuration ?? const Duration(milliseconds: 100)),
+                    onEnd: (value) {
+                      if (value == 0.0 && isClosed.value) {
+                        popoverEntry.remove();
+                        popoverEntry.dispose();
+                        animationCompleter.complete();
+                      }
+                    },
+                    builder: (innerContext, animation) {
+                      final popoverAnchor = PopoverAnchor(
+                        animation: animation,
+                        onTapOutside: () {
+                          if (isClosed.value) return;
+                          if (!modal) {
+                            isClosed.value = true;
+                            completer.complete();
+                          }
+                        },
+                        key: key,
+                        anchorContext: context,
+                        position: position!,
+                        alignment: resolvedAlignment,
+                        themes: themes,
+                        builder: builder,
+                        anchorSize: anchorSize,
+                        // anchorAlignment: anchorAlignment ?? alignment * -1,
+                        anchorAlignment: resolvedAnchorAlignment,
+                        widthConstraint: widthConstraint,
+                        heightConstraint: heightConstraint,
+                        regionGroupId: regionGroupId,
+                        offset: offset,
+                        transitionAlignment: transitionAlignment,
+                        margin: margin,
+                        follow: follow,
+                        consumeOutsideTaps: consumeOutsideTaps,
+                        onTickFollow: onTickFollow,
+                        allowInvertHorizontal: allowInvertHorizontal,
+                        allowInvertVertical: allowInvertVertical,
+                        data: data,
+                        onClose: () {
+                          if (isClosed.value) return Future.value();
+                          isClosed.value = true;
+                          completer.complete();
+                          return animationCompleter.future;
+                        },
+                        onImmediateClose: () {
                           popoverEntry.remove();
-                          popoverEntry.dispose();
-                          animationCompleter.complete();
-                        }
-                      },
-                      builder: (innerContext, animation) {
-                        var popoverAnchor = PopoverAnchor(
-                          animation: animation,
-                          onTapOutside: () {
-                            if (isClosed.value) return;
-                            if (!modal) {
-                              isClosed.value = true;
-                              completer.complete();
-                            }
-                          },
-                          key: key,
-                          anchorContext: context,
-                          position: position!,
-                          alignment: resolvedAlignment,
-                          themes: themes,
-                          builder: builder,
-                          anchorSize: anchorSize,
-                          // anchorAlignment: anchorAlignment ?? alignment * -1,
-                          anchorAlignment: resolvedAnchorAlignment,
-                          widthConstraint: widthConstraint,
-                          heightConstraint: heightConstraint,
-                          regionGroupId: regionGroupId,
-                          offset: offset,
-                          transitionAlignment: transitionAlignment,
-                          margin: margin,
-                          follow: follow,
-                          consumeOutsideTaps: consumeOutsideTaps,
-                          onTickFollow: onTickFollow,
-                          allowInvertHorizontal: allowInvertHorizontal,
-                          allowInvertVertical: allowInvertVertical,
-                          data: data,
-                          onClose: () {
-                            if (isClosed.value) return Future.value();
-                            isClosed.value = true;
-                            completer.complete();
-                            return animationCompleter.future;
-                          },
-                          onImmediateClose: () {
-                            popoverEntry.remove();
-                            completer.complete();
-                          },
-                          onCloseWithResult: (value) {
-                            if (isClosed.value) return Future.value();
-                            isClosed.value = true;
-                            completer.complete(value as T);
-                            return animationCompleter.future;
-                          },
-                        );
-                        return popoverAnchor;
-                      });
-                }),
+                          completer.complete();
+                        },
+                        onCloseWithResult: (value) {
+                          if (isClosed.value) return Future.value();
+                          isClosed.value = true;
+                          completer.complete(value as T);
+                          return animationCompleter.future;
+                        },
+                      );
+                      return popoverAnchor;
+                    });
+              },
+            ),
           ),
         );
       },
@@ -493,10 +505,8 @@ class PopoverAnchorState extends State<PopoverAnchor>
       data: this,
       child: TapRegion(
         // enabled: widget.consumeOutsideTaps,
-        onTapOutside: widget.onTapOutside != null
-            ? (event) {
-                widget.onTapOutside?.call();
-              }
+        onTapOutside: widget.onTapOutside != null //
+            ? (event) => widget.onTapOutside?.call()
             : null,
         groupId: widget.regionGroupId,
         child: MediaQuery.removePadding(
@@ -534,6 +544,7 @@ class PopoverAnchorState extends State<PopoverAnchor>
         ),
       ),
     );
+
     if (widget.themes != null) {
       childWidget = widget.themes!.wrap(childWidget);
     }
@@ -697,6 +708,10 @@ class PopoverController extends ChangeNotifier {
 
   Iterable<Popover> get openPopovers => List.unmodifiable(_openPopovers);
 
+  PopoverOverlayHandler? _handler;
+  void blockDismiss() => _handler?.blockDismiss();
+  void unblockDismiss() => _handler?.unblockDismiss();
+
   Future<T?> show<T>({
     required BuildContext context,
     required WidgetBuilder builder,
@@ -727,6 +742,8 @@ class PopoverController extends ChangeNotifier {
     }
     key ??= GlobalKey<PopoverAnchorState>(debugLabel: 'PopoverAnchor$hashCode');
 
+    _handler = PopoverOverlayHandler();
+
     OverlayCompleter<T?> res = showPopover<T>(
       context: context,
       alignment: alignment,
@@ -749,19 +766,22 @@ class PopoverController extends ChangeNotifier {
       showDuration: showDuration,
       dismissDuration: hideDuration,
       overlayBarrier: overlayBarrier,
-      handler: handler,
+      handler: handler ?? _handler,
     );
-    var popover = Popover._(
-      key,
-      res,
-    );
+
+    final popover = Popover._(key, res);
     _openPopovers.add(popover);
+
     notifyListeners();
+
     await res.future;
+
     _openPopovers.remove(popover);
+
     if (!_disposed) {
       notifyListeners();
     }
+
     return res.future;
   }
 
