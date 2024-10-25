@@ -59,8 +59,10 @@ class PopoverOverlayHandler extends OverlayHandler {
     }
 
     ValueNotifier<bool> isClosed = ValueNotifier(false);
+
     OverlayEntry? barrierEntry;
     late OverlayEntry overlayEntry;
+
     if (modal) {
       if (consumeOutsideTaps) {
         barrierEntry = OverlayEntry(
@@ -89,6 +91,9 @@ class PopoverOverlayHandler extends OverlayHandler {
 
                 isClosed.value = true;
               },
+              child: Container(
+                color: overlayBarrier?.barrierColor,
+              ),
             );
           },
         );
