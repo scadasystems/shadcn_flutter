@@ -492,28 +492,18 @@ class ShadcnLayer extends StatelessWidget {
     var appScaling = scaling ?? AdaptiveScaler.defaultScaling(theme);
     var platformBrightness = MediaQuery.platformBrightnessOf(context);
     var mobileMode = isMobile(theme.platform);
-    final scaledTheme = themeMode == ThemeMode.dark ||
-            (themeMode == ThemeMode.system &&
-                platformBrightness == Brightness.dark)
-        ? appScaling.scale(darkTheme ?? theme)
-        : appScaling.scale(theme);
+    final scaledTheme =
+        themeMode == ThemeMode.dark || (themeMode == ThemeMode.system && platformBrightness == Brightness.dark)
+            ? appScaling.scale(darkTheme ?? theme)
+            : appScaling.scale(theme);
     return MultiModel(
       data: [
         Model(#shadcn_flutter_smooth_animation, enableThemeAnimation),
       ],
       child: OverlayManagerLayer(
-        menuHandler: menuHandler ??
-            (mobileMode
-                ? const SheetOverlayHandler()
-                : const PopoverOverlayHandler()),
-        popoverHandler: popoverHandler ??
-            (mobileMode
-                ? const SheetOverlayHandler()
-                : const PopoverOverlayHandler()),
-        tooltipHandler: tooltipHandler ??
-            (mobileMode
-                ? const FixedTooltipOverlayHandler()
-                : const PopoverOverlayHandler()),
+        menuHandler: menuHandler ?? (mobileMode ? const SheetOverlayHandler() : PopoverOverlayHandler()),
+        popoverHandler: popoverHandler ?? (mobileMode ? const SheetOverlayHandler() : PopoverOverlayHandler()),
+        tooltipHandler: tooltipHandler ?? (mobileMode ? const FixedTooltipOverlayHandler() : PopoverOverlayHandler()),
         child: ShadcnAnimatedTheme(
           duration: kDefaultDuration,
           data: scaledTheme,
@@ -605,8 +595,7 @@ class ShadcnAnimatedContainer extends StatelessWidget {
           'Cannot provide both a color and a decoration\n'
           'The color argument is just a shorthand for "decoration: BoxDecoration(color: color)".',
         ),
-        decoration =
-            decoration ?? (color != null ? BoxDecoration(color: color) : null),
+        decoration = decoration ?? (color != null ? BoxDecoration(color: color) : null),
         constraints = (width != null || height != null)
             ? constraints?.tighten(width: width, height: height) ??
                 BoxConstraints.tightFor(width: width, height: height)
@@ -614,8 +603,7 @@ class ShadcnAnimatedContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    bool shadcnFlutterSmoothAnimation =
-        Model.of(context, #shadcn_flutter_smooth_animation);
+    bool shadcnFlutterSmoothAnimation = Model.of(context, #shadcn_flutter_smooth_animation);
     if (!shadcnFlutterSmoothAnimation) {
       return Container(
         alignment: alignment,
@@ -666,8 +654,7 @@ class ShadcnAnimatedTheme extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    bool shadcnFlutterSmoothAnimation =
-        Model.of(context, #shadcn_flutter_smooth_animation);
+    bool shadcnFlutterSmoothAnimation = Model.of(context, #shadcn_flutter_smooth_animation);
     if (!shadcnFlutterSmoothAnimation) {
       return Theme(
         data: data,

@@ -82,12 +82,11 @@ class ChipInputState<T> extends State<ChipInput<T>> with FormValueSupplier {
   void _onSuggestionsChanged() {
     if (_suggestions.value.isEmpty || !_focusNode.hasFocus) {
       _popoverController.close();
-    } else if (!_popoverController.hasOpenPopover &&
-        _suggestions.value.isNotEmpty) {
+    } else if (!_popoverController.hasOpenPopover && _suggestions.value.isNotEmpty) {
       final theme = Theme.of(context);
       _popoverController.show(
         context: context,
-        handler: const PopoverOverlayHandler(),
+        handler: PopoverOverlayHandler(),
         builder: (context) {
           return buildPopover(context);
         },
@@ -162,29 +161,24 @@ class ChipInputState<T> extends State<ChipInput<T>> with FormValueSupplier {
           constraints: widget.popoverConstraints,
           child: OutlinedContainer(
             child: AnimatedBuilder(
-                animation:
-                    Listenable.merge([_suggestions, _selectedSuggestions]),
+                animation: Listenable.merge([_suggestions, _selectedSuggestions]),
                 builder: (context, child) {
-                  return ListView(
-                      shrinkWrap: true,
-                      padding: EdgeInsets.all(theme.scaling * 4),
-                      children: [
-                        for (int i = 0; i < _suggestions.value.length; i++)
-                          SelectedButton(
-                            style: const ButtonStyle.ghost(),
-                            selectedStyle: const ButtonStyle.secondary(),
-                            value: i == _selectedSuggestions.value,
-                            alignment: AlignmentDirectional.centerStart,
-                            onChanged: (value) {
-                              if (value) {
-                                widget.onSuggestionChoosen?.call(i);
-                              }
-                            },
-                            child: widget.suggestionBuilder
-                                    ?.call(context, _suggestions.value[i]) ??
-                                Text(_suggestions.value[i].toString()),
-                          ),
-                      ]);
+                  return ListView(shrinkWrap: true, padding: EdgeInsets.all(theme.scaling * 4), children: [
+                    for (int i = 0; i < _suggestions.value.length; i++)
+                      SelectedButton(
+                        style: const ButtonStyle.ghost(),
+                        selectedStyle: const ButtonStyle.secondary(),
+                        value: i == _selectedSuggestions.value,
+                        alignment: AlignmentDirectional.centerStart,
+                        onChanged: (value) {
+                          if (value) {
+                            widget.onSuggestionChoosen?.call(i);
+                          }
+                        },
+                        child: widget.suggestionBuilder?.call(context, _suggestions.value[i]) ??
+                            Text(_suggestions.value[i].toString()),
+                      ),
+                  ]);
                 }),
           ),
         ),
@@ -211,10 +205,8 @@ class ChipInputState<T> extends State<ChipInput<T>> with FormValueSupplier {
         mouseCursor: SystemMouseCursors.text,
         shortcuts: {
           LogicalKeySet(LogicalKeyboardKey.tab): const SelectSuggestionIntent(),
-          LogicalKeySet(LogicalKeyboardKey.arrowDown):
-              const NextSuggestionIntent(),
-          LogicalKeySet(LogicalKeyboardKey.arrowUp):
-              const PreviousSuggestionIntent(),
+          LogicalKeySet(LogicalKeyboardKey.arrowDown): const NextSuggestionIntent(),
+          LogicalKeySet(LogicalKeyboardKey.arrowUp): const PreviousSuggestionIntent(),
         },
         actions: {
           SelectSuggestionIntent: CallbackAction(
@@ -264,8 +256,7 @@ class ChipInputState<T> extends State<ChipInput<T>> with FormValueSupplier {
                       runSpacing: theme.scaling * 4,
                       spacing: theme.scaling * 4,
                       children: [
-                        for (int i = 0; i < widget.chips.length; i++)
-                          _chipBuilder(i),
+                        for (int i = 0; i < widget.chips.length; i++) _chipBuilder(i),
                       ],
                     ).withPadding(
                       left: theme.scaling * 4,
@@ -292,8 +283,7 @@ class ChipInputState<T> extends State<ChipInput<T>> with FormValueSupplier {
                       spacing: theme.scaling * 4,
                       crossAxisAlignment: WrapCrossAlignment.center,
                       children: [
-                        for (int i = 0; i < widget.chips.length; i++)
-                          _chipBuilder(i),
+                        for (int i = 0; i < widget.chips.length; i++) _chipBuilder(i),
                         if (_controller.text.isNotEmpty) const Gap(4),
                         if (_controller.text.isNotEmpty)
                           Text(
@@ -309,9 +299,7 @@ class ChipInputState<T> extends State<ChipInput<T>> with FormValueSupplier {
               child: OutlinedContainer(
                 backgroundColor: Colors.transparent,
                 borderRadius: theme.borderRadiusMd,
-                borderColor: _focusNode.hasFocus
-                    ? theme.colorScheme.ring
-                    : theme.colorScheme.border,
+                borderColor: _focusNode.hasFocus ? theme.colorScheme.ring : theme.colorScheme.border,
                 child: child!,
               ),
             );

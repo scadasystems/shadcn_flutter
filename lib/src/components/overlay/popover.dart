@@ -261,8 +261,7 @@ enum PopoverConstraint {
   anchorMaxSize,
 }
 
-class PopoverAnchorState extends State<PopoverAnchor>
-    with SingleTickerProviderStateMixin, OverlayHandlerStateMixin {
+class PopoverAnchorState extends State<PopoverAnchor> with SingleTickerProviderStateMixin, OverlayHandlerStateMixin {
   late BuildContext _anchorContext;
   late Offset? _position;
   late Offset? _offset;
@@ -751,8 +750,7 @@ class PopoverController extends ChangeNotifier {
     if (closeOthers) {
       close();
     }
-    key ??= GlobalKey<OverlayHandlerStateMixin>(
-        debugLabel: 'PopoverAnchor$hashCode');
+    key ??= GlobalKey<OverlayHandlerStateMixin>(debugLabel: 'PopoverAnchor$hashCode');
 
     _handler = PopoverOverlayHandler();
 
