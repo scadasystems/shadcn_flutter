@@ -28,7 +28,7 @@ class TooltipContainer extends StatelessWidget {
     if (surfaceOpacity != null) {
       backgroundColor = backgroundColor.scaleAlpha(surfaceOpacity);
     }
-    Widget animatedContainer = AnimatedContainer(
+    Widget animatedContainer = ShadcnAnimatedContainer(
       duration: kDefaultDuration,
       padding: const EdgeInsets.symmetric(
             horizontal: 12,
@@ -179,7 +179,7 @@ class OverlayManagerAsTooltipOverlayHandler extends OverlayHandler {
   });
 
   @override
-  OverlayCompleter<T> show<T>({
+  OverlayCompleter<T?> show<T>({
     required BuildContext context,
     required AlignmentGeometry alignment,
     required WidgetBuilder builder,
@@ -189,6 +189,7 @@ class OverlayManagerAsTooltipOverlayHandler extends OverlayHandler {
     PopoverConstraint heightConstraint = PopoverConstraint.flexible,
     Key? key,
     bool rootOverlay = true,
+    bool barrierDismissable = true,
     bool modal = true,
     Clip clipBehavior = Clip.none,
     Object? regionGroupId,
@@ -249,6 +250,7 @@ class FixedTooltipOverlayHandler extends OverlayHandler {
     Key? key,
     bool rootOverlay = true,
     bool modal = true,
+    bool barrierDismissable = true,
     Clip clipBehavior = Clip.none,
     Object? regionGroupId,
     Offset? offset,

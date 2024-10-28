@@ -153,6 +153,7 @@ class ObjectFormFieldState<T> extends State<ObjectFormField<T>>
         padding: const EdgeInsets.symmetric(vertical: 8) * scaling,
         borderRadius: BorderRadius.circular(theme.radiusLg),
       ),
+      offset: Offset(0, 8 * scaling),
       builder: (context) {
         return _ObjectFormFieldPopup<T>(
           value: value,
@@ -350,7 +351,7 @@ class _ObjectFormFieldPopupState<T> extends State<_ObjectFormFieldPopup<T>>
 
   @override
   Future<void> close() {
-    return closePopover(context);
+    return closeOverlay(context);
   }
 
   @override
@@ -358,14 +359,13 @@ class _ObjectFormFieldPopupState<T> extends State<_ObjectFormFieldPopup<T>>
     final theme = Theme.of(context);
     return Data<ObjectFormHandler<T>>.inherit(
       data: this,
-      child: Padding(
+      child: SurfaceCard(
         padding: widget.popoverPadding ??
-            (const EdgeInsets.symmetric(vertical: 8) * theme.scaling),
-        child: SurfaceCard(
-          child: widget.editorBuilder(
-            context,
-            this,
-          ),
+            (const EdgeInsets.symmetric(vertical: 16, horizontal: 16) *
+                theme.scaling),
+        child: widget.editorBuilder(
+          context,
+          this,
         ),
       ),
     );

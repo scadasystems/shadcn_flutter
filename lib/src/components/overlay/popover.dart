@@ -24,6 +24,7 @@ class PopoverOverlayHandler extends OverlayHandler {
     Key? key,
     bool rootOverlay = true,
     bool modal = true,
+    bool barrierDismissable = true,
     ui.Clip clipBehavior = Clip.none,
     Object? regionGroupId,
     ui.Offset? offset,
@@ -69,6 +70,7 @@ class PopoverOverlayHandler extends OverlayHandler {
           builder: (context) {
             return GestureDetector(
               onTap: () {
+                if (!barrierDismissable) return;
                 // FIXME: 블록 해제 처리
                 if (_blockDismiss) return;
 
@@ -86,6 +88,7 @@ class PopoverOverlayHandler extends OverlayHandler {
             return Listener(
               behavior: HitTestBehavior.translucent,
               onPointerDown: (event) {
+                if (!barrierDismissable) return;
                 // FIXME: 블록 해제 처리
                 if (_blockDismiss) return;
 
@@ -258,16 +261,8 @@ enum PopoverConstraint {
   anchorMaxSize,
 }
 
-typedef OffsetSupplier = Offset Function(PopoverAnchorState state);
-
-abstract class OverlayAnchorHandler {
-  Future<void> close([bool immediate = false]);
-  void closeLater();
-}
-
 class PopoverAnchorState extends State<PopoverAnchor>
-    with SingleTickerProviderStateMixin
-    implements OverlayAnchorHandler {
+    with SingleTickerProviderStateMixin, OverlayHandlerStateMixin {
   late BuildContext _anchorContext;
   late Offset? _position;
   late Offset? _offset;
@@ -282,6 +277,7 @@ class PopoverAnchorState extends State<PopoverAnchor>
   late bool _allowInvertVertical;
   late Ticker _ticker;
 
+  @override
   set offset(Offset? offset) {
     if (offset != null) {
       setState(() {
@@ -391,7 +387,7 @@ class PopoverAnchorState extends State<PopoverAnchor>
   BuildContext get anchorContext => _anchorContext;
   bool get allowInvertHorizontal => _allowInvertHorizontal;
   bool get allowInvertVertical => _allowInvertVertical;
-
+  @override
   set alignment(Alignment value) {
     if (_alignment != value) {
       setState(() {
@@ -408,6 +404,7 @@ class PopoverAnchorState extends State<PopoverAnchor>
     }
   }
 
+  @override
   set anchorAlignment(Alignment value) {
     if (_anchorAlignment != value) {
       setState(() {
@@ -416,6 +413,7 @@ class PopoverAnchorState extends State<PopoverAnchor>
     }
   }
 
+  @override
   set widthConstraint(PopoverConstraint value) {
     if (_widthConstraint != value) {
       setState(() {
@@ -424,6 +422,7 @@ class PopoverAnchorState extends State<PopoverAnchor>
     }
   }
 
+  @override
   set heightConstraint(PopoverConstraint value) {
     if (_heightConstraint != value) {
       setState(() {
@@ -432,6 +431,7 @@ class PopoverAnchorState extends State<PopoverAnchor>
     }
   }
 
+  @override
   set margin(EdgeInsets? value) {
     if (_margin != value) {
       setState(() {
@@ -440,6 +440,7 @@ class PopoverAnchorState extends State<PopoverAnchor>
     }
   }
 
+  @override
   set follow(bool value) {
     if (_follow != value) {
       setState(() {
@@ -453,6 +454,7 @@ class PopoverAnchorState extends State<PopoverAnchor>
     }
   }
 
+  @override
   set anchorContext(BuildContext value) {
     if (_anchorContext != value) {
       setState(() {
@@ -461,6 +463,7 @@ class PopoverAnchorState extends State<PopoverAnchor>
     }
   }
 
+  @override
   set allowInvertHorizontal(bool value) {
     if (_allowInvertHorizontal != value) {
       setState(() {
@@ -469,6 +472,7 @@ class PopoverAnchorState extends State<PopoverAnchor>
     }
   }
 
+  @override
   set allowInvertVertical(bool value) {
     if (_allowInvertVertical != value) {
       setState(() {
@@ -506,7 +510,7 @@ class PopoverAnchorState extends State<PopoverAnchor>
 
   @override
   Widget build(BuildContext context) {
-    Widget childWidget = Data.inherit(
+    Widget childWidget = Data<OverlayHandlerStateMixin>.inherit(
       data: this,
       child: TapRegion(
         // enabled: widget.consumeOutsideTaps,
@@ -558,16 +562,16 @@ class PopoverAnchorState extends State<PopoverAnchor>
     }
     return childWidget;
   }
+
+  @override
+  Future<void> closeWithResult<X>([X? value]) {
+    return widget.onCloseWithResult?.call(value) ?? Future.value();
+  }
 }
 
-Future<void> closePopover<T>(BuildContext context, [T? value]) {
-  final state = Data.maybeOf<PopoverAnchorState>(context);
-
-  if (state != null && state.mounted) {
-    return state.widget.onCloseWithResult?.call(value) ?? Future.value();
-  }
-
-  return Future.value();
+@Deprecated('Use closeOverlay instead')
+Future<void> closePopover<T>(BuildContext context, [T? result]) {
+  return closeOverlay<T>(context, result);
 }
 
 class OverlayPopoverEntry<T> implements OverlayCompleter<T> {
@@ -624,6 +628,7 @@ OverlayCompleter<T?> showPopover<T>({
   Key? key,
   bool rootOverlay = true,
   bool modal = true,
+  bool barrierDismissable = true,
   Clip clipBehavior = Clip.none,
   Object? regionGroupId,
   Offset? offset,
@@ -653,6 +658,7 @@ OverlayCompleter<T?> showPopover<T>({
     key: key,
     rootOverlay: rootOverlay,
     modal: modal,
+    barrierDismissable: barrierDismissable,
     clipBehavior: clipBehavior,
     regionGroupId: regionGroupId,
     offset: offset,
@@ -671,7 +677,7 @@ OverlayCompleter<T?> showPopover<T>({
 }
 
 class Popover {
-  final GlobalKey<PopoverAnchorState> key;
+  final GlobalKey<OverlayHandlerStateMixin> key;
   final OverlayCompleter entry;
 
   Popover._(this.key, this.entry);
@@ -699,7 +705,7 @@ class Popover {
     entry.remove();
   }
 
-  PopoverAnchorState? get currentState => key.currentState;
+  OverlayHandlerStateMixin? get currentState => key.currentState;
 }
 
 class PopoverController extends ChangeNotifier {
@@ -727,7 +733,7 @@ class PopoverController extends ChangeNotifier {
     bool modal = false,
     bool closeOthers = true,
     Offset? offset,
-    GlobalKey<PopoverAnchorState>? key,
+    GlobalKey<OverlayHandlerStateMixin>? key,
     Object? regionGroupId,
     Alignment? transitionAlignment,
     bool consumeOutsideTaps = true,
@@ -745,7 +751,8 @@ class PopoverController extends ChangeNotifier {
     if (closeOthers) {
       close();
     }
-    key ??= GlobalKey<PopoverAnchorState>(debugLabel: 'PopoverAnchor$hashCode');
+    key ??= GlobalKey<OverlayHandlerStateMixin>(
+        debugLabel: 'PopoverAnchor$hashCode');
 
     _handler = PopoverOverlayHandler();
 

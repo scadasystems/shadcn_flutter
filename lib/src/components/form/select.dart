@@ -271,10 +271,13 @@ class SelectLabel extends StatelessWidget {
   }
 }
 
+typedef SelectSearch = void Function(String query);
+
 class Select<T> extends StatefulWidget {
   final ValueChanged<T?>? onChanged; // if null, then it's a disabled combobox
   final SearchFilter<T>?
       searchFilter; // if its not null, then it's a searchable combobox
+  final SelectSearch? onSearch;
   final Widget? placeholder; // placeholder when value is null
   final bool filled;
   final FocusNode? focusNode;
@@ -322,6 +325,7 @@ class Select<T> extends StatefulWidget {
     this.surfaceOpacity,
     this.canUnselect = false,
     this.autoClosePopover = true,
+    this.onSearch,
     required this.itemBuilder,
     required this.children,
   });
@@ -445,6 +449,7 @@ class SelectState<T> extends State<Select<T>> with FormValueSupplier {
                         borderRadius: BorderRadius.circular(theme.radiusLg),
                         margin:
                             const EdgeInsets.symmetric(vertical: 8) * scaling,
+                        onSearch: widget.onSearch,
                         autoClose: widget.autoClosePopover,
                         orderSelectedFirst: widget.orderSelectedFirst,
                         searchPlaceholder: widget.searchPlaceholder,
@@ -522,6 +527,7 @@ class SelectPopup<T> extends StatefulWidget {
   final bool autoClose;
   final EdgeInsetsGeometry margin;
   final BorderRadiusGeometry borderRadius;
+  final SelectSearch? onSearch;
 
   const SelectPopup({
     super.key,
@@ -536,6 +542,7 @@ class SelectPopup<T> extends StatefulWidget {
     this.surfaceBlur,
     this.surfaceOpacity,
     this.autoClose = true,
+    this.onSearch,
     required this.margin,
     required this.borderRadius,
     required this.children,
@@ -573,245 +580,254 @@ class SelectPopupState<T> extends State<SelectPopup<T>> {
     final scaling = theme.scaling;
     final surfaceBlur = widget.surfaceBlur ?? theme.surfaceBlur;
     final surfaceOpacity = widget.surfaceOpacity ?? theme.surfaceOpacity;
-    return Container(
-      margin: widget.margin,
-      constraints: widget.constraints ??
-          (const BoxConstraints(
-                minWidth: 200,
-              ) *
-              scaling),
-      child: OutlinedContainer(
-        clipBehavior: Clip.hardEdge,
-        surfaceBlur: surfaceBlur,
-        surfaceOpacity: surfaceOpacity,
-        borderRadius: widget.borderRadius,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (widget.searchFilter != null)
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12) * scaling,
-                child: Row(
-                  children: [
-                    AnimatedIconTheme(
-                      duration: kDefaultDuration,
-                      data: IconThemeData(
-                        color: Theme.of(context).colorScheme.foreground,
-                        opacity: 0.5,
+    var isSheetOverlay = SheetOverlayHandler.isSheetOverlay(context);
+    return SizedBox(
+      width: isSheetOverlay ? double.infinity : null,
+      child: Container(
+        margin: isSheetOverlay ? null : widget.margin,
+        constraints: widget.constraints ??
+            (const BoxConstraints(
+                  minWidth: 200,
+                ) *
+                scaling),
+        child: SurfaceCard(
+          clipBehavior: Clip.hardEdge,
+          surfaceBlur: surfaceBlur,
+          surfaceOpacity: surfaceOpacity,
+          borderRadius: widget.borderRadius,
+          padding: EdgeInsets.zero,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (widget.searchFilter != null)
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12) * scaling,
+                  child: Row(
+                    children: [
+                      AnimatedIconTheme(
+                        duration: kDefaultDuration,
+                        data: IconThemeData(
+                          color: Theme.of(context).colorScheme.foreground,
+                          opacity: 0.5,
+                        ),
+                        child: const Icon(
+                          Icons.search,
+                        ).iconSmall(),
                       ),
-                      child: const Icon(
-                        Icons.search,
-                      ).iconSmall(),
-                    ),
-                    SizedBox(width: 8 * scaling),
-                    Expanded(
-                      child: TextField(
-                        controller: _searchController,
-                        border: false,
-                        placeholder: widget.searchPlaceholder,
-                        padding:
-                            const EdgeInsets.symmetric(vertical: 12) * scaling,
+                      SizedBox(width: 8 * scaling),
+                      Expanded(
+                        child: TextField(
+                          controller: _searchController,
+                          border: false,
+                          placeholder: widget.searchPlaceholder,
+                          onChanged: (value) {
+                            widget.onSearch?.call(value);
+                          },
+                          padding: const EdgeInsets.symmetric(vertical: 12) *
+                              scaling,
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-              ),
-            if (widget.searchFilter != null) const Divider(),
-            Flexible(
-              child: ClipRRect(
-                borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(theme.radiusXl),
-                  bottomRight: Radius.circular(theme.radiusXl),
-                ),
-                child: ScrollConfiguration(
-                  behavior: ScrollConfiguration.of(context).copyWith(
-                    scrollbars: false,
+                    ],
                   ),
-                  child: ListenableBuilder(
-                    listenable: Listenable.merge([
-                      _searchController,
-                      widget.value,
-                      widget.children,
-                    ]),
-                    builder: (context, child) {
-                      String text = _searchController.text;
-                      Map<AbstractSelectItem<T>, SelectSearchResult> resultMap =
-                          {};
-                      for (int i = 0; i < widget.children.value.length; i++) {
-                        var item = widget.children.value[i];
-                        if (text.isEmpty) {
-                          var result = item.search(SearchQuery<T>(
-                              text, widget.searchFilter, widget.value.value));
-                          resultMap[item] =
-                              SelectSearchResult(0, i, result.hasSelectedValue);
-                        } else {
-                          var result = item.search(SearchQuery<T>(
-                              text, widget.searchFilter, widget.value.value));
-                          int score = result.score;
-                          bool hasSelectedValue = result.hasSelectedValue;
-                          if (score > 0 || widget.showUnrelatedValues) {
-                            resultMap[item] =
-                                SelectSearchResult(score, i, hasSelectedValue);
+                ),
+              if (widget.searchFilter != null) const Divider(),
+              Flexible(
+                child: ClipRRect(
+                  borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(theme.radiusXl),
+                    bottomRight: Radius.circular(theme.radiusXl),
+                  ),
+                  child: ScrollConfiguration(
+                    behavior: ScrollConfiguration.of(context).copyWith(
+                      scrollbars: false,
+                    ),
+                    child: ListenableBuilder(
+                      listenable: Listenable.merge([
+                        _searchController,
+                        widget.value,
+                        widget.children,
+                      ]),
+                      builder: (context, child) {
+                        String text = _searchController.text;
+                        Map<AbstractSelectItem<T>, SelectSearchResult>
+                            resultMap = {};
+                        for (int i = 0; i < widget.children.value.length; i++) {
+                          var item = widget.children.value[i];
+                          if (text.isEmpty) {
+                            var result = item.search(SearchQuery<T>(
+                                text, widget.searchFilter, widget.value.value));
+                            resultMap[item] = SelectSearchResult(
+                                0, i, result.hasSelectedValue);
+                          } else {
+                            var result = item.search(SearchQuery<T>(
+                                text, widget.searchFilter, widget.value.value));
+                            int score = result.score;
+                            bool hasSelectedValue = result.hasSelectedValue;
+                            if (score > 0 || widget.showUnrelatedValues) {
+                              resultMap[item] = SelectSearchResult(
+                                  score, i, hasSelectedValue);
+                            }
                           }
                         }
-                      }
-                      List<Widget> children = [];
-                      // sort from largest score to lowest score, if score is same, then sort by index
-                      resultMap.entries.toList()
-                        ..sort((a, b) {
-                          if (widget.orderSelectedFirst) {
-                            if (a.value.hasSelectedValue &&
-                                !b.value.hasSelectedValue) {
-                              return -1;
+                        List<Widget> children = [];
+                        // sort from largest score to lowest score, if score is same, then sort by index
+                        resultMap.entries.toList()
+                          ..sort((a, b) {
+                            if (widget.orderSelectedFirst) {
+                              if (a.value.hasSelectedValue &&
+                                  !b.value.hasSelectedValue) {
+                                return -1;
+                              }
+                              if (!a.value.hasSelectedValue &&
+                                  b.value.hasSelectedValue) {
+                                return 1;
+                              }
                             }
-                            if (!a.value.hasSelectedValue &&
-                                b.value.hasSelectedValue) {
-                              return 1;
+                            if (a.value.score == b.value.score) {
+                              return a.value.index.compareTo(b.value.index);
                             }
-                          }
-                          if (a.value.score == b.value.score) {
-                            return a.value.index.compareTo(b.value.index);
-                          }
-                          return b.value.score.compareTo(a.value.score);
-                        })
-                        ..forEach((element) {
-                          children.add(element.key);
-                        });
-                      Widget child;
-                      if (children.isEmpty) {
-                        child = widget.emptyBuilder?.call(context) ??
-                            const SizedBox();
-                      } else {
-                        child = Stack(
-                          fit: StackFit.passthrough,
-                          children: [
-                            Padding(
-                              // to fix visual glitch, add padding
-                              padding:
-                                  const EdgeInsets.only(top: 1, bottom: 1) *
-                                      scaling,
-                              child: ListView(
-                                controller: _scrollController,
-                                padding: const EdgeInsets.all(4) * scaling,
-                                shrinkWrap: true,
-                                children: children,
+                            return b.value.score.compareTo(a.value.score);
+                          })
+                          ..forEach((element) {
+                            children.add(element.key);
+                          });
+                        Widget child;
+                        if (children.isEmpty) {
+                          child = widget.emptyBuilder?.call(context) ??
+                              const SizedBox();
+                        } else {
+                          child = Stack(
+                            fit: StackFit.passthrough,
+                            children: [
+                              Padding(
+                                // to fix visual glitch, add padding
+                                padding:
+                                    const EdgeInsets.only(top: 1, bottom: 1) *
+                                        scaling,
+                                child: ListView(
+                                  controller: _scrollController,
+                                  padding: const EdgeInsets.all(4) * scaling,
+                                  shrinkWrap: true,
+                                  children: children,
+                                ),
                               ),
-                            ),
-                            AnimatedBuilder(
-                              animation: _scrollController,
-                              builder: (context, child) {
-                                return Visibility(
-                                  visible: _scrollController.offset > 0,
-                                  child: Positioned(
-                                    top: 0,
-                                    left: 0,
-                                    right: 0,
-                                    child: HoverActivity(
-                                      hitTestBehavior:
-                                          HitTestBehavior.translucent,
-                                      debounceDuration:
-                                          const Duration(milliseconds: 16),
-                                      onHover: () {
-                                        // decrease scroll offset
-                                        var value =
-                                            _scrollController.offset - 8;
-                                        value = value.clamp(
-                                          0.0,
-                                          _scrollController
-                                              .position.maxScrollExtent,
-                                        );
-                                        _scrollController.jumpTo(
-                                          value,
-                                        );
-                                      },
-                                      child: Container(
-                                        color: theme.colorScheme.background,
-                                        padding: const EdgeInsets.symmetric(
-                                                vertical: 4) *
-                                            scaling,
-                                        child: const Icon(
-                                          RadixIcons.chevronUp,
-                                        ).iconX3Small(),
+                              AnimatedBuilder(
+                                animation: _scrollController,
+                                builder: (context, child) {
+                                  return Visibility(
+                                    visible: _scrollController.offset > 0,
+                                    child: Positioned(
+                                      top: 0,
+                                      left: 0,
+                                      right: 0,
+                                      child: HoverActivity(
+                                        hitTestBehavior:
+                                            HitTestBehavior.translucent,
+                                        debounceDuration:
+                                            const Duration(milliseconds: 16),
+                                        onHover: () {
+                                          // decrease scroll offset
+                                          var value =
+                                              _scrollController.offset - 8;
+                                          value = value.clamp(
+                                            0.0,
+                                            _scrollController
+                                                .position.maxScrollExtent,
+                                          );
+                                          _scrollController.jumpTo(
+                                            value,
+                                          );
+                                        },
+                                        child: Container(
+                                          color: theme.colorScheme.background,
+                                          padding: const EdgeInsets.symmetric(
+                                                  vertical: 4) *
+                                              scaling,
+                                          child: const Icon(
+                                            RadixIcons.chevronUp,
+                                          ).iconX3Small(),
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                );
-                              },
-                            ),
-                            AnimatedBuilder(
-                              animation: _scrollController,
-                              builder: (context, child) {
-                                return Visibility(
-                                  visible: _scrollController.hasClients &&
-                                      _scrollController
-                                          .position.hasContentDimensions &&
-                                      _scrollController.offset <
-                                          _scrollController
-                                              .position.maxScrollExtent,
-                                  child: Positioned(
-                                    bottom: 0,
-                                    left: 0,
-                                    right: 0,
-                                    child: HoverActivity(
-                                      hitTestBehavior:
-                                          HitTestBehavior.translucent,
-                                      debounceDuration:
-                                          const Duration(milliseconds: 16),
-                                      onHover: () {
-                                        // increase scroll offset
-                                        var value =
-                                            _scrollController.offset + 8;
-                                        value = value.clamp(
-                                          0.0,
-                                          _scrollController
-                                              .position.maxScrollExtent,
-                                        );
-                                        _scrollController.jumpTo(
-                                          value,
-                                        );
-                                      },
-                                      child: Container(
-                                        color: theme.colorScheme.background,
-                                        padding: const EdgeInsets.symmetric(
-                                                vertical: 4) *
-                                            scaling,
-                                        child: const Icon(
-                                          RadixIcons.chevronDown,
-                                        ).iconX3Small(),
+                                  );
+                                },
+                              ),
+                              AnimatedBuilder(
+                                animation: _scrollController,
+                                builder: (context, child) {
+                                  return Visibility(
+                                    visible: _scrollController.hasClients &&
+                                        _scrollController
+                                            .position.hasContentDimensions &&
+                                        _scrollController.offset <
+                                            _scrollController
+                                                .position.maxScrollExtent,
+                                    child: Positioned(
+                                      bottom: 0,
+                                      left: 0,
+                                      right: 0,
+                                      child: HoverActivity(
+                                        hitTestBehavior:
+                                            HitTestBehavior.translucent,
+                                        debounceDuration:
+                                            const Duration(milliseconds: 16),
+                                        onHover: () {
+                                          // increase scroll offset
+                                          var value =
+                                              _scrollController.offset + 8;
+                                          value = value.clamp(
+                                            0.0,
+                                            _scrollController
+                                                .position.maxScrollExtent,
+                                          );
+                                          _scrollController.jumpTo(
+                                            value,
+                                          );
+                                        },
+                                        child: Container(
+                                          color: theme.colorScheme.background,
+                                          padding: const EdgeInsets.symmetric(
+                                                  vertical: 4) *
+                                              scaling,
+                                          child: const Icon(
+                                            RadixIcons.chevronDown,
+                                          ).iconX3Small(),
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                );
-                              },
-                            ),
-                          ],
+                                  );
+                                },
+                              ),
+                            ],
+                          );
+                        }
+                        return Data.inherit(
+                          data: SelectData(
+                            (item, query) {
+                              return widget.searchFilter?.call(item, query) ??
+                                  0;
+                            },
+                            text,
+                            (value, selected) {
+                              widget.onChanged?.call(value, selected);
+                              if (widget.autoClose) {
+                                closeOverlay(context, value);
+                              }
+                            },
+                            widget.value,
+                            widget.showUnrelatedValues,
+                            widget.orderSelectedFirst,
+                          ),
+                          child: child,
                         );
-                      }
-                      return Data.inherit(
-                        data: SelectData(
-                          (item, query) {
-                            return widget.searchFilter?.call(item, query) ?? 0;
-                          },
-                          text,
-                          (value, selected) {
-                            widget.onChanged?.call(value, selected);
-                            if (widget.autoClose) {
-                              closePopover(context, value);
-                            }
-                          },
-                          widget.value,
-                          widget.showUnrelatedValues,
-                          widget.orderSelectedFirst,
-                        ),
-                        child: child,
-                      );
-                    },
+                      },
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -888,6 +904,7 @@ class MultiSelect<T> extends StatefulWidget {
   final double? surfaceOpacity;
   final bool disableHoverEffect;
   final bool autoClosePopover;
+  final SelectSearch? onSearch;
 
   const MultiSelect({
     super.key,
@@ -912,6 +929,7 @@ class MultiSelect<T> extends StatefulWidget {
     this.surfaceBlur,
     this.surfaceOpacity,
     this.autoClosePopover = false,
+    this.onSearch,
     required this.itemBuilder,
     required this.children,
   });
@@ -1035,6 +1053,7 @@ class MultiSelectState<T> extends State<MultiSelect<T>> with FormValueSupplier {
                             const EdgeInsets.symmetric(vertical: 8) * scaling,
                         orderSelectedFirst: widget.orderSelectedFirst,
                         searchPlaceholder: widget.searchPlaceholder,
+                        onSearch: widget.onSearch,
                         searchFilter: widget.searchFilter,
                         constraints: widget.popupConstraints,
                         value: _valueNotifier,

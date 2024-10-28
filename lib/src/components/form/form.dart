@@ -755,7 +755,8 @@ class FormEntry<T> extends StatefulWidget {
   final Widget child;
   final Validator<T>? validator;
 
-  const FormEntry({required FormKey super.key, required this.child, this.validator});
+  const FormEntry(
+      {required FormKey<T> super.key, required this.child, this.validator});
 
   @override
   FormKey get key => super.key as FormKey;

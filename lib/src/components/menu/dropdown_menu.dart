@@ -28,7 +28,8 @@ void showDropdown({
   final theme = Theme.of(context);
   final scaling = theme.scaling;
   final GlobalKey key = GlobalKey();
-  showPopover(
+  final overlayManager = OverlayManager.of(context);
+  overlayManager.showMenu(
     context: context,
     alignment: Alignment.topCenter,
     offset: offset ?? (const Offset(0, 4) * scaling),
@@ -88,6 +89,7 @@ class _DropdownMenuState extends State<DropdownMenu> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isSheetOverlay = SheetOverlayHandler.isSheetOverlay(context);
     return ConstrainedBox(
       constraints: const BoxConstraints(
         minWidth: 192,
@@ -95,8 +97,11 @@ class _DropdownMenuState extends State<DropdownMenu> {
       child: MenuGroup(
         regionGroupId: Data.maybeOf<DropdownMenuData>(context)?.key,
         subMenuOffset: const Offset(8, -4) * theme.scaling,
+        itemPadding: isSheetOverlay
+            ? const EdgeInsets.symmetric(horizontal: 8) * theme.scaling
+            : EdgeInsets.zero,
         onDismissed: () {
-          closePopover(context);
+          closeOverlay(context);
         },
         direction: Axis.vertical,
         builder: (context, children) {
