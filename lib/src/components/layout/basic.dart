@@ -15,6 +15,7 @@ class Basic extends StatelessWidget {
   final double? titleSpacing;
   final MainAxisAlignment mainAxisAlignment;
   final EdgeInsetsGeometry? padding;
+  final bool expandTrailing;
 
   const Basic({
     super.key,
@@ -32,6 +33,7 @@ class Basic extends StatelessWidget {
     this.titleSpacing, //4
     this.mainAxisAlignment = MainAxisAlignment.center,
     this.padding,
+    this.expandTrailing = false,
   });
 
   @override
@@ -51,8 +53,7 @@ class Basic extends StatelessWidget {
                   alignment: leadingAlignment ?? Alignment.topCenter,
                   child: leading!,
                 ),
-              if (leading != null &&
-                  (title != null || content != null || subtitle != null))
+              if (leading != null && (title != null || content != null || subtitle != null))
                 SizedBox(width: contentSpacing ?? (16 * scaling)),
               if (title != null || content != null || subtitle != null)
                 Expanded(
@@ -65,16 +66,13 @@ class Basic extends StatelessWidget {
                           alignment: titleAlignment ?? Alignment.topLeft,
                           child: title!,
                         ).small().medium(),
-                      if (title != null && subtitle != null)
-                        SizedBox(height: 2 * scaling),
+                      if (title != null && subtitle != null) SizedBox(height: 2 * scaling),
                       if (subtitle != null)
                         Align(
                           alignment: subtitleAlignment ?? Alignment.topLeft,
                           child: subtitle!,
                         ).xSmall().muted(),
-                      if ((title != null || subtitle != null) &&
-                          content != null)
-                        SizedBox(height: titleSpacing),
+                      if ((title != null || subtitle != null) && content != null) SizedBox(height: titleSpacing),
                       if (content != null)
                         Align(
                           alignment: contentAlignment ?? Alignment.topLeft,
@@ -83,13 +81,10 @@ class Basic extends StatelessWidget {
                     ],
                   ),
                 ),
-              if (trailing != null &&
-                  (title != null ||
-                      content != null ||
-                      leading != null ||
-                      subtitle != null))
+              if (trailing != null && (title != null || content != null || leading != null || subtitle != null))
                 SizedBox(width: contentSpacing ?? (16 * scaling)),
               // if (trailing != null) trailing!,
+              if (expandTrailing) const Spacer(),
               if (trailing != null)
                 Align(
                   alignment: trailingAlignment ?? Alignment.topCenter,
@@ -149,8 +144,7 @@ class BasicLayout extends StatelessWidget {
                 alignment: leadingAlignment ?? Alignment.topCenter,
                 child: leading!,
               ),
-            if (leading != null &&
-                (title != null || content != null || subtitle != null))
+            if (leading != null && (title != null || content != null || subtitle != null))
               SizedBox(width: contentSpacing ?? (16 * scaling)),
             if (title != null || content != null || subtitle != null)
               Expanded(
@@ -164,8 +158,7 @@ class BasicLayout extends StatelessWidget {
                         alignment: titleAlignment ?? Alignment.topLeft,
                         child: title!,
                       ),
-                    if (title != null && subtitle != null)
-                      SizedBox(height: 2 * scaling),
+                    if (title != null && subtitle != null) SizedBox(height: 2 * scaling),
                     if (subtitle != null)
                       Align(
                         alignment: subtitleAlignment ?? Alignment.topLeft,
@@ -181,11 +174,7 @@ class BasicLayout extends StatelessWidget {
                   ],
                 ),
               ),
-            if (trailing != null &&
-                (title != null ||
-                    content != null ||
-                    leading != null ||
-                    subtitle != null))
+            if (trailing != null && (title != null || content != null || leading != null || subtitle != null))
               SizedBox(width: contentSpacing ?? (16 * scaling)),
             if (trailing != null)
               Align(

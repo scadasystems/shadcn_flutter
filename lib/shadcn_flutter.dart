@@ -10,12 +10,10 @@ export 'package:cross_file/cross_file.dart' show XFile;
 export 'package:data_widget/data_widget.dart';
 export 'package:data_widget/extension.dart';
 export 'package:flutter/cupertino.dart'
-    show
-        cupertinoDesktopTextSelectionControls,
-        cupertinoDesktopTextSelectionHandleControls;
+    show cupertinoDesktopTextSelectionControls, cupertinoDesktopTextSelectionHandleControls;
 // export Icons from material
 export 'package:flutter/material.dart'
-    show Icons, MaterialPageRoute, MaterialPage, SliverAppBar, FlutterLogo
+    show Icons, MaterialPageRoute, MaterialPage, SliverAppBar, FlutterLogo, InkWell
     hide TextButton;
 export 'package:flutter/widgets.dart'
     hide

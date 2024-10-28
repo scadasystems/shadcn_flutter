@@ -67,8 +67,7 @@ class _ShadcnScrollbar extends RawScrollbar {
           fadeDuration: _kScrollbarFadeDuration,
           timeToFade: _kScrollbarTimeToFade,
           pressDuration: Duration.zero,
-          notificationPredicate:
-              notificationPredicate ?? defaultScrollNotificationPredicate,
+          notificationPredicate: notificationPredicate ?? defaultScrollNotificationPredicate,
         );
 
   @override
@@ -107,7 +106,7 @@ class _ShadcnScrollbarState extends RawScrollbarState<_ShadcnScrollbar> {
       ..color = _theme.colorScheme.border
       ..textDirection = Directionality.of(context)
       // Should this be affected by density?
-      ..thickness = 7.0 * _theme.scaling
+      ..thickness = (widget.thickness ?? 7.0) * _theme.scaling
       ..radius = widget.radius ?? Radius.circular(_theme.radiusSm)
       ..minLength = _kScrollbarMinLength
       ..padding = MediaQuery.paddingOf(context) + EdgeInsets.all(_theme.scaling)
