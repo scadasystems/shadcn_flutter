@@ -106,7 +106,7 @@ class SurfaceBarrierPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant SurfaceBarrierPainter oldDelegate) {
-    return oldDelegate.borderRadius != borderRadius ||
+    return oldDelegate.borderRadius != borderRadius || //
         oldDelegate.barrierColor != barrierColor;
   }
 }
@@ -118,25 +118,25 @@ class DialogRoute<T> extends RawDialogRoute<T> {
     required BuildContext context,
     required WidgetBuilder builder,
     CapturedThemes? themes,
-    super.barrierColor = const Color.fromRGBO(0, 0, 0, 0),
+    required super.barrierColor,
     super.barrierDismissible,
     String? barrierLabel,
     bool useSafeArea = true,
     super.settings,
     super.anchorPoint,
     super.traversalEdgeBehavior,
+    required EdgeInsetsGeometry? padding,
     required this.alignment,
     required super.transitionBuilder,
     this.data,
   }) : super(
-          pageBuilder: (BuildContext buildContext, Animation<double> animation,
-              Animation<double> secondaryAnimation) {
+          pageBuilder: (BuildContext buildContext, Animation<double> animation, Animation<double> secondaryAnimation) {
             final Widget pageChild = Builder(
               builder: (context) {
                 final theme = Theme.of(context);
                 final scaling = theme.scaling;
                 return Padding(
-                  padding: const EdgeInsets.all(16) * scaling,
+                  padding: padding ?? const EdgeInsets.all(16) * scaling,
                   child: builder(context),
                 );
               },
@@ -156,12 +156,13 @@ class DialogRoute<T> extends RawDialogRoute<T> {
 }
 
 Widget _buildShadcnDialogTransitions(
-    BuildContext context,
-    BorderRadiusGeometry borderRadius,
-    AlignmentGeometry alignment,
-    Animation<double> animation,
-    Animation<double> secondaryAnimation,
-    Widget child) {
+  BuildContext context,
+  BorderRadiusGeometry borderRadius,
+  AlignmentGeometry alignment,
+  Animation<double> animation,
+  Animation<double> secondaryAnimation,
+  Widget child,
+) {
   return Align(
     alignment: alignment,
     child: ScaleTransition(
@@ -193,28 +194,27 @@ Future<T?> showDialog<T>({
   Offset? anchorPoint,
   TraversalEdgeBehavior? traversalEdgeBehavior,
   AlignmentGeometry? alignment,
+  EdgeInsetsGeometry? padding,
 }) {
   var navigatorState = Navigator.of(
     context,
     rootNavigator: useRootNavigator,
   );
-  final CapturedThemes themes =
-      InheritedTheme.capture(from: context, to: navigatorState.context);
-  final CapturedData data =
-      Data.capture(from: context, to: navigatorState.context);
+  final CapturedThemes themes = InheritedTheme.capture(from: context, to: navigatorState.context);
+  final CapturedData data = Data.capture(from: context, to: navigatorState.context);
   var dialogRoute = DialogRoute<T>(
     context: context,
     builder: builder,
     themes: themes,
     barrierDismissible: barrierDismissible,
-    barrierColor: barrierColor ?? const Color.fromRGBO(0, 0, 0, 0),
+    barrierColor: barrierColor ?? const Color.fromARGB(60, 0, 0, 0),
     barrierLabel: barrierLabel,
     useSafeArea: useSafeArea,
     settings: routeSettings,
     anchorPoint: anchorPoint,
     data: data,
-    traversalEdgeBehavior:
-        traversalEdgeBehavior ?? TraversalEdgeBehavior.closedLoop,
+    padding: padding,
+    traversalEdgeBehavior: traversalEdgeBehavior ?? TraversalEdgeBehavior.closedLoop,
     transitionBuilder: (context, animation, secondaryAnimation, child) {
       return _buildShadcnDialogTransitions(
         context,
@@ -243,12 +243,10 @@ class _DialogOverlayWrapper<T> extends StatefulWidget {
   });
 
   @override
-  State<_DialogOverlayWrapper<T>> createState() =>
-      _DialogOverlayWrapperState<T>();
+  State<_DialogOverlayWrapper<T>> createState() => _DialogOverlayWrapperState<T>();
 }
 
-class _DialogOverlayWrapperState<T> extends State<_DialogOverlayWrapper<T>>
-    with OverlayHandlerStateMixin {
+class _DialogOverlayWrapperState<T> extends State<_DialogOverlayWrapper<T>> with OverlayHandlerStateMixin {
   @override
   Widget build(BuildContext context) {
     return Data<OverlayHandlerStateMixin>.inherit(
@@ -322,15 +320,14 @@ class DialogOverlayHandler extends OverlayHandler {
     Duration? showDuration,
     Duration? dismissDuration,
     OverlayBarrier? overlayBarrier,
+    EdgeInsetsGeometry? padding,
   }) {
     var navigatorState = Navigator.of(
       context,
       rootNavigator: rootOverlay,
     );
-    final CapturedThemes themes =
-        InheritedTheme.capture(from: context, to: navigatorState.context);
-    final CapturedData data =
-        Data.capture(from: context, to: navigatorState.context);
+    final CapturedThemes themes = InheritedTheme.capture(from: context, to: navigatorState.context);
+    final CapturedData data = Data.capture(from: context, to: navigatorState.context);
     var dialogRoute = DialogRoute<T>(
       context: context,
       builder: (context) {
@@ -347,8 +344,7 @@ class DialogOverlayHandler extends OverlayHandler {
               modal: modal,
               borderRadius: overlayBarrier.borderRadius,
               padding: overlayBarrier.padding,
-              barrierColor: overlayBarrier.barrierColor ??
-                  const Color.fromRGBO(0, 0, 0, 0.8),
+              barrierColor: overlayBarrier.barrierColor ?? const Color.fromRGBO(0, 0, 0, 0.8),
               child: child,
             ),
           );
@@ -362,9 +358,7 @@ class DialogOverlayHandler extends OverlayHandler {
       },
       themes: themes,
       barrierDismissible: barrierDismissable,
-      barrierColor: overlayBarrier == null
-          ? const Color.fromRGBO(0, 0, 0, 0.8)
-          : Colors.transparent,
+      barrierColor: overlayBarrier == null ? const Color.fromRGBO(0, 0, 0, 0.8) : Colors.transparent,
       barrierLabel: 'Dismiss',
       useSafeArea: true,
       data: data,
@@ -380,6 +374,7 @@ class DialogOverlayHandler extends OverlayHandler {
         );
       },
       alignment: Alignment.center,
+      padding: padding,
     );
     navigatorState.push(
       dialogRoute,
