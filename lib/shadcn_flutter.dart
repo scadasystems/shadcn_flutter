@@ -90,7 +90,7 @@ export 'package:pixel_snap/widgets.dart'
         AnimatedPhysicalModel,
         AnimatedSize;
 // bundle from skeletonizer https://pub.dev/packages/skeletonizer
-export 'package:skeletonizer/skeletonizer.dart' show Bone, BoneMock;
+export 'package:skeletonizer/skeletonizer.dart' show Bone, BoneMock, Skeleton;
 
 export 'src/animation.dart';
 export 'src/components/animation.dart';
