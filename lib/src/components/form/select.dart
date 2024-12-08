@@ -297,6 +297,7 @@ class Select<T> extends StatefulWidget {
   final bool autoClosePopover;
   final MainAxisAlignment mainAxisAlignment;
   final MainAxisSize mainAxisSize;
+  final bool enableIntrinsicWidth;
 
   const Select({
     super.key,
@@ -325,6 +326,7 @@ class Select<T> extends StatefulWidget {
     this.onSearch,
     this.mainAxisAlignment = MainAxisAlignment.start,
     this.mainAxisSize = MainAxisSize.min,
+    this.enableIntrinsicWidth = true,
     required this.itemBuilder,
     required this.children,
   });
@@ -403,6 +405,31 @@ class SelectState<T> extends State<Select<T>> with FormValueSupplier {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final scaling = theme.scaling;
+
+    final buildRow = Row(
+      mainAxisAlignment: widget.mainAxisAlignment,
+      mainAxisSize: widget.mainAxisSize,
+      children: [
+        Expanded(
+          child: widget.value != null
+              ? widget.itemBuilder(
+                  context,
+                  widget.value as T,
+                )
+              : placeholder,
+        ),
+        SizedBox(width: 8 * scaling),
+        AnimatedIconTheme(
+          data: IconThemeData(
+            color: theme.colorScheme.foreground,
+            opacity: 0.5,
+          ),
+          duration: kDefaultDuration,
+          child: const Icon(Icons.unfold_more).iconSmall(),
+        ),
+      ],
+    );
+
     return ConstrainedBox(
       constraints: widget.constraints ?? const BoxConstraints(),
       child: TapRegion(
@@ -469,31 +496,7 @@ class SelectState<T> extends State<Select<T>> with FormValueSupplier {
                     },
                   );
                 },
-          child: IntrinsicWidth(
-            child: Row(
-              mainAxisAlignment: widget.mainAxisAlignment,
-              mainAxisSize: widget.mainAxisSize,
-              children: [
-                Expanded(
-                  child: widget.value != null
-                      ? widget.itemBuilder(
-                          context,
-                          widget.value as T,
-                        )
-                      : placeholder,
-                ),
-                SizedBox(width: 8 * scaling),
-                AnimatedIconTheme(
-                  data: IconThemeData(
-                    color: theme.colorScheme.foreground,
-                    opacity: 0.5,
-                  ),
-                  duration: kDefaultDuration,
-                  child: const Icon(Icons.unfold_more).iconSmall(),
-                ),
-              ],
-            ),
-          ),
+          child: widget.enableIntrinsicWidth ? IntrinsicWidth(child: buildRow) : buildRow,
         ),
       ),
     );
