@@ -25,7 +25,6 @@ class Tabs extends StatelessWidget {
       child: IntrinsicHeight(
         child: IntrinsicWidth(
           child: Row(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               for (var i = 0; i < tabs.length; i++)
                 Expanded(
@@ -38,9 +37,7 @@ class Tabs extends StatelessWidget {
                       hitTestBehavior: HitTestBehavior.translucent,
                       cursor: SystemMouseCursors.click,
                       child: ShadcnAnimatedContainer(
-                        duration: const Duration(
-                            milliseconds:
-                                50), // slightly faster than kDefaultDuration
+                        duration: const Duration(milliseconds: 50), // slightly faster than kDefaultDuration
                         alignment: Alignment.center,
                         padding: const EdgeInsets.symmetric(
                               horizontal: 16,
@@ -48,17 +45,12 @@ class Tabs extends StatelessWidget {
                             ) *
                             scaling,
                         decoration: BoxDecoration(
-                          color:
-                              i == index ? theme.colorScheme.background : null,
+                          color: i == index ? theme.colorScheme.background : null,
                           borderRadius: BorderRadius.circular(
                             theme.radiusMd,
                           ),
                         ),
-                        child: (i == index
-                                ? tabs[i].foreground()
-                                : tabs[i].muted())
-                            .small()
-                            .medium(),
+                        child: (i == index ? tabs[i].foreground() : tabs[i].muted()).small().medium(),
                       ),
                     ),
                   ),
