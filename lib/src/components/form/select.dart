@@ -298,6 +298,11 @@ class Select<T> extends StatefulWidget {
   final MainAxisAlignment mainAxisAlignment;
   final MainAxisSize mainAxisSize;
   final bool enableIntrinsicWidth;
+  final bool popupFill;
+  final Color? popupFillColor;
+  final Color? popupBorderColor;
+  final double? popupBorderWidth;
+  final List<BoxShadow>? popupBoxShadow;
 
   const Select({
     super.key,
@@ -327,6 +332,11 @@ class Select<T> extends StatefulWidget {
     this.mainAxisAlignment = MainAxisAlignment.start,
     this.mainAxisSize = MainAxisSize.min,
     this.enableIntrinsicWidth = true,
+    this.popupFill = false,
+    this.popupFillColor,
+    this.popupBorderColor,
+    this.popupBorderWidth,
+    this.popupBoxShadow,
     required this.itemBuilder,
     required this.children,
   });
@@ -461,6 +471,7 @@ class SelectState<T> extends State<Select<T>> with FormValueSupplier {
                     overlayBarrier: OverlayBarrier(
                       padding: const EdgeInsets.symmetric(vertical: 8) * scaling,
                       borderRadius: BorderRadius.circular(theme.radiusLg),
+                      barrierColor: Colors.black.withOpacity(0.4),
                     ),
                     builder: (context) {
                       return SelectPopup<T>(
@@ -486,6 +497,11 @@ class SelectState<T> extends State<Select<T>> with FormValueSupplier {
                         emptyBuilder: widget.emptyBuilder,
                         surfaceBlur: widget.surfaceBlur,
                         surfaceOpacity: widget.surfaceOpacity,
+                        filled: widget.popupFill,
+                        fillColor: widget.popupFillColor,
+                        borderColor: widget.popupBorderColor,
+                        borderWidth: widget.popupBorderWidth,
+                        boxShadow: widget.popupBoxShadow,
                         children: _childrenNotifier,
                       );
                     },
@@ -521,6 +537,11 @@ class SelectPopup<T> extends StatefulWidget {
   final EdgeInsetsGeometry margin;
   final BorderRadiusGeometry borderRadius;
   final SelectSearch? onSearch;
+  final bool filled;
+  final Color? fillColor;
+  final Color? borderColor;
+  final double? borderWidth;
+  final List<BoxShadow>? boxShadow;
 
   const SelectPopup({
     super.key,
@@ -536,6 +557,11 @@ class SelectPopup<T> extends StatefulWidget {
     this.surfaceOpacity,
     this.autoClose = true,
     this.onSearch,
+    this.filled = false,
+    this.fillColor,
+    this.borderColor,
+    this.borderWidth,
+    this.boxShadow,
     required this.margin,
     required this.borderRadius,
     required this.children,
@@ -578,17 +604,18 @@ class SelectPopupState<T> extends State<SelectPopup<T>> {
       width: isSheetOverlay ? double.infinity : null,
       child: Container(
         margin: isSheetOverlay ? null : widget.margin,
-        constraints: widget.constraints ??
-            (const BoxConstraints(
-                  minWidth: 200,
-                ) *
-                scaling),
+        constraints: widget.constraints ?? (const BoxConstraints(minWidth: 200) * scaling),
         child: SurfaceCard(
           clipBehavior: Clip.hardEdge,
           surfaceBlur: surfaceBlur,
           surfaceOpacity: surfaceOpacity,
           borderRadius: widget.borderRadius,
           padding: EdgeInsets.zero,
+          filled: widget.filled,
+          fillColor: widget.fillColor,
+          borderColor: widget.borderColor,
+          borderWidth: widget.borderWidth,
+          boxShadow: widget.boxShadow,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             mainAxisSize: MainAxisSize.min,
