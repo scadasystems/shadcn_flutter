@@ -85,8 +85,7 @@ class TextField extends StatefulWidget {
     this.autofocus = false,
   });
 
-  static Widget _defaultContextMenuBuilder(
-      BuildContext context, EditableTextState editableTextState) {
+  static Widget _defaultContextMenuBuilder(BuildContext context, EditableTextState editableTextState) {
     return buildEditableTextContextMenu(context, editableTextState);
   }
 
@@ -179,13 +178,10 @@ class _TextFieldState extends State<TextField> with FormValueSupplier {
           )
           .merge(widget.style);
     } else {
-      defaultTextStyle = DefaultTextStyle.of(context)
-          .style
-          .merge(theme.typography.small)
-          .merge(theme.typography.normal)
-          .copyWith(
-            color: theme.colorScheme.foreground,
-          );
+      defaultTextStyle =
+          DefaultTextStyle.of(context).style.merge(theme.typography.small).merge(theme.typography.normal).copyWith(
+                color: theme.colorScheme.foreground,
+              );
     }
     var maxLines = widget.maxLines;
     maxLines ??= widget.obscureText ? 1 : null;
@@ -222,8 +218,7 @@ class _TextFieldState extends State<TextField> with FormValueSupplier {
       textInputAction: widget.textInputAction,
       autofillHints: widget.autofillHints,
       minLines: widget.minLines,
-      buildCounter: (context,
-          {required currentLength, required isFocused, required maxLength}) {
+      buildCounter: (context, {required currentLength, required isFocused, required maxLength}) {
         return null;
       },
       controller: _controller,
@@ -239,22 +234,20 @@ class _TextFieldState extends State<TextField> with FormValueSupplier {
         fillColor: theme.colorScheme.muted,
         hintText: widget.placeholder,
         hintStyle: defaultTextStyle
-            .merge(theme.typography.normal)
-            .merge(theme.typography.small)
+            // .merge(theme.typography.normal)
+            // .merge(theme.typography.small)
             .copyWith(
-              color: theme.colorScheme.mutedForeground,
-            ),
+          color: theme.colorScheme.mutedForeground,
+        ),
         border: !widget.border
             ? material.InputBorder.none
             : widget.filled
                 ? material.OutlineInputBorder(
-                    borderRadius: widget.borderRadius ??
-                        BorderRadius.circular(theme.radiusMd),
+                    borderRadius: widget.borderRadius ?? BorderRadius.circular(theme.radiusMd),
                     borderSide: BorderSide.none,
                   )
                 : material.OutlineInputBorder(
-                    borderRadius: widget.borderRadius ??
-                        BorderRadius.circular(theme.radiusMd),
+                    borderRadius: widget.borderRadius ?? BorderRadius.circular(theme.radiusMd),
                     borderSide: BorderSide(
                       color: theme.colorScheme.border,
                     ),
@@ -264,13 +257,11 @@ class _TextFieldState extends State<TextField> with FormValueSupplier {
             ? material.InputBorder.none
             : widget.filled
                 ? material.OutlineInputBorder(
-                    borderRadius: widget.borderRadius ??
-                        BorderRadius.circular(theme.radiusMd),
+                    borderRadius: widget.borderRadius ?? BorderRadius.circular(theme.radiusMd),
                     borderSide: BorderSide.none,
                   )
                 : material.OutlineInputBorder(
-                    borderRadius: widget.borderRadius ??
-                        BorderRadius.circular(theme.radiusMd),
+                    borderRadius: widget.borderRadius ?? BorderRadius.circular(theme.radiusMd),
                     borderSide: BorderSide(
                       color: theme.colorScheme.ring,
                     ),
@@ -279,13 +270,11 @@ class _TextFieldState extends State<TextField> with FormValueSupplier {
             ? material.InputBorder.none
             : widget.filled
                 ? material.OutlineInputBorder(
-                    borderRadius: widget.borderRadius ??
-                        BorderRadius.circular(theme.radiusMd),
+                    borderRadius: widget.borderRadius ?? BorderRadius.circular(theme.radiusMd),
                     borderSide: BorderSide.none,
                   )
                 : material.OutlineInputBorder(
-                    borderRadius: widget.borderRadius ??
-                        BorderRadius.circular(theme.radiusMd),
+                    borderRadius: widget.borderRadius ?? BorderRadius.circular(theme.radiusMd),
                     borderSide: BorderSide(
                       color: theme.colorScheme.border,
                     ),
@@ -294,13 +283,11 @@ class _TextFieldState extends State<TextField> with FormValueSupplier {
             ? material.InputBorder.none
             : widget.filled
                 ? material.OutlineInputBorder(
-                    borderRadius: widget.borderRadius ??
-                        BorderRadius.circular(theme.radiusMd),
+                    borderRadius: widget.borderRadius ?? BorderRadius.circular(theme.radiusMd),
                     borderSide: BorderSide.none,
                   )
                 : material.OutlineInputBorder(
-                    borderRadius: widget.borderRadius ??
-                        BorderRadius.circular(theme.radiusMd),
+                    borderRadius: widget.borderRadius ?? BorderRadius.circular(theme.radiusMd),
                     borderSide: BorderSide(
                       color: theme.colorScheme.border,
                     ),
@@ -309,13 +296,11 @@ class _TextFieldState extends State<TextField> with FormValueSupplier {
             ? material.InputBorder.none
             : widget.filled
                 ? material.OutlineInputBorder(
-                    borderRadius: widget.borderRadius ??
-                        BorderRadius.circular(theme.radiusMd),
+                    borderRadius: widget.borderRadius ?? BorderRadius.circular(theme.radiusMd),
                     borderSide: BorderSide.none,
                   )
                 : material.OutlineInputBorder(
-                    borderRadius: widget.borderRadius ??
-                        BorderRadius.circular(theme.radiusMd),
+                    borderRadius: widget.borderRadius ?? BorderRadius.circular(theme.radiusMd),
                     borderSide: BorderSide(
                       color: theme.colorScheme.destructive,
                     ),
@@ -324,13 +309,11 @@ class _TextFieldState extends State<TextField> with FormValueSupplier {
             ? material.InputBorder.none
             : widget.filled
                 ? material.OutlineInputBorder(
-                    borderRadius: widget.borderRadius ??
-                        BorderRadius.circular(theme.radiusMd),
+                    borderRadius: widget.borderRadius ?? BorderRadius.circular(theme.radiusMd),
                     borderSide: BorderSide.none,
                   )
                 : material.OutlineInputBorder(
-                    borderRadius: widget.borderRadius ??
-                        BorderRadius.circular(theme.radiusMd),
+                    borderRadius: widget.borderRadius ?? BorderRadius.circular(theme.radiusMd),
                     borderSide: BorderSide(
                       color: theme.colorScheme.destructive,
                     ),
