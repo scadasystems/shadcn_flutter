@@ -210,12 +210,14 @@ class MenuLabel extends StatelessWidget implements MenuItem {
   final Widget child;
   final Widget? trailing;
   final Widget? leading;
+  final bool isSemiBold;
 
   const MenuLabel({
     super.key,
     required this.child,
     this.trailing,
     this.leading,
+    this.isSemiBold = true,
   });
 
   @override
@@ -244,7 +246,9 @@ class MenuLabel extends StatelessWidget implements MenuItem {
                     child: leading!.iconSmall(),
                   ),
         trailing: trailing,
-        content: UnderlineInterceptor(child: child.semiBold()),
+        content: UnderlineInterceptor(
+          child: isSemiBold ? child.semiBold() : child,
+        ),
         trailingAlignment: Alignment.center,
         leadingAlignment: Alignment.center,
         contentAlignment:
