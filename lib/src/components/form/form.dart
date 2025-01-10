@@ -974,9 +974,7 @@ class FormController extends ChangeNotifier {
         if (_validity[key] == future) {
           _validity[key] = value;
           WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-            if (_disposed) {
-              return;
-            }
+            if (_disposed) return;
             notifyListeners();
           });
         }
@@ -1017,9 +1015,7 @@ class FormController extends ChangeNotifier {
       }
     }
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      if (_disposed) {
-        return;
-      }
+      if (_disposed) return;
       notifyListeners();
     });
     return null;
@@ -1030,6 +1026,7 @@ class FormController extends ChangeNotifier {
       _attachedInputs.remove(key);
       _validity.remove(key);
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        if (_disposed) return;
         notifyListeners();
       });
     }
@@ -1207,6 +1204,9 @@ extension FormExtension on BuildContext {
         }
         return _chainedSubmitForm(values, errors, iterator);
       });
+    } else if (value is ValidationResult) {
+      // FIXED: 에러발생 시 반드시 추가
+      errors[entry.key] = value;
     }
     return _chainedSubmitForm(values, errors, iterator);
   }
@@ -1632,6 +1632,7 @@ class _SubmitButtonState extends widgets.State<SubmitButton> {
       onPressed: () {
         setState(() {
           var submissionResult = context.submitForm();
+
           if (submissionResult is Future<SubmissionResult>) {
             _future = submissionResult.then((value) {
               return value.errors.isNotEmpty;
