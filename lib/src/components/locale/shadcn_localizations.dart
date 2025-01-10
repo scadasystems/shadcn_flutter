@@ -1,32 +1,39 @@
+// ignore_for_file: public_member_api_docs
+
 import 'dart:math';
 
 import 'package:flutter/foundation.dart';
+import 'package:shadcn_flutter/src/components/locale/languages/en.dart';
+import 'package:shadcn_flutter/src/components/locale/languages/ja.dart';
+import 'package:shadcn_flutter/src/components/locale/languages/ko.dart';
 
 import '../../../shadcn_flutter.dart';
 
-class ShadcnLocalizationsDelegate
-    extends LocalizationsDelegate<ShadcnLocalizations> {
-  static const ShadcnLocalizationsDelegate delegate =
-      ShadcnLocalizationsDelegate();
+class ShadcnLocalizationsDelegate extends LocalizationsDelegate<ShadcnLocalizations> {
+  static const ShadcnLocalizationsDelegate delegate = ShadcnLocalizationsDelegate();
   const ShadcnLocalizationsDelegate();
 
   @override
-  bool isSupported(Locale locale) => locale.languageCode == 'en';
+  bool isSupported(Locale locale) => true;
 
   @override
   Future<ShadcnLocalizations> load(Locale locale) {
-    return SynchronousFuture<ShadcnLocalizations>(
-        DefaultShadcnLocalizations.instance);
+    // return SynchronousFuture<ShadcnLocalizations>(DefaultShadcnLocalizations.instance);
+    final ShadcnLocalizations instance = switch (locale) {
+      const Locale('ko', 'KR') => KoreanShadcnLocalizations.instance,
+      const Locale('ja', 'JP') => JapaneseShadcnLocalizations.instance,
+      _ => EnglishShadcnLocalizations.instance,
+    };
+
+    return SynchronousFuture<ShadcnLocalizations>(instance);
   }
 
   @override
   bool shouldReload(ShadcnLocalizationsDelegate old) => false;
 }
 
-const _fileByteUnits =
-    SizeUnitLocale(1024, ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']);
-const _fileBitUnits = SizeUnitLocale(
-    1024, ['Bi', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB']);
+// const _fileByteUnits = SizeUnitLocale(1024, ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']);
+// const _fileBitUnits = SizeUnitLocale(1024, ['Bi', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB']);
 
 class SizeUnitLocale {
   final int base;
@@ -56,16 +63,14 @@ String formatFileSize(int bytes, SizeUnitLocale unit) {
   // return '${NumberFormat('#,##0.#').format(bytes / pow(base, digitGroups))} ${units[digitGroups]}';
   // do it without NumberFormat, but format to #,##0.# format
   final value = bytes / pow(base, digitGroups);
-  final formattedValue =
-      value.toStringAsFixed(value.truncateToDouble() == value ? 0 : 1);
+  final formattedValue = value.toStringAsFixed(value.truncateToDouble() == value ? 0 : 1);
   return '$formattedValue ${units[digitGroups]}';
 }
 
 abstract class ShadcnLocalizations {
   static ShadcnLocalizations of(BuildContext context) {
-    return Localizations.of<ShadcnLocalizations>(
-            context, ShadcnLocalizations) ??
-        DefaultShadcnLocalizations.instance;
+    final instance = Localizations.of<ShadcnLocalizations>(context, ShadcnLocalizations);
+    return instance ?? EnglishShadcnLocalizations.instance;
   }
 
   const ShadcnLocalizations();
@@ -74,7 +79,14 @@ abstract class ShadcnLocalizations {
   String get invalidValue;
   String get invalidEmail;
   String get invalidURL;
-  String formatNumber(double value);
+  String formatNumber(double value) {
+    // if the value is an integer, return it as an integer
+    if (value == value.toInt()) {
+      return value.toInt().toString();
+    }
+    return value.toString();
+  }
+
   String formLessThan(double value);
   String formGreaterThan(double value);
   String formLessThanOrEqualTo(double value);
@@ -83,6 +95,7 @@ abstract class ShadcnLocalizations {
   String formBetweenExclusively(double min, double max);
   String formLengthLessThan(int value);
   String formLengthGreaterThan(int value);
+  String formEqualTo(dynamic value);
   String get formPasswordDigits;
   String get formPasswordLowercase;
   String get formPasswordUppercase;
@@ -151,16 +164,65 @@ abstract class ShadcnLocalizations {
   String get menuSearchWeb;
   String get menuLiveTextInput;
   String formatDateTime(DateTime dateTime,
-      {bool showDate = true,
-      bool showTime = true,
-      bool showSeconds = false,
-      bool use24HourFormat = true});
+      {bool showDate = true, bool showTime = true, bool showSeconds = false, bool use24HourFormat = true}) {
+    String result = '';
+    if (showDate) {
+      result += '${getMonth(dateTime.month)} ${dateTime.day}, ${dateTime.year}';
+    }
+    if (showTime) {
+      if (use24HourFormat) {
+        if (result.isNotEmpty) {
+          result += ' ';
+        }
+        result += '${dateTime.hour}:${dateTime.minute}';
+        if (showSeconds) {
+          result += ':${dateTime.second}';
+        }
+      } else {
+        if (result.isNotEmpty) {
+          result += ' ';
+        }
+        int hour = dateTime.hour;
+        if (hour > 12) {
+          hour -= 12;
+          result += '$hour:${dateTime.minute} PM';
+        } else {
+          result += '$hour:${dateTime.minute} AM';
+        }
+      }
+    }
+    return result;
+  }
 
-  String formatTimeOfDay(
-    TimeOfDay time, {
-    bool use24HourFormat = true,
-    bool showSeconds = false,
-  });
+  String formatTimeOfDay(TimeOfDay time, {bool use24HourFormat = true, bool showSeconds = false}) {
+    String result = '';
+    if (use24HourFormat) {
+      result += '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
+      if (showSeconds) {
+        result += ':${time.second.toString().padLeft(2, '0')}';
+      }
+    } else {
+      int hour = time.hour;
+      if (hour > 12) {
+        hour -= 12;
+        if (showSeconds) {
+          result +=
+              '${hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}:${time.second.toString().padLeft(2, '0')} PM';
+        } else {
+          result += '${hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')} PM';
+        }
+      } else {
+        if (showSeconds) {
+          result +=
+              '${hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}:${time.second.toString().padLeft(2, '0')} AM';
+        } else {
+          result += '${hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')} AM';
+        }
+      }
+    }
+    return result;
+  }
+
   String get placeholderDatePicker;
   String get placeholderTimePicker;
   String get placeholderColorPicker;
@@ -280,15 +342,6 @@ abstract class ShadcnLocalizations {
     }
   }
 
-  Map<String, String> get localizedMimeTypes;
-}
-
-class DefaultShadcnLocalizations extends ShadcnLocalizations {
-  static const ShadcnLocalizations instance = DefaultShadcnLocalizations();
-
-  const DefaultShadcnLocalizations();
-
-  @override
   final Map<String, String> localizedMimeTypes = const {
     'audio/aac': 'AAC Audio',
     'application/x-abiword': 'AbiWord Document',
@@ -306,8 +359,7 @@ class DefaultShadcnLocalizations extends ShadcnLocalizations {
     'text/css': 'Cascading Style Sheets (CSS)',
     'text/csv': 'Comma-Separated Values (CSV)',
     'application/msword': 'Microsoft Word',
-    'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
-        'Microsoft Word (OpenXML)',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'Microsoft Word (OpenXML)',
     'application/vnd.ms-fontobject': 'MS Embedded OpenType Fonts',
     'application/epub+zip': 'Electronic Publication (EPUB)',
     'application/gzip': 'GZip Compressed Archive',
@@ -326,10 +378,8 @@ class DefaultShadcnLocalizations extends ShadcnLocalizations {
     'video/mp4': 'MP4 Video',
     'video/mpeg': 'MPEG Video',
     'application/vnd.apple.installer+xml': 'Apple Installer Package',
-    'application/vnd.oasis.opendocument.presentation':
-        'OpenDocument Presentation Document',
-    'application/vnd.oasis.opendocument.spreadsheet':
-        'OpenDocument Spreadsheet Document',
+    'application/vnd.oasis.opendocument.presentation': 'OpenDocument Presentation Document',
+    'application/vnd.oasis.opendocument.spreadsheet': 'OpenDocument Spreadsheet Document',
     'application/vnd.oasis.opendocument.text': 'OpenDocument Text Document',
     'audio/ogg': 'Ogg Audio',
     'video/ogg': 'Ogg Video',
@@ -339,8 +389,7 @@ class DefaultShadcnLocalizations extends ShadcnLocalizations {
     'application/pdf': 'Adobe Portable Document Format (PDF)',
     'application/x-httpd-php': 'Hypertext Preprocessor (Personal Home Page)',
     'application/vnd.ms-powerpoint': 'Microsoft PowerPoint',
-    'application/vnd.openxmlformats-officedocument.presentationml.presentation':
-        'Microsoft PowerPoint (OpenXML)',
+    'application/vnd.openxmlformats-officedocument.presentationml.presentation': 'Microsoft PowerPoint (OpenXML)',
     'application/vnd.rar': 'RAR Archive',
     'application/rtf': 'Rich Text Format (RTF)',
     'application/x-sh': 'Bourne Shell Script',
@@ -359,8 +408,7 @@ class DefaultShadcnLocalizations extends ShadcnLocalizations {
     'font/woff2': 'Web Open Font Format (WOFF)',
     'application/xhtml+xml': 'XHTML',
     'application/vnd.ms-excel': 'Microsoft Excel',
-    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
-        'Microsoft Excel (OpenXML)',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': 'Microsoft Excel (OpenXML)',
     'application/xml': 'XML',
     'application/vnd.mozilla.xul+xml': 'XUL',
     'application/zip': 'ZIP Archive',
@@ -370,388 +418,4 @@ class DefaultShadcnLocalizations extends ShadcnLocalizations {
     'audio/3gpp2': '3GPP2 Audio/Video Container',
     'application/x-7z-compressed': '7-Zip Archive',
   };
-
-  @override
-  String get commandSearch => 'Type a command or search...';
-
-  @override
-  String get commandEmpty => 'No results found.';
-
-  @override
-  String get formNotEmpty => 'This field cannot be empty';
-
-  @override
-  String get invalidValue => 'Invalid value';
-
-  @override
-  String get invalidEmail => 'Invalid email';
-
-  @override
-  String get invalidURL => 'Invalid URL';
-
-  @override
-  String formatNumber(double value) {
-    // if the value is an integer, return it as an integer
-    if (value == value.toInt()) {
-      return value.toInt().toString();
-    }
-    return value.toString();
-  }
-
-  @override
-  String formLessThan(double value) =>
-      'Must be less than ${formatNumber(value)}';
-
-  @override
-  String formGreaterThan(double value) =>
-      'Must be greater than ${formatNumber(value)}';
-
-  @override
-  String formLessThanOrEqualTo(double value) =>
-      'Must be less than or equal to ${formatNumber(value)}';
-
-  @override
-  String formGreaterThanOrEqualTo(double value) =>
-      'Must be greater than or equal to ${formatNumber(value)}';
-
-  @override
-  String formBetweenInclusively(double min, double max) =>
-      'Must be between ${formatNumber(min)} and ${formatNumber(max)} (inclusive)';
-
-  @override
-  String formBetweenExclusively(double min, double max) =>
-      'Must be between ${formatNumber(min)} and ${formatNumber(max)} (exclusive)';
-
-  @override
-  String formLengthLessThan(int value) => 'Must be at least $value characters';
-
-  @override
-  String formLengthGreaterThan(int value) =>
-      'Must be at most $value characters';
-
-  @override
-  String get formPasswordDigits => 'Must contain at least one digit';
-
-  @override
-  String get formPasswordLowercase =>
-      'Must contain at least one lowercase letter';
-
-  @override
-  String get formPasswordUppercase =>
-      'Must contain at least one uppercase letter';
-
-  @override
-  String get formPasswordSpecial =>
-      'Must contain at least one special character';
-
-  @override
-  String get abbreviatedMonday => 'Mo';
-
-  @override
-  String get abbreviatedTuesday => 'Tu';
-
-  @override
-  String get abbreviatedWednesday => 'We';
-
-  @override
-  String get abbreviatedThursday => 'Th';
-
-  @override
-  String get abbreviatedFriday => 'Fr';
-
-  @override
-  String get abbreviatedSaturday => 'Sa';
-
-  @override
-  String get abbreviatedSunday => 'Su';
-
-  @override
-  String get monthJanuary => 'January';
-
-  @override
-  String get monthFebruary => 'February';
-
-  @override
-  String get monthMarch => 'March';
-
-  @override
-  String get monthApril => 'April';
-
-  @override
-  String get monthMay => 'May';
-
-  @override
-  String get monthJune => 'June';
-
-  @override
-  String get monthJuly => 'July';
-
-  @override
-  String get monthAugust => 'August';
-
-  @override
-  String get monthSeptember => 'September';
-
-  @override
-  String get monthOctober => 'October';
-
-  @override
-  String get monthNovember => 'November';
-
-  @override
-  String get monthDecember => 'December';
-
-  @override
-  String get buttonCancel => 'Cancel';
-
-  @override
-  String get buttonOk => 'OK';
-
-  @override
-  String get buttonClose => 'Close';
-
-  @override
-  String get buttonSave => 'Save';
-
-  @override
-  String get buttonReset => 'Reset';
-
-  @override
-  String formatDateTime(DateTime dateTime,
-      {bool showDate = true,
-      bool showTime = true,
-      bool showSeconds = false,
-      bool use24HourFormat = true}) {
-    String result = '';
-    if (showDate) {
-      result += '${getMonth(dateTime.month)} ${dateTime.day}, ${dateTime.year}';
-    }
-    if (showTime) {
-      if (use24HourFormat) {
-        if (result.isNotEmpty) {
-          result += ' ';
-        }
-        result += '${dateTime.hour}:${dateTime.minute}';
-        if (showSeconds) {
-          result += ':${dateTime.second}';
-        }
-      } else {
-        if (result.isNotEmpty) {
-          result += ' ';
-        }
-        int hour = dateTime.hour;
-        if (hour > 12) {
-          hour -= 12;
-          result += '$hour:${dateTime.minute} PM';
-        } else {
-          result += '$hour:${dateTime.minute} AM';
-        }
-      }
-    }
-    return result;
-  }
-
-  @override
-  String get placeholderDatePicker => 'Select a date';
-
-  @override
-  String get placeholderColorPicker => 'Select a color';
-
-  @override
-  String get buttonNext => 'Next';
-
-  @override
-  String get buttonPrevious => 'Previous';
-
-  @override
-  String get searchPlaceholderCountry => 'Search country...';
-
-  @override
-  String get emptyCountryList => 'No countries found';
-
-  @override
-  String get placeholderTimePicker => 'Select a time';
-
-  @override
-  String formatTimeOfDay(TimeOfDay time,
-      {bool use24HourFormat = true, bool showSeconds = false}) {
-    String result = '';
-    if (use24HourFormat) {
-      result +=
-          '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
-      if (showSeconds) {
-        result += ':${time.second.toString().padLeft(2, '0')}';
-      }
-    } else {
-      int hour = time.hour;
-      if (hour > 12) {
-        hour -= 12;
-        if (showSeconds) {
-          result +=
-              '${hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}:${time.second.toString().padLeft(2, '0')} PM';
-        } else {
-          result +=
-              '${hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')} PM';
-        }
-      } else {
-        if (showSeconds) {
-          result +=
-              '${hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}:${time.second.toString().padLeft(2, '0')} AM';
-        } else {
-          result +=
-              '${hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')} AM';
-        }
-      }
-    }
-    return result;
-  }
-
-  @override
-  String get timeHour => 'Hour';
-
-  @override
-  String get timeMinute => 'Minute';
-
-  @override
-  String get timeSecond => 'Second';
-
-  @override
-  String get timeAM => 'AM';
-
-  @override
-  String get timePM => 'PM';
-
-  @override
-  String get toastSnippetCopied => 'Copied to clipboard';
-
-  @override
-  String get datePickerSelectYear => 'Select a year';
-
-  @override
-  String get abbreviatedJanuary => 'Jan';
-
-  @override
-  String get abbreviatedFebruary => 'Feb';
-
-  @override
-  String get abbreviatedMarch => 'Mar';
-
-  @override
-  String get abbreviatedApril => 'Apr';
-
-  @override
-  String get abbreviatedMay => 'May';
-
-  @override
-  String get abbreviatedJune => 'Jun';
-
-  @override
-  String get abbreviatedJuly => 'Jul';
-
-  @override
-  String get abbreviatedAugust => 'Aug';
-
-  @override
-  String get abbreviatedSeptember => 'Sep';
-
-  @override
-  String get abbreviatedOctober => 'Oct';
-
-  @override
-  String get abbreviatedNovember => 'Nov';
-
-  @override
-  String get abbreviatedDecember => 'Dec';
-
-  @override
-  String get colorRed => 'Red';
-
-  @override
-  String get colorGreen => 'Green';
-
-  @override
-  String get colorBlue => 'Blue';
-
-  @override
-  String get colorAlpha => 'Alpha';
-
-  @override
-  String get menuCut => 'Cut';
-
-  @override
-  String get menuCopy => 'Copy';
-
-  @override
-  String get menuPaste => 'Paste';
-
-  @override
-  String get menuSelectAll => 'Select All';
-
-  @override
-  String get menuUndo => 'Undo';
-
-  @override
-  String get menuRedo => 'Redo';
-
-  @override
-  String get menuDelete => 'Delete';
-
-  @override
-  String get menuShare => 'Share';
-
-  @override
-  String get menuSearchWeb => 'Search Web';
-
-  @override
-  String get menuLiveTextInput => 'Live Text Input';
-
-  @override
-  String get refreshTriggerPull => 'Pull to refresh';
-
-  @override
-  String get refreshTriggerRelease => 'Release to refresh';
-
-  @override
-  String get refreshTriggerRefreshing => 'Refreshing...';
-
-  @override
-  String get refreshTriggerComplete => 'Refresh complete';
-
-  @override
-  String get colorPickerTabRecent => 'Recent';
-
-  @override
-  String get colorPickerTabRGB => 'RGB';
-
-  @override
-  String get colorPickerTabHSV => 'HSV';
-
-  @override
-  String get colorPickerTabHSL => 'HSL';
-
-  @override
-  String get colorHue => 'Hue';
-
-  @override
-  String get colorSaturation => 'Sat';
-
-  @override
-  String get colorValue => 'Val';
-
-  @override
-  String get colorLightness => 'Lum';
-
-  @override
-  String get dataTableColumns => 'Columns';
-
-  @override
-  String get dataTableNext => 'Next';
-
-  @override
-  String get dataTablePrevious => 'Previous';
-
-  @override
-  String dataTableSelectedRows(int count, int total) {
-    return '$count of $total row(s) selected.';
-  }
 }
