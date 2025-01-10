@@ -24,9 +24,7 @@ class CircularProgressIndicator extends StatelessWidget {
   Widget build(BuildContext context) {
     final iconThemeData = IconTheme.of(context);
     final theme = Theme.of(context);
-    final color = this.color ?? onSurface //
-        ? theme.colorScheme.background
-        : theme.colorScheme.primary;
+    final color = this.color ?? (onSurface ? theme.colorScheme.background : theme.colorScheme.primary);
 
     if (value == null || !animated) {
       return RepaintBoundary(
