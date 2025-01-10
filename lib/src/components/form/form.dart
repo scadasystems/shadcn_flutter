@@ -46,7 +46,6 @@ class ValidationMode<T> extends Validator<T> {
 
   const ValidationMode(this.validator,
       {this.mode = const {
-        FormValidationMode.changed,
         FormValidationMode.submitted,
       }});
 
