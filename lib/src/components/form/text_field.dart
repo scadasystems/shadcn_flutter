@@ -39,7 +39,6 @@ class TextField extends StatefulWidget {
   final void Function(PointerDownEvent event)? onTapOutside;
   final List<TextInputFormatter>? inputFormatters;
   final TextStyle? style;
-  final TextStyle? placeholderStyle;
   final EditableTextContextMenuBuilder? contextMenuBuilder;
   final bool useNativeContextMenu;
   final bool? isCollapsed;
@@ -82,7 +81,6 @@ class TextField extends StatefulWidget {
     this.onTapOutside,
     this.inputFormatters,
     this.style,
-    this.placeholderStyle,
     this.contextMenuBuilder = defaultContextMenuBuilder,
     this.useNativeContextMenu = false,
     this.isCollapsed,
@@ -321,8 +319,7 @@ class _TextFieldState extends State<TextField> with FormValueSupplier {
                                       .merge(theme.typography.small)
                                       .copyWith(
                                         color: theme.colorScheme.mutedForeground,
-                                      )
-                                      .merge(widget.placeholderStyle),
+                                      ),
                                   child: widget.placeholder!,
                                 ),
                               ),
