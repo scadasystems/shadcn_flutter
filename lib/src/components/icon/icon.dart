@@ -116,9 +116,10 @@ class WrappedIcon extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final iconTheme = data(context, theme);
-    return IconTheme.merge(
+    return AnimatedIconTheme.merge(
       data: iconTheme,
       child: child,
+      duration: kDefaultDuration,
     );
   }
 

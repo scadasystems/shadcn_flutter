@@ -1214,7 +1214,8 @@ class _TreeItemViewState extends State<TreeItemView> {
     );
     return ExcludeFocus(
       excluding: !data.expanded && !data.node.expanded,
-      child: DefaultTextStyle.merge(
+      child: mergeAnimatedTextStyle(
+        duration: kDefaultDuration,
         overflow: TextOverflow.ellipsis,
         maxLines: 1,
         child: AnimatedCrossFade(

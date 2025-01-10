@@ -283,11 +283,11 @@ class Select<T> extends StatefulWidget {
   final T? value;
   final Widget Function(BuildContext context, T item) itemBuilder;
   final bool showUnrelatedValues;
-  final BorderRadiusGeometry? borderRadius;
-  final Widget? searchPlaceholder;
+  final BorderRadius? borderRadius;
+  final String? searchPlaceholder;
   final EdgeInsetsGeometry? padding;
-  final AlignmentGeometry popoverAlignment;
-  final AlignmentGeometry? popoverAnchorAlignment;
+  final Alignment popoverAlignment;
+  final Alignment? popoverAnchorAlignment;
   final WidgetBuilder? emptyBuilder;
   final bool orderSelectedFirst;
   final double? surfaceBlur;
@@ -512,29 +512,7 @@ class SelectState<T> extends State<Select<T>> with FormValueSupplier {
                     },
                   );
                 },
-          child: IntrinsicWidth(
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Expanded(
-                  child: widget.value != null
-                      ? widget.itemBuilder(
-                          context,
-                          widget.value as T,
-                        )
-                      : placeholder,
-                ),
-                SizedBox(width: 8 * scaling),
-                IconTheme.merge(
-                  data: IconThemeData(
-                    color: theme.colorScheme.foreground,
-                    opacity: 0.5,
-                  ),
-                  child: const Icon(Icons.unfold_more).iconSmall(),
-                ),
-              ],
-            ),
-          ),
+          child: widget.enableIntrinsicWidth ? IntrinsicWidth(child: buildRow) : buildRow,
         ),
       ),
     );
@@ -550,7 +528,7 @@ class SelectPopup<T> extends StatefulWidget {
   final ValueListenable<List<AbstractSelectItem<T>>> children;
   final bool showUnrelatedValues;
   final SelectValueChanged<T>? onChanged;
-  final Widget? searchPlaceholder;
+  final String? searchPlaceholder;
   final WidgetBuilder? emptyBuilder;
   final bool orderSelectedFirst;
   final double? surfaceBlur;
@@ -647,7 +625,8 @@ class SelectPopupState<T> extends State<SelectPopup<T>> {
                   padding: const EdgeInsets.symmetric(horizontal: 12) * scaling,
                   child: Row(
                     children: [
-                      IconTheme.merge(
+                      AnimatedIconTheme(
+                        duration: kDefaultDuration,
                         data: IconThemeData(
                           color: Theme.of(context).colorScheme.foreground,
                           opacity: 0.5,
@@ -905,11 +884,11 @@ class MultiSelect<T> extends StatefulWidget {
   final List<T> value;
   final Widget Function(BuildContext context, T item) itemBuilder;
   final bool showUnrelatedValues;
-  final BorderRadiusGeometry? borderRadius;
-  final Widget? searchPlaceholder;
+  final BorderRadius? borderRadius;
+  final String? searchPlaceholder;
   final EdgeInsetsGeometry? padding;
-  final AlignmentGeometry popoverAlignment;
-  final AlignmentGeometry? popoverAnchorAlignment;
+  final Alignment popoverAlignment;
+  final Alignment? popoverAnchorAlignment;
   final WidgetBuilder? emptyBuilder;
   final bool orderSelectedFirst;
   final double? surfaceBlur;
@@ -1128,11 +1107,12 @@ class MultiSelectState<T> extends State<MultiSelect<T>> with FormValueSupplier {
                       : placeholder,
                 ),
                 SizedBox(width: 8 * scaling),
-                IconTheme(
+                AnimatedIconTheme(
                   data: IconThemeData(
                     color: theme.colorScheme.foreground,
                     opacity: 0.5,
                   ),
+                  duration: kDefaultDuration,
                   child: const Icon(Icons.unfold_more).iconSmall(),
                 ),
               ],

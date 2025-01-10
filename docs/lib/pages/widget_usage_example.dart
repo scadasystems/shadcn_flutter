@@ -230,11 +230,7 @@ String _formatCode(String code) {
   if (code.contains('StatefulWidget')) {
     RegExp exp = RegExp(r'extends[\s]*State<.+?>[\s]*{[\s]*\n(.*)[\s]*}',
         multiLine: true, dotAll: true);
-    var firstMatch = exp.firstMatch(code);
-    if (firstMatch == null) {
-      return code;
-    }
-    code = firstMatch.group(1)!;
+    code = exp.firstMatch(code)!.group(1)!;
     List<String> lines = code.split('\n');
     String formatted = '';
     // count the number of spaces in the 2nd line

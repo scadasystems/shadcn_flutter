@@ -130,7 +130,8 @@ class _NavigationBarState extends State<NavigationBar>
           selectedIndex: widget.index,
           onSelected: _onSelected,
         ),
-        child: Container(
+        child: ShadcnAnimatedContainer(
+          duration: kDefaultDuration,
           color: widget.backgroundColor,
           padding: resolvedPadding,
           child: _wrapIntrinsic(
@@ -264,7 +265,8 @@ class _NavigationRailState extends State<NavigationRail>
       ),
       child: SurfaceBlur(
         surfaceBlur: widget.surfaceBlur,
-        child: Container(
+        child: ShadcnAnimatedContainer(
+          duration: kDefaultDuration,
           color: widget.backgroundColor ??
               (theme.colorScheme.background
                   .scaleAlpha(widget.surfaceOpacity ?? 1)),
@@ -368,8 +370,11 @@ class _NavigationSidebarState extends State<NavigationSidebar>
             widget.constraints ?? getDefaultConstraints(context, theme),
         child: SurfaceBlur(
           surfaceBlur: widget.surfaceBlur,
-          child: Container(
-            color: widget.backgroundColor,
+          child: ShadcnAnimatedContainer(
+            duration: kDefaultDuration,
+            color: widget.backgroundColor ??
+                (theme.colorScheme.background
+                    .scaleAlpha(widget.surfaceOpacity ?? 1)),
             child: ClipRect(
               child: CustomScrollView(
                 clipBehavior: Clip.none,
@@ -762,7 +767,7 @@ enum NavigationOverflow {
 class NavigationLabel extends StatelessWidget implements NavigationBarItem {
   final Widget child;
   final AlignmentGeometry alignment;
-  final EdgeInsetsGeometry? padding;
+
   final NavigationOverflow overflow;
 
   // these options are ignored in NavigationBar and NavigationRail
@@ -775,7 +780,6 @@ class NavigationLabel extends StatelessWidget implements NavigationBarItem {
     this.floating = false,
     this.pinned = false,
     this.overflow = NavigationOverflow.marquee,
-    this.padding,
     required this.child,
   });
 
@@ -792,7 +796,8 @@ class NavigationLabel extends StatelessWidget implements NavigationBarItem {
   }
 
   Widget buildBox(BuildContext context) {
-    return DefaultTextStyle.merge(
+    return mergeAnimatedTextStyle(
+      duration: kDefaultDuration,
       textAlign: TextAlign.center,
       child: child.xSmall(),
     );
@@ -816,9 +821,10 @@ class NavigationLabel extends StatelessWidget implements NavigationBarItem {
               curve: Curves.easeInOut,
             );
           },
-          child: Container(
+          child: ShadcnAnimatedContainer(
+            duration: kDefaultDuration,
             alignment: alignment,
-            padding: padding ?? EdgeInsets.symmetric(horizontal: 16 * scaling),
+            padding: EdgeInsets.symmetric(horizontal: 16 * scaling),
             // child: OverflowMarquee(child: child),
             child: _NavigationChildOverflowHandle(
               overflow: overflow,

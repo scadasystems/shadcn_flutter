@@ -11,8 +11,8 @@ mixin OverlayHandlerStateMixin<T extends StatefulWidget> on State<T> {
   void closeLater();
   Future<void> closeWithResult<X>([X? value]);
   set anchorContext(BuildContext value) {}
-  set alignment(AlignmentGeometry value) {}
-  set anchorAlignment(AlignmentGeometry value) {}
+  set alignment(Alignment value) {}
+  set anchorAlignment(Alignment value) {}
   set widthConstraint(PopoverConstraint value) {}
   set heightConstraint(PopoverConstraint value) {}
   set margin(EdgeInsets value) {}
@@ -48,8 +48,8 @@ abstract class OverlayHandler {
     Clip clipBehavior = Clip.none,
     Object? regionGroupId,
     Offset? offset,
-    AlignmentGeometry? transitionAlignment,
-    EdgeInsetsGeometry? margin,
+    Alignment? transitionAlignment,
+    EdgeInsets? margin,
     bool follow = true,
     bool consumeOutsideTaps = true,
     ValueChanged<PopoverAnchorState>? onTickFollow,
@@ -97,8 +97,8 @@ abstract class OverlayManager implements OverlayHandler {
     Clip clipBehavior = Clip.none,
     Object? regionGroupId,
     Offset? offset,
-    AlignmentGeometry? transitionAlignment,
-    EdgeInsetsGeometry? margin,
+    Alignment? transitionAlignment,
+    EdgeInsets? margin,
     bool follow = true,
     bool consumeOutsideTaps = true,
     ValueChanged<PopoverAnchorState>? onTickFollow,
@@ -125,8 +125,8 @@ abstract class OverlayManager implements OverlayHandler {
     Clip clipBehavior = Clip.none,
     Object? regionGroupId,
     Offset? offset,
-    AlignmentGeometry? transitionAlignment,
-    EdgeInsetsGeometry? margin,
+    Alignment? transitionAlignment,
+    EdgeInsets? margin,
     bool follow = true,
     bool consumeOutsideTaps = true,
     ValueChanged<PopoverAnchorState>? onTickFollow,
@@ -153,8 +153,8 @@ abstract class OverlayManager implements OverlayHandler {
     Clip clipBehavior = Clip.none,
     Object? regionGroupId,
     Offset? offset,
-    AlignmentGeometry? transitionAlignment,
-    EdgeInsetsGeometry? margin,
+    Alignment? transitionAlignment,
+    EdgeInsets? margin,
     bool follow = true,
     bool consumeOutsideTaps = true,
     ValueChanged<PopoverAnchorState>? onTickFollow,
@@ -210,8 +210,8 @@ class _OverlayManagerLayerState extends State<OverlayManagerLayer> implements Ov
     Clip clipBehavior = Clip.none,
     Object? regionGroupId,
     Offset? offset,
-    AlignmentGeometry? transitionAlignment,
-    EdgeInsetsGeometry? margin,
+    Alignment? transitionAlignment,
+    EdgeInsets? margin,
     bool follow = true,
     bool consumeOutsideTaps = true,
     ValueChanged<PopoverAnchorState>? onTickFollow,
@@ -267,8 +267,8 @@ class _OverlayManagerLayerState extends State<OverlayManagerLayer> implements Ov
     Clip clipBehavior = Clip.none,
     Object? regionGroupId,
     Offset? offset,
-    AlignmentGeometry? transitionAlignment,
-    EdgeInsetsGeometry? margin,
+    Alignment? transitionAlignment,
+    EdgeInsets? margin,
     bool follow = true,
     bool consumeOutsideTaps = true,
     ValueChanged<PopoverAnchorState>? onTickFollow,
@@ -324,8 +324,8 @@ class _OverlayManagerLayerState extends State<OverlayManagerLayer> implements Ov
     Clip clipBehavior = Clip.none,
     Object? regionGroupId,
     Offset? offset,
-    AlignmentGeometry? transitionAlignment,
-    EdgeInsetsGeometry? margin,
+    Alignment? transitionAlignment,
+    EdgeInsets? margin,
     bool follow = true,
     bool consumeOutsideTaps = true,
     ValueChanged<PopoverAnchorState>? onTickFollow,

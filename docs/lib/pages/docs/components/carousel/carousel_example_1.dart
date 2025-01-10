@@ -28,16 +28,17 @@ class _CarouselExample1State extends State<CarouselExample1> {
             child: SizedBox(
               height: 200,
               child: Carousel(
-                // frameTransform: Carousel.fadingTransform,
-                transition: const CarouselTransition.sliding(gap: 24),
+                gap: 24,
+                snapAlignment: CarouselAlignment.center,
                 controller: controller,
-                sizeConstraint: const CarouselFixedConstraint(200),
-                autoplaySpeed: const Duration(seconds: 2),
+                sizeFactor: 0.8,
+                autoplaySpeed: const Duration(seconds: 1),
                 itemCount: 5,
+                // wrap: false,
                 itemBuilder: (context, index) {
                   return NumberedContainer(index: index);
                 },
-                duration: const Duration(seconds: 1),
+                duration: const Duration(seconds: 2),
               ),
             ),
           ),

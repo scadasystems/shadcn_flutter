@@ -4,7 +4,7 @@ import 'package:shadcn_flutter/shadcn_flutter.dart';
 class TextArea extends StatefulWidget {
   final TextEditingController? controller;
   final bool filled;
-  final Widget? placeholder;
+  final String? placeholder;
   final bool border;
   final Widget? leading;
   final Widget? trailing;
@@ -20,7 +20,7 @@ class TextArea extends StatefulWidget {
   final String? initialValue;
   final int? maxLength;
   final MaxLengthEnforcement? maxLengthEnforcement;
-  final BorderRadiusGeometry? borderRadius;
+  final BorderRadius? borderRadius;
   final TextAlign textAlign;
   final bool expandableHeight;
   final bool expandableWidth;
@@ -32,20 +32,6 @@ class TextArea extends StatefulWidget {
   final double minHeight;
   final double maxWidth;
   final double maxHeight;
-  final TextAlignVertical? textAlignVertical;
-  final UndoHistoryController? undoController;
-  final ValueChanged<String>? onChanged;
-  final Iterable<String>? autofillHints;
-  final void Function(PointerDownEvent event)? onTapOutside;
-  final List<TextInputFormatter>? inputFormatters;
-  final TextStyle? style;
-  final EditableTextContextMenuBuilder? contextMenuBuilder;
-  final bool useNativeContextMenu;
-  final bool? isCollapsed;
-  final TextInputType? keyboardType;
-  final TextInputAction? textInputAction;
-  final Clip clipBehavior;
-  final bool autofocus;
 
   const TextArea({
     super.key,
@@ -79,20 +65,6 @@ class TextArea extends StatefulWidget {
     this.minHeight = 100,
     this.maxWidth = double.infinity,
     this.maxHeight = double.infinity,
-    this.textAlignVertical = TextAlignVertical.top,
-    this.undoController,
-    this.onChanged,
-    this.autofillHints,
-    this.onTapOutside,
-    this.inputFormatters,
-    this.style,
-    this.contextMenuBuilder,
-    this.useNativeContextMenu = false,
-    this.isCollapsed,
-    this.keyboardType,
-    this.textInputAction,
-    this.clipBehavior = Clip.hardEdge,
-    this.autofocus = false,
   });
 
   @override
@@ -134,7 +106,6 @@ class _TextAreaState extends State<TextArea> {
             Positioned.fill(
               child: TextField(
                 expands: true,
-                isCollapsed: widget.isCollapsed,
                 controller: widget.controller,
                 onSubmitted: widget.onSubmitted,
                 onEditingComplete: widget.onEditingComplete,
@@ -157,24 +128,12 @@ class _TextAreaState extends State<TextArea> {
                 trailing: widget.trailing,
                 padding: widget.padding,
                 borderRadius: widget.borderRadius,
-                textAlignVertical: widget.textAlignVertical,
-                undoController: widget.undoController,
-                onChanged: widget.onChanged,
-                autofillHints: widget.autofillHints,
-                onTapOutside: widget.onTapOutside,
-                inputFormatters: widget.inputFormatters,
-                style: widget.style,
-                contextMenuBuilder: widget.contextMenuBuilder,
-                useNativeContextMenu: widget.useNativeContextMenu,
-                keyboardType: widget.keyboardType,
-                textInputAction: widget.textInputAction,
-                clipBehavior: widget.clipBehavior,
-                autofocus: widget.autofocus,
+                textAlignVertical: TextAlignVertical.top,
               ),
             ),
             Positioned(
-              bottom: -1 * scaling,
-              right: -1 * scaling,
+              bottom: -1,
+              right: -1,
               width: (8 + 8) * scaling,
               height: (8 + 8) * scaling,
               child: MouseRegion(

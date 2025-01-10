@@ -5,7 +5,7 @@ import '../../../shadcn_flutter.dart';
 class SurfaceBlur extends StatefulWidget {
   final Widget child;
   final double? surfaceBlur;
-  final BorderRadiusGeometry? borderRadius;
+  final BorderRadius? borderRadius;
 
   const SurfaceBlur({
     super.key,
@@ -67,7 +67,6 @@ class OutlinedContainer extends StatefulWidget {
   final double? surfaceBlur;
   final double? width;
   final double? height;
-  final Duration? duration;
   const OutlinedContainer({
     super.key,
     required this.child,
@@ -83,7 +82,6 @@ class OutlinedContainer extends StatefulWidget {
     this.surfaceBlur,
     this.width,
     this.height,
-    this.duration,
   });
 
   @override
@@ -104,11 +102,11 @@ class _OutlinedContainerState extends State<OutlinedContainer> {
     if (widget.surfaceOpacity != null) {
       backgroundColor = backgroundColor.scaleAlpha(widget.surfaceOpacity!);
     }
-    Widget childWidget = AnimatedContainer(
-      duration: widget.duration ?? Duration.zero,
+    Widget childWidget = ShadcnAnimatedContainer(
       key: _mainContainerKey,
       width: widget.width,
       height: widget.height,
+      duration: kDefaultDuration,
       decoration: BoxDecoration(
         color: backgroundColor,
         border: Border.all(
@@ -119,8 +117,10 @@ class _OutlinedContainerState extends State<OutlinedContainer> {
         borderRadius: borderRadius,
         boxShadow: widget.boxShadow,
       ),
-      child: AnimatedContainer(
-        duration: widget.duration ?? Duration.zero,
+      // padding: widget.padding,
+      // clipBehavior: widget.clipBehavior,
+      child: ShadcnAnimatedContainer(
+        duration: kDefaultDuration,
         padding: widget.padding,
         clipBehavior: widget.clipBehavior,
         decoration: BoxDecoration(
@@ -218,7 +218,7 @@ class DashedContainerProperties {
   final double gap;
   final double thickness;
   final Color color;
-  final BorderRadiusGeometry borderRadius;
+  final BorderRadius borderRadius;
 
   const DashedContainerProperties({
     required this.width,
@@ -229,7 +229,6 @@ class DashedContainerProperties {
   });
 
   static DashedContainerProperties lerp(
-    BuildContext context,
     DashedContainerProperties a,
     DashedContainerProperties b,
     double t,
@@ -239,8 +238,7 @@ class DashedContainerProperties {
       gap: lerpDouble(a.gap, b.gap, t)!,
       thickness: lerpDouble(a.thickness, b.thickness, t)!,
       color: Color.lerp(a.color, b.color, t)!,
-      borderRadius: BorderRadius.lerp(a.borderRadius.optionallyResolve(context),
-          b.borderRadius.optionallyResolve(context), t)!,
+      borderRadius: BorderRadius.lerp(a.borderRadius, b.borderRadius, t)!,
     );
   }
 }
@@ -251,10 +249,13 @@ class DashedContainer extends StatelessWidget {
   final double? thickness;
   final Color? color;
   final Widget child;
-  final BorderRadiusGeometry? borderRadius;
+  final BorderRadius? borderRadius;
 
   const DashedContainer({
     super.key,
+    // this.strokeWidth = 8,
+    // this.gap = 5,
+    // this.thickness = 1,
     this.strokeWidth,
     this.gap,
     this.thickness,
@@ -275,9 +276,7 @@ class DashedContainer extends StatelessWidget {
         borderRadius: borderRadius ?? theme.borderRadiusLg,
       ),
       duration: kDefaultDuration,
-      lerp: (a, b, t) {
-        return DashedContainerProperties.lerp(context, a, b, t);
-      },
+      lerp: DashedContainerProperties.lerp,
       builder: (context, value, child) {
         return CustomPaint(
           painter: DashedPainter(
@@ -285,7 +284,7 @@ class DashedContainer extends StatelessWidget {
             gap: value.gap,
             thickness: value.thickness,
             color: value.color,
-            borderRadius: value.borderRadius.optionallyResolve(context),
+            borderRadius: value.borderRadius,
           ),
           child: child,
         );

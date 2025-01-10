@@ -246,7 +246,9 @@ class MenuLabel extends StatelessWidget implements MenuItem {
                     child: leading!.iconSmall(),
                   ),
         trailing: trailing,
-        content: child.semiBold(),
+        content: UnderlineInterceptor(
+          child: isSemiBold ? child.semiBold() : child,
+        ),
         trailingAlignment: Alignment.center,
         leadingAlignment: Alignment.center,
         contentAlignment:
@@ -780,8 +782,8 @@ class MenuOverlayHandler extends OverlayHandler {
       Clip clipBehavior = Clip.none,
       Object? regionGroupId,
       Offset? offset,
-      AlignmentGeometry? transitionAlignment,
-      EdgeInsetsGeometry? margin,
+      Alignment? transitionAlignment,
+      EdgeInsets? margin,
       bool follow = true,
       bool consumeOutsideTaps = true,
       ValueChanged<PopoverAnchorState>? onTickFollow,

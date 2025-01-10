@@ -12,7 +12,6 @@ class Card extends StatelessWidget {
   final List<BoxShadow>? boxShadow;
   final double? surfaceOpacity;
   final double? surfaceBlur;
-  final Duration? duration;
 
   const Card({
     super.key,
@@ -27,7 +26,6 @@ class Card extends StatelessWidget {
     this.boxShadow,
     this.surfaceOpacity,
     this.surfaceBlur,
-    this.duration,
   });
 
   @override
@@ -46,9 +44,9 @@ class Card extends StatelessWidget {
       padding: padding ?? (EdgeInsets.all(16 * scaling)),
       surfaceOpacity: surfaceOpacity,
       surfaceBlur: surfaceBlur,
-      duration: duration,
-      child: DefaultTextStyle.merge(
+      child: mergeAnimatedTextStyle(
         child: child,
+        duration: kDefaultDuration,
         style: TextStyle(
           color: theme.colorScheme.cardForeground,
         ),
@@ -69,7 +67,6 @@ class SurfaceCard extends StatelessWidget {
   final List<BoxShadow>? boxShadow;
   final double? surfaceOpacity;
   final double? surfaceBlur;
-  final Duration? duration;
 
   const SurfaceCard({
     super.key,
@@ -84,7 +81,6 @@ class SurfaceCard extends StatelessWidget {
     this.boxShadow,
     this.surfaceOpacity,
     this.surfaceBlur,
-    this.duration,
   });
 
   @override
@@ -110,7 +106,6 @@ class SurfaceCard extends StatelessWidget {
       padding: padding,
       surfaceOpacity: surfaceOpacity ?? theme.surfaceOpacity,
       surfaceBlur: surfaceBlur ?? theme.surfaceBlur,
-      duration: duration,
       child: child,
     );
   }

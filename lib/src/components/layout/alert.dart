@@ -27,11 +27,13 @@ class Alert extends StatelessWidget {
   Widget build(BuildContext context) {
     if (destructive) {
       var destructive2 = Theme.of(context).colorScheme.destructive;
-      return DefaultTextStyle.merge(
+      return mergeAnimatedTextStyle(
+        duration: kDefaultDuration,
         style: TextStyle(
           color: destructive2,
         ),
-        child: IconTheme.merge(
+        child: AnimatedIconTheme.merge(
+          duration: kDefaultDuration,
           data: IconThemeData(
             color: destructive2,
           ),

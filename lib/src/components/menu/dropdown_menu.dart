@@ -1,6 +1,6 @@
 import 'package:shadcn_flutter/shadcn_flutter.dart';
 
-OverlayCompleter<T?> showDropdown<T>({
+void showDropdown({
   required BuildContext context,
   required WidgetBuilder builder,
   Offset? position,
@@ -13,10 +13,10 @@ OverlayCompleter<T?> showDropdown<T>({
   Clip clipBehavior = Clip.none,
   Object? regionGroupId,
   Offset? offset,
-  AlignmentGeometry? transitionAlignment,
-  EdgeInsetsGeometry? margin,
+  Alignment? transitionAlignment,
+  EdgeInsets? margin,
   bool follow = true,
-  bool consumeOutsideTaps = false,
+  bool consumeOutsideTaps = true,
   ValueChanged<PopoverAnchorState>? onTickFollow,
   bool allowInvertHorizontal = true,
   bool allowInvertVertical = true,
@@ -29,7 +29,7 @@ OverlayCompleter<T?> showDropdown<T>({
   final scaling = theme.scaling;
   final GlobalKey key = GlobalKey();
   final overlayManager = OverlayManager.of(context);
-  return overlayManager.showMenu<T>(
+  overlayManager.showMenu(
     context: context,
     alignment: Alignment.topCenter,
     offset: offset ?? (const Offset(0, 4) * scaling),
@@ -46,13 +46,14 @@ OverlayCompleter<T?> showDropdown<T>({
     heightConstraint: heightConstraint,
     position: position,
     anchorAlignment: anchorAlignment,
-    consumeOutsideTaps: consumeOutsideTaps,
+    consumeOutsideTaps: false,
     regionGroupId: key,
     modal: modal,
-    dismissBackdropFocus: dismissBackdropFocus,
-    overlayBarrier: OverlayBarrier(
-      borderRadius: BorderRadius.circular(theme.radiusMd),
-    ),
+    dismissBackdropFocus: true,
+    overlayBarrier: overlayBarrier ??
+        OverlayBarrier(
+          borderRadius: BorderRadius.circular(theme.radiusMd),
+        ),
     builder: (context) {
       return Data.inherit(
         data: DropdownMenuData(key),

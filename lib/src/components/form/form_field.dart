@@ -15,9 +15,9 @@ class ObjectFormField<T> extends StatefulWidget {
   final PromptMode mode;
   final Widget Function(BuildContext context, ObjectFormHandler<T> handler)
       editorBuilder;
-  final AlignmentGeometry? popoverAlignment;
-  final AlignmentGeometry? popoverAnchorAlignment;
-  final EdgeInsetsGeometry? popoverPadding;
+  final Alignment? popoverAlignment;
+  final Alignment? popoverAnchorAlignment;
+  final EdgeInsets? popoverPadding;
   final Widget? dialogTitle;
   final ButtonSize size;
   final ButtonDensity density;
@@ -150,9 +150,9 @@ class ObjectFormFieldState<T> extends State<ObjectFormField<T>>
       alignment: widget.popoverAlignment ?? Alignment.topLeft,
       anchorAlignment: widget.popoverAnchorAlignment ?? Alignment.bottomLeft,
       overlayBarrier: OverlayBarrier(
+        padding: const EdgeInsets.symmetric(vertical: 8) * scaling,
         borderRadius: BorderRadius.circular(theme.radiusLg),
       ),
-      modal: true,
       offset: Offset(0, 8 * scaling),
       builder: (context) {
         return _ObjectFormFieldPopup<T>(
@@ -301,7 +301,7 @@ class _ObjectFormFieldPopup<T> extends StatefulWidget {
   final T? value;
   final Widget Function(BuildContext context, ObjectFormHandler<T> handler)
       editorBuilder;
-  final EdgeInsetsGeometry? popoverPadding;
+  final EdgeInsets? popoverPadding;
   final ValueChanged<T?>? onChanged;
   final ValueChanged<T?> prompt;
 

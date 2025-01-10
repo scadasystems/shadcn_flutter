@@ -4,14 +4,12 @@ class Tabs extends StatelessWidget {
   final int index;
   final ValueChanged<int> onChanged;
   final List<Widget> tabs;
-  final EdgeInsetsGeometry? padding;
 
   const Tabs({
     super.key,
     required this.index,
     required this.onChanged,
     required this.tabs,
-    this.padding,
   });
 
   @override
@@ -38,17 +36,14 @@ class Tabs extends StatelessWidget {
                     child: MouseRegion(
                       hitTestBehavior: HitTestBehavior.translucent,
                       cursor: SystemMouseCursors.click,
-                      child: AnimatedContainer(
-                        duration: const Duration(
-                            milliseconds:
-                                50), // slightly faster than kDefaultDuration
+                      child: ShadcnAnimatedContainer(
+                        duration: const Duration(milliseconds: 50), // slightly faster than kDefaultDuration
                         alignment: Alignment.center,
-                        padding: padding ??
-                            const EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                  vertical: 4,
-                                ) *
-                                scaling,
+                        padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 4,
+                            ) *
+                            scaling,
                         decoration: BoxDecoration(
                           color: i == index ? theme.colorScheme.background : null,
                           borderRadius: BorderRadius.circular(

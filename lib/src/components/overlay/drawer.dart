@@ -16,7 +16,7 @@ Future<T?> openDrawer<T>({
   WidgetBuilder? backdropBuilder,
   bool useSafeArea = true,
   bool showDragHandle = true,
-  BorderRadiusGeometry? borderRadius,
+  BorderRadius? borderRadius,
   Size? dragHandleSize,
   bool transformBackdrop = true,
   double? surfaceOpacity,
@@ -88,7 +88,7 @@ class DrawerWrapper extends StatefulWidget {
   final Size extraSize;
   final Size size;
   final bool showDragHandle;
-  final BorderRadiusGeometry? borderRadius;
+  final BorderRadius? borderRadius;
   final Size? dragHandleSize;
   final EdgeInsets padding;
   final double? surfaceOpacity;
@@ -468,7 +468,7 @@ class _DrawerWrapperState extends State<DrawerWrapper>
     }
   }
 
-  BorderRadiusGeometry getBorderRadius(double radius) {
+  BorderRadius getBorderRadius(double radius) {
     switch (widget.position) {
       case OverlayPosition.left:
         return BorderRadius.only(
@@ -533,7 +533,6 @@ class _DrawerWrapperState extends State<DrawerWrapper>
     final animation = data?.state._controlledAnimation;
     final theme = Theme.of(context);
     var surfaceBlur = widget.surfaceBlur ?? theme.surfaceBlur;
-    var surfaceOpacity = widget.surfaceOpacity ?? theme.surfaceOpacity;
     var borderRadius = widget.borderRadius ?? getBorderRadius(theme.radiusXxl);
     Widget container = Container(
       width: widget.expands ? expandingWidth : null,
@@ -560,7 +559,6 @@ class _DrawerWrapperState extends State<DrawerWrapper>
         barrierColor = barrierColor.scaleAlpha(0.75);
       }
       container = ModalContainer(
-        surfaceClip: ModalContainer.shouldClipSurface(surfaceOpacity),
         borderRadius: borderRadius,
         barrierColor: barrierColor,
         fadeAnimation: animation,
@@ -685,7 +683,7 @@ class _SheetWrapperState extends _DrawerWrapperState {
   }
 
   @override
-  BorderRadiusGeometry getBorderRadius(double radius) {
+  BorderRadius getBorderRadius(double radius) {
     return BorderRadius.zero;
   }
 
@@ -727,6 +725,7 @@ class _DrawerOverlayWrapper extends StatefulWidget {
   final Widget child;
   final Completer completer;
   const _DrawerOverlayWrapper({
+    super.key,
     required this.child,
     required this.completer,
   });
@@ -1386,8 +1385,8 @@ class SheetOverlayHandler extends OverlayHandler {
     Clip clipBehavior = Clip.none,
     Object? regionGroupId,
     Offset? offset,
-    AlignmentGeometry? transitionAlignment,
-    EdgeInsetsGeometry? margin,
+    Alignment? transitionAlignment,
+    EdgeInsets? margin,
     bool follow = true,
     bool consumeOutsideTaps = true,
     ValueChanged<PopoverAnchorState>? onTickFollow,

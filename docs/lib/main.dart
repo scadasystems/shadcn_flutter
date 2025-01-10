@@ -741,7 +741,6 @@ class MyAppState extends State<MyApp> {
         title: 'shadcn/ui Flutter',
         scaling: AdaptiveScaling(scaling),
         enableScrollInterception: true,
-        // popoverHandler: DialogOverlayHandler(),
         theme: ThemeData(
           colorScheme: colorScheme,
           radius: radius,

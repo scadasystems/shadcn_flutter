@@ -28,7 +28,8 @@ class TooltipContainer extends StatelessWidget {
     if (surfaceOpacity != null) {
       backgroundColor = backgroundColor.scaleAlpha(surfaceOpacity);
     }
-    Widget animatedContainer = Container(
+    Widget animatedContainer = ShadcnAnimatedContainer(
+      duration: kDefaultDuration,
       padding: const EdgeInsets.symmetric(
             horizontal: 12,
             vertical: 6,
@@ -90,7 +91,6 @@ class _TooltipState extends State<Tooltip> {
         if (hovered) {
           _controller.show(
             context: context,
-            modal: false,
             builder: (context) {
               return widget.tooltip;
             },
@@ -116,8 +116,8 @@ class InstantTooltip extends StatefulWidget {
   final Widget child;
   final HitTestBehavior behavior;
   final WidgetBuilder tooltipBuilder;
-  final AlignmentGeometry tooltipAlignment;
-  final AlignmentGeometry? tooltipAnchorAlignment;
+  final Alignment tooltipAlignment;
+  final Alignment? tooltipAnchorAlignment;
 
   const InstantTooltip({
     super.key,
@@ -149,7 +149,6 @@ class _InstantTooltipState extends State<InstantTooltip> {
         _controller.close(true);
         _controller.show(
           context: context,
-          modal: false,
           builder: widget.tooltipBuilder,
           alignment: widget.tooltipAlignment,
           anchorAlignment: widget.tooltipAnchorAlignment,
@@ -195,8 +194,8 @@ class OverlayManagerAsTooltipOverlayHandler extends OverlayHandler {
     Clip clipBehavior = Clip.none,
     Object? regionGroupId,
     Offset? offset,
-    AlignmentGeometry? transitionAlignment,
-    EdgeInsetsGeometry? margin,
+    Alignment? transitionAlignment,
+    EdgeInsets? margin,
     bool follow = true,
     bool consumeOutsideTaps = true,
     ValueChanged<PopoverAnchorState>? onTickFollow,
@@ -255,8 +254,8 @@ class FixedTooltipOverlayHandler extends OverlayHandler {
     Clip clipBehavior = Clip.none,
     Object? regionGroupId,
     Offset? offset,
-    AlignmentGeometry? transitionAlignment,
-    EdgeInsetsGeometry? margin,
+    Alignment? transitionAlignment,
+    EdgeInsets? margin,
     bool follow = true,
     bool consumeOutsideTaps = true,
     ValueChanged<PopoverAnchorState>? onTickFollow,

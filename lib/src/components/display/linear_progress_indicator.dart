@@ -31,7 +31,7 @@ class LinearProgressIndicator extends StatelessWidget {
   final Color? backgroundColor;
   final double? minHeight;
   final Color? color;
-  final BorderRadiusGeometry? borderRadius;
+  final BorderRadius? borderRadius;
   final bool showSparks;
   final bool disableAnimation;
 
