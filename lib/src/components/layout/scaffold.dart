@@ -147,8 +147,7 @@ class ScaffoldState extends State<Scaffold> {
     final theme = Theme.of(context);
     final viewInsets = MediaQuery.viewInsetsOf(context);
     return DrawerOverlay(
-      child: ShadcnAnimatedContainer(
-        duration: kDefaultDuration,
+      child: Container(
         color: theme.colorScheme.background,
         child: _ScaffoldFlex(
           floatingHeader: widget.floatingHeader,
@@ -176,7 +175,7 @@ class AppBar extends StatefulWidget {
   final Widget? subtitle; // small widget placed below title
   final bool
       trailingExpanded; // expand the trailing instead of the main content
-  final Alignment alignment;
+  final AlignmentGeometry alignment;
   final Color? backgroundColor;
   final double? leadingGap;
   final double? trailingGap;
@@ -228,8 +227,7 @@ class _AppBarState extends State<AppBar> {
             sigmaX: surfaceBlur ?? 0,
             sigmaY: surfaceBlur ?? 0,
           ),
-          child: ShadcnAnimatedContainer(
-            duration: kDefaultDuration,
+          child: Container(
             color: widget.backgroundColor ??
                 theme.colorScheme.background.scaleAlpha(surfaceOpacity ?? 1),
             alignment: widget.alignment,

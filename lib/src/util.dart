@@ -1,13 +1,28 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:flutter/foundation.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart';
 
 const kDefaultDuration = Duration(milliseconds: 150);
 
 typedef ContextedCallback = void Function(BuildContext context);
 typedef ContextedValueChanged<T> = void Function(BuildContext context, T value);
+
+BorderRadius? optionallyResolveBorderRadius(
+    BuildContext context, BorderRadiusGeometry? radius) {
+  if (radius == null) {
+    return null;
+  }
+  if (radius is BorderRadius) {
+    return radius;
+  }
+  return radius.resolve(Directionality.of(context));
+}
+
+/// A style helper function that returns the value from the widget, theme, or default value.
+T styleValue<T>({T? widgetValue, T? themeValue, required T defaultValue}) {
+  return widgetValue ?? themeValue ?? defaultValue;
+}
 
 extension FutureOrExtension<T> on FutureOr<T> {
   FutureOr<R> map<R>(R Function(T value) transform) {
@@ -47,7 +62,7 @@ extension AlignmentExtension on AlignmentGeometry {
 }
 
 extension BorderRadiusExtension on BorderRadiusGeometry {
-  BorderRadiusGeometry optionallyResolve(BuildContext context) {
+  BorderRadius optionallyResolve(BuildContext context) {
     if (this is BorderRadius) {
       return this as BorderRadius;
     }
@@ -384,7 +399,7 @@ extension WidgetExtension on Widget {
   }
 
   Widget clipRRect(
-      {BorderRadius borderRadius = BorderRadius.zero,
+      {BorderRadiusGeometry borderRadius = BorderRadius.zero,
       Clip clipBehavior = Clip.antiAlias}) {
     return ClipRRect(
       borderRadius: borderRadius,
@@ -444,76 +459,120 @@ extension WidgetExtension on Widget {
 }
 
 extension ColumnExtension on Column {
-  Column gap(double gap) {
-    return Column(
-      key: key,
-      mainAxisAlignment: mainAxisAlignment,
-      mainAxisSize: mainAxisSize,
-      crossAxisAlignment: crossAxisAlignment,
-      textDirection: textDirection,
-      verticalDirection: verticalDirection,
-      textBaseline: textBaseline,
-      children: join(
-        children,
-        SizedBox(height: gap),
-      ).toList(growable: false),
-    );
+  Widget gap(double gap) {
+    return separator(SizedBox(height: gap));
   }
 
-  Column separator(Widget separator) {
-    return Column(
+  Widget separator(Widget separator) {
+    return SeparatedFlex(
       key: key,
+      direction: Axis.vertical,
       mainAxisAlignment: mainAxisAlignment,
       mainAxisSize: mainAxisSize,
       crossAxisAlignment: crossAxisAlignment,
       textDirection: textDirection,
       verticalDirection: verticalDirection,
       textBaseline: textBaseline,
-      children: join(
-        children,
-        separator,
-      ).toList(growable: false),
+      clipBehavior: clipBehavior,
+      separator: separator,
+      children: children,
     );
   }
 }
 
 extension RowExtension on Row {
-  Row gap(double gap) {
-    return Row(
-      key: key,
-      mainAxisAlignment: mainAxisAlignment,
-      mainAxisSize: mainAxisSize,
-      crossAxisAlignment: crossAxisAlignment,
-      textDirection: textDirection,
-      verticalDirection: verticalDirection,
-      textBaseline: textBaseline,
-      children: join(
-        children,
-        SizedBox(width: gap),
-      ).toList(growable: false),
-    );
+  Widget gap(double gap) {
+    return separator(SizedBox(width: gap));
   }
 
-  Row separator(Widget separator) {
-    return Row(
+  Widget separator(Widget separator) {
+    return SeparatedFlex(
       key: key,
+      direction: Axis.horizontal,
       mainAxisAlignment: mainAxisAlignment,
       mainAxisSize: mainAxisSize,
       crossAxisAlignment: crossAxisAlignment,
       textDirection: textDirection,
       verticalDirection: verticalDirection,
       textBaseline: textBaseline,
-      children: join(
-        children,
-        separator,
-      ).toList(growable: false),
+      clipBehavior: clipBehavior,
+      separator: separator,
+      children: children,
+    );
+  }
+}
+
+class SeparatedFlex extends StatefulWidget {
+  final MainAxisAlignment mainAxisAlignment;
+  final MainAxisSize mainAxisSize;
+  final CrossAxisAlignment crossAxisAlignment;
+  final TextDirection? textDirection;
+  final VerticalDirection verticalDirection;
+  final TextBaseline? textBaseline;
+  final List<Widget> children;
+  final Axis direction;
+  final Widget separator;
+  final Clip clipBehavior;
+
+  const SeparatedFlex({
+    super.key,
+    required this.mainAxisAlignment,
+    required this.mainAxisSize,
+    required this.crossAxisAlignment,
+    this.textDirection,
+    required this.verticalDirection,
+    this.textBaseline,
+    required this.children,
+    required this.separator,
+    required this.direction,
+    this.clipBehavior = Clip.none,
+  });
+
+  @override
+  State<SeparatedFlex> createState() => _SeparatedFlexState();
+}
+
+class _SeparatedFlexState extends State<SeparatedFlex> {
+  late List<Widget> _children;
+
+  @override
+  void initState() {
+    super.initState();
+    _children = join(widget.children, widget.separator).toList();
+  }
+
+  @override
+  void didUpdateWidget(covariant SeparatedFlex oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    mutateSeparated(widget.children, _children, widget.separator);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Flex(
+      key: widget.key,
+      direction: widget.direction,
+      mainAxisAlignment: widget.mainAxisAlignment,
+      mainAxisSize: widget.mainAxisSize,
+      crossAxisAlignment: widget.crossAxisAlignment,
+      textDirection: widget.textDirection,
+      verticalDirection: widget.verticalDirection,
+      textBaseline: widget.textBaseline,
+      clipBehavior: widget.clipBehavior,
+      children: _children,
     );
   }
 }
 
 extension FlexExtension on Flex {
-  Flex gap(double gap) {
-    return Flex(
+  Widget gap(double gap) {
+    return separator(direction == Axis.vertical
+        ? SizedBox(height: gap)
+        : SizedBox(width: gap));
+  }
+
+  Widget separator(Widget separator) {
+    return SeparatedFlex(
       key: key,
       direction: direction,
       mainAxisAlignment: mainAxisAlignment,
@@ -522,112 +581,15 @@ extension FlexExtension on Flex {
       textDirection: textDirection,
       verticalDirection: verticalDirection,
       textBaseline: textBaseline,
-      children: join(
-        children,
-        Gap(gap),
-      ).toList(growable: false),
-    );
-  }
-
-  Flex separator(Widget separator) {
-    return Flex(
-      key: key,
-      direction: direction,
-      mainAxisAlignment: mainAxisAlignment,
-      mainAxisSize: mainAxisSize,
-      crossAxisAlignment: crossAxisAlignment,
-      textDirection: textDirection,
-      verticalDirection: verticalDirection,
-      textBaseline: textBaseline,
-      children: join(
-        children,
-        separator,
-      ).toList(growable: false),
+      clipBehavior: clipBehavior,
+      separator: separator,
+      children: children,
     );
   }
 }
 
-Iterable<Widget> join(Iterable<Widget> widgets, Widget separator) sync* {
-  final iterator = widgets.iterator;
-  if (!iterator.moveNext()) {
-    return;
-  }
-  yield iterator.current;
-  while (iterator.moveNext()) {
-    yield separator;
-    yield iterator.current;
-  }
-}
-
-class AnimatedIconTheme extends ImplicitlyAnimatedWidget {
-  final IconThemeData data;
-  final Widget child;
-
-  const AnimatedIconTheme({
-    super.key,
-    required this.data,
-    required this.child,
-    super.curve,
-    required super.duration,
-    super.onEnd,
-  });
-
-  static Widget merge({
-    Key? key,
-    required IconThemeData data,
-    required Widget child,
-    Curve curve = Curves.linear,
-    required Duration duration,
-    VoidCallback? onEnd,
-  }) {
-    return Builder(
-      builder: (BuildContext context) {
-        final iconTheme = IconTheme.of(context);
-        return AnimatedIconTheme(
-          key: key,
-          data: iconTheme.merge(data),
-          curve: curve,
-          duration: duration,
-          onEnd: onEnd,
-          child: child,
-        );
-      },
-    );
-  }
-
-  @override
-  AnimatedWidgetBaseState<AnimatedIconTheme> createState() =>
-      _AnimatedIconThemeState();
-}
-
-class _AnimatedIconThemeState
-    extends AnimatedWidgetBaseState<AnimatedIconTheme> {
-  IconThemeDataTween? _data;
-
-  @override
-  void forEachTween(TweenVisitor<dynamic> visitor) {
-    _data = visitor(
-            _data,
-            widget.data,
-            (dynamic value) =>
-                IconThemeDataTween(begin: value as IconThemeData))!
-        as IconThemeDataTween;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return IconTheme(
-      data: _data!.evaluate(animation),
-      child: widget.child,
-    );
-  }
-
-  @override
-  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
-    super.debugFillProperties(properties);
-    properties.add(DiagnosticsProperty<IconThemeDataTween>('data', _data,
-        showName: false, defaultValue: null));
-  }
+Iterable<Widget> join(Iterable<Widget> widgets, Widget separator) {
+  return SeparatedIterable(widgets, separator);
 }
 
 extension DoubleExtension on double {
@@ -645,53 +607,6 @@ class IconThemeDataTween extends Tween<IconThemeData> {
 
   @override
   IconThemeData lerp(double t) => IconThemeData.lerp(begin, end, t);
-}
-
-Widget mergeAnimatedTextStyle({
-  Key? key,
-  TextStyle? style,
-  required Widget child,
-  Curve curve = Curves.linear,
-  required Duration duration,
-  VoidCallback? onEnd,
-  TextAlign? textAlign,
-  bool? softWrap,
-  TextOverflow? overflow,
-  int? maxLines,
-  TextWidthBasis? textWidthBasis,
-}) {
-  return Builder(
-    builder: (BuildContext context) {
-      bool shadcnFlutterSmoothAnimation =
-          Model.of(context, #shadcn_flutter_smooth_animation);
-      if (!shadcnFlutterSmoothAnimation) {
-        return DefaultTextStyle.merge(
-          key: key,
-          style: style,
-          textAlign: textAlign,
-          softWrap: softWrap,
-          overflow: overflow,
-          maxLines: maxLines,
-          textWidthBasis: textWidthBasis,
-          child: child,
-        );
-      }
-      final defaultTextStyle = DefaultTextStyle.of(context);
-      return AnimatedDefaultTextStyle(
-        key: key,
-        style: defaultTextStyle.style.merge(style),
-        textAlign: textAlign ?? defaultTextStyle.textAlign,
-        softWrap: softWrap ?? defaultTextStyle.softWrap,
-        overflow: overflow ?? defaultTextStyle.overflow,
-        maxLines: maxLines ?? defaultTextStyle.maxLines,
-        textWidthBasis: textWidthBasis ?? defaultTextStyle.textWidthBasis,
-        curve: curve,
-        duration: duration,
-        onEnd: onEnd,
-        child: child,
-      );
-    },
-  );
 }
 
 int _lerpColorInt(int a, int b, double t) {
