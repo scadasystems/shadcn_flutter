@@ -11,7 +11,7 @@ export 'package:flutter/cupertino.dart'
     show cupertinoDesktopTextSelectionControls, cupertinoDesktopTextSelectionHandleControls;
 // export Icons from material
 export 'package:flutter/material.dart'
-    show Icons, MaterialPageRoute, MaterialPage, SliverAppBar, FlutterLogo, InkWell
+    show Icons, MaterialPageRoute, MaterialPage, SliverAppBar, FlutterLogo
     hide TextButton;
 export 'package:flutter/widgets.dart' hide ErrorWidgetBuilder, Form, FormState, Table, TableRow, TableCell, FormField;
 // bundle from gap
