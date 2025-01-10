@@ -39,6 +39,7 @@ enum FormValidationMode {
   initial,
   changed,
   submitted,
+  waiting,
 }
 
 class ValidationMode<T> extends Validator<T> {
@@ -74,17 +75,18 @@ class ConditionalValidator<T> extends Validator<T> {
   const ConditionalValidator(this.predicate, {required this.message, this.dependencies = const []});
 
   @override
-  FutureOr<ValidationResult?> validate(BuildContext context, T? value, FormValidationMode state) {
+  FutureOr<ValidationResult?> validate(
+      BuildContext context, T? value, FormValidationMode lifecycle) {
     var result = predicate(value);
     if (result is Future<bool>) {
       return result.then((value) {
         if (!value) {
-          return InvalidResult(message);
+          return InvalidResult(message, state: lifecycle);
         }
         return null;
       });
     } else if (!result) {
-      return InvalidResult(message);
+      return InvalidResult(message, state: lifecycle);
     }
 
     return null;
@@ -104,6 +106,35 @@ class ConditionalValidator<T> extends Validator<T> {
   int get hashCode => Object.hash(predicate, message);
 }
 
+typedef ValidatorBuilderFunction<T> = FutureOr<ValidationResult?> Function(
+    T? value);
+
+class ValidatorBuilder<T> extends Validator<T> {
+  final ValidatorBuilderFunction<T> builder;
+  final List<FormKey> dependencies;
+
+  const ValidatorBuilder(this.builder, {this.dependencies = const []});
+
+  @override
+  FutureOr<ValidationResult?> validate(
+      BuildContext context, T? value, FormValidationMode lifecycle) {
+    return builder(value);
+  }
+
+  @override
+  bool shouldRevalidate(FormKey<dynamic> source) {
+    return dependencies.contains(source);
+  }
+
+  @override
+  operator ==(Object other) {
+    return other is ValidatorBuilder && other.builder == builder;
+  }
+
+  @override
+  int get hashCode => builder.hashCode;
+}
+
 class NotValidator<T> extends Validator<T> {
   final Validator<T> validator;
   final String? message; // if null, use default message from ShadcnLocalizations
@@ -117,12 +148,13 @@ class NotValidator<T> extends Validator<T> {
     if (result is Future<ValidationResult?>) {
       return result.then((value) {
         if (value == null) {
-          return InvalidResult(message ?? localizations.invalidValue);
+          return InvalidResult(message ?? localizations.invalidValue,
+              state: state);
         }
         return null;
       });
     } else if (result == null) {
-      return InvalidResult(message ?? localizations.invalidValue);
+      return InvalidResult(message ?? localizations.invalidValue, state: state);
     }
     return null;
   }
@@ -203,7 +235,7 @@ class NonNullValidator<T> extends Validator<T> {
   FutureOr<ValidationResult?> validate(BuildContext context, T? value, FormValidationMode state) {
     if (value == null) {
       var localizations = Localizations.of(context, ShadcnLocalizations);
-      return InvalidResult(message ?? localizations.formNotEmpty);
+      return InvalidResult(message ?? localizations.formNotEmpty, state: state);
     }
     return null;
   }
@@ -224,7 +256,7 @@ class NotEmptyValidator extends NonNullValidator<String> {
   FutureOr<ValidationResult?> validate(BuildContext context, String? value, FormValidationMode state) {
     if (value == null || value.isEmpty) {
       var localizations = Localizations.of(context, ShadcnLocalizations);
-      return InvalidResult(message ?? localizations.formNotEmpty);
+      return InvalidResult(message ?? localizations.formNotEmpty, state: state);
     }
     return null;
   }
@@ -252,10 +284,12 @@ class LengthValidator extends Validator<String> {
     }
     ShadcnLocalizations localizations = Localizations.of(context, ShadcnLocalizations);
     if (min != null && value.length < min!) {
-      return InvalidResult(message ?? localizations.formLengthLessThan(min!));
+      return InvalidResult(message ?? localizations.formLengthLessThan(min!),
+          state: state);
     }
     if (max != null && value.length > max!) {
-      return InvalidResult(message ?? localizations.formLengthGreaterThan(max!));
+      return InvalidResult(message ?? localizations.formLengthGreaterThan(max!),
+          state: state);
     }
     return null;
   }
@@ -301,33 +335,42 @@ class CompareWith<T extends Comparable<T>> extends Validator<T> {
     var localizations = Localizations.of(context, ShadcnLocalizations);
     var otherValue = context.getFormValue(key);
     if (otherValue == null) {
-      return InvalidResult(message ?? localizations.invalidValue);
+      return InvalidResult(message ?? localizations.invalidValue, state: state);
     }
     var compare = _compare(value, otherValue);
     switch (type) {
       case CompareType.greater:
         if (compare <= 0) {
-          return InvalidResult(message ?? localizations.formGreaterThan(otherValue));
+          return InvalidResult(
+              message ?? localizations.formGreaterThan(otherValue),
+              state: state);
         }
         break;
       case CompareType.greaterOrEqual:
         if (compare < 0) {
-          return InvalidResult(message ?? localizations.formGreaterThanOrEqualTo(otherValue));
+          return InvalidResult(
+              message ?? localizations.formGreaterThanOrEqualTo(otherValue),
+              state: state);
         }
         break;
       case CompareType.less:
         if (compare >= 0) {
-          return InvalidResult(message ?? localizations.formLessThan(otherValue));
+          return InvalidResult(
+              message ?? localizations.formLessThan(otherValue),
+              state: state);
         }
         break;
       case CompareType.lessOrEqual:
         if (compare > 0) {
-          return InvalidResult(message ?? localizations.formLessThanOrEqualTo(otherValue));
+          return InvalidResult(
+              message ?? localizations.formLessThanOrEqualTo(otherValue),
+              state: state);
         }
         break;
       case CompareType.equal:
         if (compare != 0) {
-          return InvalidResult(message ?? localizations.formEqualTo(otherValue));
+          return InvalidResult(message ?? localizations.formEqualTo(otherValue),
+              state: state);
         }
         break;
     }
@@ -368,16 +411,31 @@ class SafePasswordValidator extends Validator<String> {
       return null;
     }
     if (requireDigit && !RegExp(r'\d').hasMatch(value)) {
-      return InvalidResult(message ?? Localizations.of(context, ShadcnLocalizations).formPasswordDigits);
+      return InvalidResult(
+          message ??
+              Localizations.of(context, ShadcnLocalizations).formPasswordDigits,
+          state: state);
     }
     if (requireLowercase && !RegExp(r'[a-z]').hasMatch(value)) {
-      return InvalidResult(message ?? Localizations.of(context, ShadcnLocalizations).formPasswordLowercase);
+      return InvalidResult(
+          message ??
+              Localizations.of(context, ShadcnLocalizations)
+                  .formPasswordLowercase,
+          state: state);
     }
     if (requireUppercase && !RegExp(r'[A-Z]').hasMatch(value)) {
-      return InvalidResult(message ?? Localizations.of(context, ShadcnLocalizations).formPasswordUppercase);
+      return InvalidResult(
+          message ??
+              Localizations.of(context, ShadcnLocalizations)
+                  .formPasswordUppercase,
+          state: state);
     }
     if (requireSpecialChar && !RegExp(r'[\W_]').hasMatch(value)) {
-      return InvalidResult(message ?? Localizations.of(context, ShadcnLocalizations).formPasswordSpecial);
+      return InvalidResult(
+          message ??
+              Localizations.of(context, ShadcnLocalizations)
+                  .formPasswordSpecial,
+          state: state);
     }
     return null;
   }
@@ -410,11 +468,19 @@ class MinValidator<T extends num> extends Validator<T> {
     }
     if (inclusive) {
       if (value < min) {
-        return InvalidResult(message ?? Localizations.of(context, ShadcnLocalizations).formGreaterThanOrEqualTo(min));
+        return InvalidResult(
+            message ??
+                Localizations.of(context, ShadcnLocalizations)
+                    .formGreaterThanOrEqualTo(min),
+            state: state);
       }
     } else {
       if (value <= min) {
-        return InvalidResult(message ?? Localizations.of(context, ShadcnLocalizations).formGreaterThan(min));
+        return InvalidResult(
+            message ??
+                Localizations.of(context, ShadcnLocalizations)
+                    .formGreaterThan(min),
+            state: state);
       }
     }
     return null;
@@ -443,11 +509,19 @@ class MaxValidator<T extends num> extends Validator<T> {
     }
     if (inclusive) {
       if (value > max) {
-        return InvalidResult(message ?? Localizations.of(context, ShadcnLocalizations).formLessThanOrEqualTo(max));
+        return InvalidResult(
+            message ??
+                Localizations.of(context, ShadcnLocalizations)
+                    .formLessThanOrEqualTo(max),
+            state: state);
       }
     } else {
       if (value >= max) {
-        return InvalidResult(message ?? Localizations.of(context, ShadcnLocalizations).formLessThan(max));
+        return InvalidResult(
+            message ??
+                Localizations.of(context, ShadcnLocalizations)
+                    .formLessThan(max),
+            state: state);
       }
     }
     return null;
@@ -478,12 +552,18 @@ class RangeValidator<T extends num> extends Validator<T> {
     if (inclusive) {
       if (value < min || value > max) {
         return InvalidResult(
-            message ?? Localizations.of(context, ShadcnLocalizations).formBetweenInclusively(min, max));
+            message ??
+                Localizations.of(context, ShadcnLocalizations)
+                    .formBetweenInclusively(min, max),
+            state: state);
       }
     } else {
       if (value <= min || value >= max) {
         return InvalidResult(
-            message ?? Localizations.of(context, ShadcnLocalizations).formBetweenExclusively(min, max));
+            message ??
+                Localizations.of(context, ShadcnLocalizations)
+                    .formBetweenExclusively(min, max),
+            state: state);
       }
     }
     return null;
@@ -511,7 +591,10 @@ class RegexValidator extends Validator<String> {
       return null;
     }
     if (!pattern.hasMatch(value)) {
-      return InvalidResult(message ?? Localizations.of(context, ShadcnLocalizations).invalidValue);
+      return InvalidResult(
+          message ??
+              Localizations.of(context, ShadcnLocalizations).invalidValue,
+          state: state);
     }
     return null;
   }
@@ -537,7 +620,10 @@ class EmailValidator extends Validator<String> {
       return null;
     }
     if (!email_validator.EmailValidator.validate(value)) {
-      return InvalidResult(message ?? Localizations.of(context, ShadcnLocalizations).invalidEmail);
+      return InvalidResult(
+          message ??
+              Localizations.of(context, ShadcnLocalizations).invalidEmail,
+          state: state);
     }
     return null;
   }
@@ -564,7 +650,9 @@ class URLValidator extends Validator<String> {
     try {
       Uri.parse(value);
     } on FormatException {
-      return InvalidResult(message ?? Localizations.of(context, ShadcnLocalizations).invalidURL);
+      return InvalidResult(
+          message ?? Localizations.of(context, ShadcnLocalizations).invalidURL,
+          state: state);
     }
     return null;
   }
@@ -610,27 +698,36 @@ class CompareTo<T extends Comparable<T>> extends Validator<T> {
     switch (type) {
       case CompareType.greater:
         if (compare <= 0) {
-          return InvalidResult(message ?? localizations.formGreaterThan(this.value));
+          return InvalidResult(
+              message ?? localizations.formGreaterThan(this.value),
+              state: state);
         }
         break;
       case CompareType.greaterOrEqual:
         if (compare < 0) {
-          return InvalidResult(message ?? localizations.formGreaterThanOrEqualTo(this.value));
+          return InvalidResult(
+              message ?? localizations.formGreaterThanOrEqualTo(this.value),
+              state: state);
         }
         break;
       case CompareType.less:
         if (compare >= 0) {
-          return InvalidResult(message ?? localizations.formLessThan(this.value));
+          return InvalidResult(
+              message ?? localizations.formLessThan(this.value),
+              state: state);
         }
         break;
       case CompareType.lessOrEqual:
         if (compare > 0) {
-          return InvalidResult(message ?? localizations.formLessThanOrEqualTo(this.value));
+          return InvalidResult(
+              message ?? localizations.formLessThanOrEqualTo(this.value),
+              state: state);
         }
         break;
       case CompareType.equal:
         if (compare != 0) {
-          return InvalidResult(message ?? localizations.formEqualTo(this.value));
+          return InvalidResult(message ?? localizations.formEqualTo(this.value),
+              state: state);
         }
         break;
     }
@@ -704,19 +801,20 @@ class CompositeValidator<T> extends Validator<T> {
 }
 
 abstract class ValidationResult {
-  const ValidationResult();
+  final FormValidationMode state;
+  const ValidationResult({required this.state});
 }
 
 class ReplaceResult<T> extends ValidationResult {
   final T value;
 
-  const ReplaceResult(this.value);
+  const ReplaceResult(this.value, {required super.state});
 }
 
 class InvalidResult extends ValidationResult {
   final String message;
 
-  const InvalidResult(this.message);
+  const InvalidResult(this.message, {required super.state});
 }
 
 class FormValidityNotification extends Notification {
@@ -1034,8 +1132,10 @@ class FormState extends State<Form> {
 class FormEntryErrorBuilder extends StatelessWidget {
   final Widget Function(BuildContext context, ValidationResult? error, Widget? child) builder;
   final Widget? child;
+  final Set<FormValidationMode>? modes;
 
-  const FormEntryErrorBuilder({super.key, required this.builder, this.child});
+  const FormEntryErrorBuilder(
+      {super.key, required this.builder, this.child, this.modes});
 
   @override
   Widget build(BuildContext context) {
@@ -1045,6 +1145,9 @@ class FormEntryErrorBuilder extends StatelessWidget {
         valueListenable: formController._validity,
         child: child,
         builder: (context, validity, child) {
+          if (modes != null && !modes!.contains(validity?.state)) {
+            return builder(context, null, child);
+          }
           return builder(context, validity, child);
         },
       );
@@ -1054,7 +1157,7 @@ class FormEntryErrorBuilder extends StatelessWidget {
 }
 
 class WaitingResult extends ValidationResult {
-  const WaitingResult();
+  const WaitingResult({required super.state});
 }
 
 class FormErrorBuilder extends StatelessWidget {
@@ -1085,7 +1188,11 @@ class FormErrorBuilder extends StatelessWidget {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return builder(
                     context,
-                    {for (var entry in formController._attachedInputs.entries) entry.key: const WaitingResult()},
+                    {
+                      for (var entry in formController._attachedInputs.entries)
+                        entry.key: const WaitingResult(
+                            state: FormValidationMode.waiting)
+                    },
                     child);
               }
               if (snapshot.hasData) {
@@ -1239,14 +1346,28 @@ class FormField<T> extends StatelessWidget {
   final Widget label;
   final Widget? hint;
   final Widget child;
+  final Widget? leadingLabel;
+  final Widget? trailingLabel;
+  final MainAxisAlignment? labelAxisAlignment;
+  final double? leadingGap;
+  final double? trailingGap;
+  final EdgeInsetsGeometry? padding;
   final Validator<T>? validator;
+  final Set<FormValidationMode>? showErrors;
 
   const FormField({
     required FormKey<T> super.key,
     required this.label,
     required this.child,
+    this.leadingLabel,
+    this.trailingLabel,
+    this.labelAxisAlignment = MainAxisAlignment.start,
+    this.leadingGap,
+    this.trailingGap,
+    this.padding = EdgeInsets.zero,
     this.validator,
     this.hint,
+    this.showErrors,
   });
 
   @override
@@ -1259,32 +1380,48 @@ class FormField<T> extends StatelessWidget {
       key: key,
       validator: validator,
       child: FormEntryErrorBuilder(
+        modes: showErrors,
         builder: (context, error, child) {
-          return IntrinsicWidth(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                mergeAnimatedTextStyle(
-                  style: error != null ? TextStyle(color: theme.colorScheme.destructive) : null,
-                  child: label.textSmall(),
-                  duration: kDefaultDuration,
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: padding!,
+                child: Row(
+                  mainAxisAlignment: labelAxisAlignment!,
+                  children: [
+                    if (leadingLabel != null) leadingLabel!.textSmall().muted(),
+                    if (leadingLabel != null)
+                      Gap(leadingGap ?? theme.scaling * 8),
+                    Expanded(
+                      child: DefaultTextStyle.merge(
+                        style: error != null
+                            ? TextStyle(color: theme.colorScheme.destructive)
+                            : null,
+                        child: label.textSmall(),
+                      ),
+                    ),
+                    if (trailingLabel != null)
+                      Gap(trailingGap ?? theme.scaling * 8),
+                    if (trailingLabel != null)
+                      trailingLabel!.textSmall().muted(),
+                  ],
                 ),
+              ),
+              Gap(theme.scaling * 8),
+              child!,
+              if (hint != null) ...[
                 Gap(theme.scaling * 8),
-                child!,
-                if (hint != null) ...[
-                  Gap(theme.scaling * 8),
-                  hint!.xSmall().muted(),
-                ],
-                if (error is InvalidResult) ...[
-                  Gap(theme.scaling * 8),
-                  mergeAnimatedTextStyle(
-                    style: TextStyle(color: theme.colorScheme.destructive),
-                    child: Text(error.message).xSmall().medium(),
-                    duration: kDefaultDuration,
-                  ),
-                ],
+                hint!.xSmall().muted(),
               ],
-            ),
+              if (error is InvalidResult) ...[
+                Gap(theme.scaling * 8),
+                DefaultTextStyle.merge(
+                  style: TextStyle(color: theme.colorScheme.destructive),
+                  child: Text(error.message).xSmall().medium(),
+                ),
+              ],
+            ],
           );
         },
         child: child,
@@ -1298,6 +1435,7 @@ class FormInline<T> extends StatelessWidget {
   final Widget? hint;
   final Widget child;
   final Validator<T>? validator;
+  final Set<FormValidationMode>? showErrors;
 
   const FormInline({
     required FormKey<T> super.key,
@@ -1305,6 +1443,7 @@ class FormInline<T> extends StatelessWidget {
     required this.child,
     this.validator,
     this.hint,
+    this.showErrors,
   });
 
   @override
@@ -1317,6 +1456,7 @@ class FormInline<T> extends StatelessWidget {
       key: key,
       validator: validator,
       child: FormEntryErrorBuilder(
+        modes: showErrors,
         builder: (context, error, child) {
           return IntrinsicWidth(
             child: Column(
@@ -1326,10 +1466,11 @@ class FormInline<T> extends StatelessWidget {
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      mergeAnimatedTextStyle(
-                        style: error != null ? TextStyle(color: theme.colorScheme.destructive) : null,
+                      DefaultTextStyle.merge(
+                        style: error != null
+                            ? TextStyle(color: theme.colorScheme.destructive)
+                            : null,
                         child: label.textSmall(),
-                        duration: kDefaultDuration,
                       ),
                       Gap(theme.scaling * 8),
                       Expanded(child: child!),
@@ -1342,10 +1483,9 @@ class FormInline<T> extends StatelessWidget {
                 ],
                 if (error is InvalidResult) ...[
                   const Gap(8),
-                  mergeAnimatedTextStyle(
+                  DefaultTextStyle.merge(
                     style: TextStyle(color: theme.colorScheme.destructive),
                     child: Text(error.message).xSmall().medium(),
-                    duration: kDefaultDuration,
                   ),
                 ],
               ],
@@ -1369,8 +1509,7 @@ class FormTableLayout extends StatelessWidget {
     final theme = Theme.of(context);
     final scaling = theme.scaling;
     var spacing = this.spacing ?? scaling * 16;
-    return mergeAnimatedTextStyle(
-      duration: kDefaultDuration,
+    return DefaultTextStyle.merge(
       style: TextStyle(color: Theme.of(context).colorScheme.foreground),
       child: widgets.Table(
         columnWidths: const {
@@ -1395,6 +1534,7 @@ class FormTableLayout extends StatelessWidget {
                   key: rows[i].key,
                   validator: rows[i].validator,
                   child: FormEntryErrorBuilder(
+                    modes: rows[i].showErrors,
                     builder: (context, error, child) {
                       return IntrinsicWidth(
                         child: Column(
@@ -1407,10 +1547,12 @@ class FormTableLayout extends StatelessWidget {
                             ],
                             if (error is InvalidResult) ...[
                               Gap(8 * scaling),
-                              mergeAnimatedTextStyle(
-                                style: TextStyle(color: Theme.of(context).colorScheme.destructive),
+                              DefaultTextStyle.merge(
+                                style: TextStyle(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .destructive),
                                 child: Text(error.message).xSmall().medium(),
-                                duration: kDefaultDuration,
                               ),
                             ],
                           ],
@@ -1445,7 +1587,6 @@ class SubmitButton extends StatefulWidget {
   final bool disableHoverEffect;
   final bool? enabled;
   final bool? enableFeedback;
-  final bool trailingExpanded;
   final bool disableTransition;
   final FocusNode? focusNode;
 
@@ -1465,7 +1606,6 @@ class SubmitButton extends StatefulWidget {
     this.disableHoverEffect = false,
     this.enabled,
     this.enableFeedback,
-    this.trailingExpanded = false,
     this.disableTransition = false,
     this.focusNode,
   });
@@ -1543,7 +1683,6 @@ class _SubmitButtonState extends widgets.State<SubmitButton> {
         disableHoverEffect: widget.disableHoverEffect,
         enabled: false,
         enableFeedback: false,
-        trailingExpanded: widget.trailingExpanded,
         disableTransition: widget.disableTransition,
         focusNode: widget.focusNode,
         style: widget.style ?? const ButtonStyle.primary(),
@@ -1558,7 +1697,6 @@ class _SubmitButtonState extends widgets.State<SubmitButton> {
         disableHoverEffect: widget.disableHoverEffect,
         enabled: false,
         enableFeedback: true,
-        trailingExpanded: widget.trailingExpanded,
         disableTransition: widget.disableTransition,
         focusNode: widget.focusNode,
         style: widget.style ?? const ButtonStyle.primary(),
@@ -1584,7 +1722,6 @@ class _SubmitButtonState extends widgets.State<SubmitButton> {
           }
         });
       },
-      trailingExpanded: widget.trailingExpanded,
       disableTransition: widget.disableTransition,
       focusNode: widget.focusNode,
       style: widget.style ?? const ButtonStyle.primary(),

@@ -254,19 +254,26 @@ extension TextExtension on Widget {
   }
 
   Widget underline() {
-    if (this is UnderlineText) {
-      return this;
+    if (this is WrappedText) {
+      return (this as WrappedText).copyWithStyle(
+        (context, theme) => const TextStyle(
+          decoration: TextDecoration.underline,
+        ),
+      );
     }
-    return UnderlineText(child: this);
+    return WrappedText(
+        style: (context, theme) => const TextStyle(
+              decoration: TextDecoration.underline,
+            ),
+        child: this);
   }
 
   Widget muted() {
     return Builder(
       builder: (context) {
         final themeData = Theme.of(context);
-        return mergeAnimatedTextStyle(
+        return DefaultTextStyle.merge(
           child: this,
-          duration: kDefaultDuration,
           style: TextStyle(
             color: themeData.colorScheme.mutedForeground,
           ),
@@ -279,9 +286,8 @@ extension TextExtension on Widget {
     return Builder(
       builder: (context) {
         final themeData = Theme.of(context);
-        return mergeAnimatedTextStyle(
+        return DefaultTextStyle.merge(
           child: this,
-          duration: kDefaultDuration,
           style: TextStyle(
             color: themeData.colorScheme.primaryForeground,
           ),
@@ -294,9 +300,8 @@ extension TextExtension on Widget {
     return Builder(
       builder: (context) {
         final themeData = Theme.of(context);
-        return mergeAnimatedTextStyle(
+        return DefaultTextStyle.merge(
           child: this,
-          duration: kDefaultDuration,
           style: TextStyle(
             color: themeData.colorScheme.secondaryForeground,
           ),
@@ -326,8 +331,7 @@ extension TextExtension on Widget {
         child = WrappedText(
             style: (context, theme) => theme.typography.h2, child: this);
       }
-      return ShadcnAnimatedContainer(
-        duration: kDefaultDuration,
+      return Container(
         margin: const EdgeInsets.only(top: 40),
         padding: const EdgeInsets.only(bottom: 8),
         decoration: BoxDecoration(
@@ -615,9 +619,8 @@ extension TextExtension on Widget {
     return Builder(
       builder: (context) {
         final themeData = Theme.of(context);
-        return mergeAnimatedTextStyle(
+        return DefaultTextStyle.merge(
           child: this,
-          duration: kDefaultDuration,
           style: TextStyle(
             color: themeData.colorScheme.foreground,
           ),
@@ -691,32 +694,29 @@ extension TextExtension on Widget {
       WidgetSpan(
         alignment: PlaceholderAlignment.middle,
         child: Builder(builder: (context) {
-          final textStyle = DefaultTextStyle.of(context);
+          final defaultTextStyle = DefaultTextStyle.of(context);
           return Button(
             style: const ButtonStyle.link(
               density: ButtonDensity.compact,
             ),
             onPressed: onPressed,
-            child: Builder(builder: (context) {
-              final buttonStyle = DefaultTextStyle.of(context);
-              return DefaultTextStyle(
-                style: textStyle.style.copyWith(
-                  decoration: TextDecoration.none,
-                ),
-                textAlign: textStyle.textAlign,
-                softWrap: textStyle.softWrap,
-                overflow: textStyle.overflow,
-                maxLines: textStyle.maxLines,
-                textWidthBasis: textStyle.textWidthBasis,
-                textHeightBehavior: textStyle.textHeightBehavior,
-                child: UnderlineText(
-                  underline:
-                      buttonStyle.style.decoration == TextDecoration.underline,
-                  translate: false,
+            child: Builder(
+              builder: (context) {
+                final buttonTextStyle = DefaultTextStyle.of(context);
+                return DefaultTextStyle(
+                  style: defaultTextStyle.style.copyWith(
+                    decoration: buttonTextStyle.style.decoration,
+                  ),
+                  overflow: defaultTextStyle.overflow,
+                  maxLines: defaultTextStyle.maxLines,
+                  softWrap: defaultTextStyle.softWrap,
+                  textAlign: defaultTextStyle.textAlign,
+                  textHeightBehavior: defaultTextStyle.textHeightBehavior,
+                  textWidthBasis: defaultTextStyle.textWidthBasis,
                   child: child,
-                ),
-              );
-            }),
+                );
+              },
+            ),
           );
         }),
       ),
@@ -954,9 +954,8 @@ class WrappedText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return mergeAnimatedTextStyle(
+    return DefaultTextStyle.merge(
       child: child,
-      duration: kDefaultDuration,
       style: style?.call(context, theme),
       textAlign: textAlign?.call(context, theme),
       softWrap: softWrap?.call(context, theme),
