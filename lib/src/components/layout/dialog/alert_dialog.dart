@@ -9,6 +9,7 @@ class AlertDialog extends StatefulWidget {
   final double? surfaceBlur;
   final double? surfaceOpacity;
   final Color? barrierColor;
+  final EdgeInsetsGeometry? padding;
 
   const AlertDialog({
     super.key,
@@ -20,6 +21,7 @@ class AlertDialog extends StatefulWidget {
     this.surfaceBlur,
     this.surfaceOpacity,
     this.barrierColor,
+    this.padding,
   });
 
   @override
@@ -34,12 +36,14 @@ class _AlertDialogState extends State<AlertDialog> {
     return ModalContainer(
       borderRadius: themeData.borderRadiusXxl,
       barrierColor: widget.barrierColor ?? Colors.black.withOpacity(0.8),
+      surfaceClip: ModalContainer.shouldClipSurface(
+          widget.surfaceOpacity ?? themeData.surfaceOpacity),
       child: OutlinedContainer(
         backgroundColor: themeData.colorScheme.popover,
         borderRadius: themeData.borderRadiusXxl,
         borderWidth: 1 * scaling,
         borderColor: themeData.colorScheme.muted,
-        padding: EdgeInsets.all(24 * scaling),
+        padding: widget.padding ?? EdgeInsets.all(24 * scaling),
         surfaceBlur: widget.surfaceBlur ?? themeData.surfaceBlur,
         surfaceOpacity: widget.surfaceOpacity ?? themeData.surfaceOpacity,
         child: Column(
