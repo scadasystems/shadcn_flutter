@@ -8,6 +8,7 @@ import '../../../shadcn_flutter.dart';
 class TextField extends StatefulWidget {
   final TextEditingController? controller;
   final bool filled;
+  final Color? fillColor;
   final Widget? placeholder;
   final AlignmentGeometry? placeholderAlignment;
   final AlignmentGeometry? leadingAlignment;
@@ -56,6 +57,7 @@ class TextField extends StatefulWidget {
     this.maxLines = 1,
     this.minLines,
     this.filled = false,
+    this.fillColor,
     this.placeholder,
     this.border = true,
     this.leading,
@@ -114,6 +116,7 @@ class _TextFieldState extends State<TextField> with FormValueSupplier {
     _controller = widget.controller ?? TextEditingController();
     _undoHistoryController = widget.undoController ?? UndoHistoryController();
     _statesController = widget.statesController ?? WidgetStatesController();
+
     if (widget.initialValue != null) {
       _controller.text = widget.initialValue!;
     }
@@ -211,7 +214,7 @@ class _TextFieldState extends State<TextField> with FormValueSupplier {
                 decoration: BoxDecoration(
                   borderRadius: optionallyResolveBorderRadius(context, widget.borderRadius) ??
                       BorderRadius.circular(theme.radiusMd),
-                  color: widget.filled ? theme.colorScheme.muted : null,
+                  color: widget.filled ? widget.fillColor ?? theme.colorScheme.muted : null,
                   border: widget.border
                       ? Border.all(
                           color: _statesController.value.contains(WidgetState.focused) && widget.enabled
@@ -236,7 +239,10 @@ class _TextFieldState extends State<TextField> with FormValueSupplier {
         child: Row(
           children: [
             if (widget.leading != null)
-              Align(alignment: widget.leadingAlignment ?? Alignment.center, child: widget.leading!),
+              Align(
+                alignment: widget.leadingAlignment ?? Alignment.center,
+                child: widget.leading!,
+              ),
             if (widget.leading != null) SizedBox(width: 8 * scaling),
             Flexible(
               child: Stack(
@@ -254,7 +260,8 @@ class _TextFieldState extends State<TextField> with FormValueSupplier {
                               }
                             : widget.contextMenuBuilder,
                     clipBehavior: widget.clipBehavior,
-                    statesController: _statesController,
+                    // FIXED: Another exception was thrown: setState() or markNeedsBuild() called during build.
+                    // statesController: _statesController,
                     inputFormatters: widget.inputFormatters,
                     onTapOutside: widget.onTapOutside,
                     onChanged: widget.onChanged,

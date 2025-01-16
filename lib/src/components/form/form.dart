@@ -921,6 +921,10 @@ class FormController extends ChangeNotifier {
     return _attachedInputs[key];
   }
 
+  void _safeNotifyListeners() {
+    if (!_disposed) notifyListeners();
+  }
+
   void revalidate(BuildContext context, FormValidationMode state) {
     bool changed = false;
     for (var entry in _attachedInputs.entries) {
@@ -935,10 +939,7 @@ class FormController extends ChangeNotifier {
               if (_validity[key] == future) {
                 _validity[key] = value;
                 WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-                  if (_disposed) {
-                    return;
-                  }
-                  notifyListeners();
+                  _safeNotifyListeners();
                 });
               }
             });
@@ -949,10 +950,7 @@ class FormController extends ChangeNotifier {
     }
     if (changed) {
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-        if (_disposed) {
-          return;
-        }
-        notifyListeners();
+        _safeNotifyListeners();
       });
     }
   }
@@ -974,8 +972,7 @@ class FormController extends ChangeNotifier {
         if (_validity[key] == future) {
           _validity[key] = value;
           WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-            if (_disposed) return;
-            notifyListeners();
+            _safeNotifyListeners();
           });
         }
       });
@@ -1005,18 +1002,14 @@ class FormController extends ChangeNotifier {
           if (_validity[k] == future) {
             _validity[k] = value;
             WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-              if (_disposed) {
-                return;
-              }
-              notifyListeners();
+              _safeNotifyListeners();
             });
           }
         });
       }
     }
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      if (_disposed) return;
-      notifyListeners();
+      _safeNotifyListeners();
     });
     return null;
   }
@@ -1026,8 +1019,7 @@ class FormController extends ChangeNotifier {
       _attachedInputs.remove(key);
       _validity.remove(key);
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-        if (_disposed) return;
-        notifyListeners();
+        _safeNotifyListeners();
       });
     }
   }

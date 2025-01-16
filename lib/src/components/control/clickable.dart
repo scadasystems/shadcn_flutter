@@ -40,8 +40,7 @@ abstract class StatedWidget extends StatelessWidget {
   }) = _MapStatedWidget;
   const factory StatedWidget.builder({
     Key? key,
-    required Widget Function(BuildContext context, Set<WidgetState> states)
-        builder,
+    required Widget Function(BuildContext context, Set<WidgetState> states) builder,
   }) = _BuilderStatedWidget;
 }
 
@@ -112,8 +111,7 @@ class _ParamStatedWidget extends StatedWidget {
 }
 
 class _MapStatedWidget extends StatedWidget {
-  static final Map<String, WidgetState> _mappedNames =
-      WidgetState.values.asNameMap();
+  static final Map<String, WidgetState> _mappedNames = WidgetState.values.asNameMap();
   final Map<Object, Widget> states;
   final Widget? child;
 
@@ -316,8 +314,7 @@ class _ClickableState extends State<Clickable> {
 
   void _onPressed() {
     if (!widget.enabled) return;
-    Duration? deltaTap =
-        _lastTap == null ? null : DateTime.now().difference(_lastTap!);
+    Duration? deltaTap = _lastTap == null ? null : DateTime.now().difference(_lastTap!);
     _lastTap = DateTime.now();
     if (deltaTap != null && deltaTap < kDoubleTapMinTime) {
       _tapCount++;
@@ -367,9 +364,7 @@ class _ClickableState extends State<Clickable> {
     }
     var buttonContainer = _buildContainer(context, decoration);
     return FocusOutline(
-      focused: widget.focusOutline &&
-          _controller.value.contains(WidgetState.focused) &&
-          !widget.disableFocusOutline,
+      focused: widget.focusOutline && _controller.value.contains(WidgetState.focused) && !widget.disableFocusOutline,
       borderRadius: borderRadius,
       child: GestureDetector(
         behavior: widget.behavior,
@@ -421,14 +416,10 @@ class _ClickableState extends State<Clickable> {
           shortcuts: {
             LogicalKeySet(LogicalKeyboardKey.enter): const ActivateIntent(),
             LogicalKeySet(LogicalKeyboardKey.space): const ActivateIntent(),
-            LogicalKeySet(LogicalKeyboardKey.arrowUp):
-                const DirectionalFocusIntent(TraversalDirection.up),
-            LogicalKeySet(LogicalKeyboardKey.arrowDown):
-                const DirectionalFocusIntent(TraversalDirection.down),
-            LogicalKeySet(LogicalKeyboardKey.arrowLeft):
-                const DirectionalFocusIntent(TraversalDirection.left),
-            LogicalKeySet(LogicalKeyboardKey.arrowRight):
-                const DirectionalFocusIntent(TraversalDirection.right),
+            LogicalKeySet(LogicalKeyboardKey.arrowUp): const DirectionalFocusIntent(TraversalDirection.up),
+            LogicalKeySet(LogicalKeyboardKey.arrowDown): const DirectionalFocusIntent(TraversalDirection.down),
+            LogicalKeySet(LogicalKeyboardKey.arrowLeft): const DirectionalFocusIntent(TraversalDirection.left),
+            LogicalKeySet(LogicalKeyboardKey.arrowRight): const DirectionalFocusIntent(TraversalDirection.right),
             ...?widget.shortcuts,
           },
           actions: {
@@ -462,21 +453,18 @@ class _ClickableState extends State<Clickable> {
             ...?widget.actions,
           },
           onShowHoverHighlight: (value) {
-            _controller.update(
-                WidgetState.hovered, value && !widget.disableHoverEffect);
+            _controller.update(WidgetState.hovered, value && !widget.disableHoverEffect);
             widget.onHover?.call(value);
           },
           onShowFocusHighlight: (value) {
             _controller.update(WidgetState.focused, value);
             widget.onFocus?.call(value);
           },
-          mouseCursor: widget.mouseCursor?.resolve(_controller.value) ??
-              MouseCursor.defer,
+          mouseCursor: widget.mouseCursor?.resolve(_controller.value) ?? SystemMouseCursors.click,
           child: DefaultTextStyle.merge(
             style: widget.textStyle?.resolve(_controller.value),
             child: IconTheme.merge(
-              data: widget.iconTheme?.resolve(_controller.value) ??
-                  const IconThemeData(),
+              data: widget.iconTheme?.resolve(_controller.value) ?? const IconThemeData(),
               child: AnimatedBuilder(
                 animation: _controller,
                 builder: (context, child) {

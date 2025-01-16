@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import '../../../shadcn_flutter.dart';
 
 abstract class AvatarWidget extends Widget {
@@ -9,10 +11,24 @@ abstract class AvatarWidget extends Widget {
 
 class Avatar extends StatefulWidget implements AvatarWidget {
   static String getInitials(String name) {
+    if (name.isEmpty) return '';
+
     // replace all non-alphabetic characters
+    var isNonLatin = RegExp(r'[^\x00-\x7F]').hasMatch(name);
+
+    if (isNonLatin) {
+      // 영어가 아닌 경우 첫 글자만 반환
+      return name.characters.first;
+    }
+
+    // 영어인 경우 기존 로직 수행
     name = name.replaceAll(RegExp(r'[^a-zA-Z\s]'), '');
+
+    // if name is empty after removing non-alphabetic characters
+    if (name.trim().isEmpty) return '';
+
     final List<String> parts = name.split(' ');
-    if (parts.isEmpty) {
+    if (parts.isEmpty || parts[0].isEmpty) {
       // get the first 2 characters (title cased)
       String first = name.substring(0, 1).toUpperCase();
       if (name.length > 1) {
@@ -21,18 +37,21 @@ class Avatar extends StatefulWidget implements AvatarWidget {
       }
       return first;
     }
-    // get the first two characters
-    String first = parts[0].substring(0, 1).toUpperCase();
-    if (parts.length > 1) {
-      String second = parts[1].substring(0, 1).toUpperCase();
-      return first + second;
+
+    // get the first character
+    String first = parts[0].substring(0, min(1, parts[0].length)).toUpperCase();
+
+    // try to get second character
+    String second = '';
+    if (parts.length > 1 && parts[1].isNotEmpty) {
+      // from second word
+      second = parts[1].substring(0, 1).toUpperCase();
+    } else if (parts[0].length > 1) {
+      // from first word
+      second = parts[0].substring(1, 2).toUpperCase();
     }
-    // append with the 2nd character of the first part
-    if (parts[0].length > 1) {
-      String second = parts[0].substring(1, 2).toUpperCase();
-      return first + second;
-    }
-    return first;
+
+    return second.isEmpty ? first : first + second;
   }
 
   final String initials;
@@ -189,8 +208,7 @@ class AvatarBadge extends StatelessWidget implements AvatarWidget {
       height: size,
       decoration: BoxDecoration(
         color: color ?? Theme.of(context).colorScheme.primary,
-        borderRadius:
-            BorderRadius.circular(borderRadius ?? theme.radius * size),
+        borderRadius: BorderRadius.circular(borderRadius ?? theme.radius * size),
       ),
       child: child,
     );
@@ -339,8 +357,7 @@ class AvatarGroup extends StatelessWidget {
         rect = Rect.fromLTWH(currentX, currentY, size, size);
         currentWidth = size;
         currentHeight = size;
-        currentBorderRadius =
-            avatar.borderRadius ?? Theme.of(context).radius * size;
+        currentBorderRadius = avatar.borderRadius ?? Theme.of(context).radius * size;
       } else {
         double width = size;
         double height = size;
@@ -352,8 +369,7 @@ class AvatarGroup extends StatelessWidget {
         var offsetWidthDiff = widthDiff * resolved.x;
         var offsetHeightDiff = heightDiff * resolved.y;
         double x = (widthDiff / 2) + offsetWidth + currentX + offsetWidthDiff;
-        double y =
-            (heightDiff / 2) + offsetHeight + currentY + offsetHeightDiff;
+        double y = (heightDiff / 2) + offsetHeight + currentY + offsetHeightDiff;
 
         // NOTE: child positions are not affected by gap
 
