@@ -35,11 +35,13 @@ class _SlashSeparator extends StatelessWidget {
 class Breadcrumb extends StatelessWidget {
   static const Widget arrowSeparator = _ArrowSeparator();
   static const Widget slashSeparator = _SlashSeparator();
+  final ScrollController? scrollController;
   final List<Widget> children;
   final Widget separator;
 
   const Breadcrumb({
     super.key,
+    this.scrollController,
     required this.children,
     required this.separator,
   });
@@ -47,9 +49,12 @@ class Breadcrumb extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ScrollConfiguration(
-      behavior: ScrollConfiguration.of(context)
-          .copyWith(scrollbars: false, dragDevices: {PointerDeviceKind.touch}),
+      behavior: ScrollConfiguration.of(context).copyWith(
+        scrollbars: false,
+        dragDevices: {PointerDeviceKind.touch},
+      ),
       child: SingleChildScrollView(
+        controller: scrollController,
         scrollDirection: Axis.horizontal,
         child: Row(
           children: [
