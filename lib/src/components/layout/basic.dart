@@ -51,8 +51,9 @@ class Basic extends StatelessWidget {
               alignment: leadingAlignment ?? Alignment.topCenter,
               child: leading!,
             ),
-          if (leading != null && (title != null || content != null || subtitle != null))
-            SizedBox(width: contentSpacing ?? (16 * scaling)),
+          if (leading != null &&
+              (title != null || content != null || subtitle != null))
+            SizedBox(width: contentSpacing ?? (12 * scaling)),
           if (title != null || content != null || subtitle != null)
             Expanded(
               child: Column(
@@ -64,13 +65,15 @@ class Basic extends StatelessWidget {
                       alignment: titleAlignment ?? Alignment.topLeft,
                       child: title!,
                     ).small().medium(),
-                  if (title != null && subtitle != null) SizedBox(height: 2 * scaling),
+                  if (title != null && subtitle != null)
+                    SizedBox(height: 2 * scaling),
                   if (subtitle != null)
                     Align(
                       alignment: subtitleAlignment ?? Alignment.topLeft,
                       child: subtitle!,
                     ).xSmall().muted(),
-                  if ((title != null || subtitle != null) && content != null) SizedBox(height: titleSpacing),
+                  if ((title != null || subtitle != null) && content != null)
+                    SizedBox(height: titleSpacing),
                   if (content != null)
                     Align(
                       alignment: contentAlignment ?? Alignment.topLeft,
@@ -79,8 +82,12 @@ class Basic extends StatelessWidget {
                 ],
               ),
             ),
-          if (trailing != null && (title != null || content != null || leading != null || subtitle != null))
-            SizedBox(width: contentSpacing ?? (16 * scaling)),
+          if (trailing != null &&
+              (title != null ||
+                  content != null ||
+                  leading != null ||
+                  subtitle != null))
+            SizedBox(width: contentSpacing ?? (12 * scaling)),
           // if (trailing != null) trailing!,
           if (trailing != null)
             Align(
@@ -146,8 +153,9 @@ class BasicLayout extends StatelessWidget {
                 alignment: leadingAlignment ?? Alignment.topCenter,
                 child: leading!,
               ),
-            if (leading != null && (title != null || content != null || subtitle != null))
-              SizedBox(width: contentSpacing ?? (16 * scaling)),
+            if (leading != null &&
+                (title != null || content != null || subtitle != null))
+              SizedBox(width: contentSpacing ?? (12 * scaling)),
             if (title != null || content != null || subtitle != null)
               Expanded(
                 child: Column(
@@ -160,7 +168,8 @@ class BasicLayout extends StatelessWidget {
                         alignment: titleAlignment ?? Alignment.topLeft,
                         child: title!,
                       ),
-                    if (title != null && subtitle != null) SizedBox(height: 2 * scaling),
+                    if (title != null && subtitle != null)
+                      SizedBox(height: 2 * scaling),
                     if (subtitle != null)
                       Align(
                         alignment: subtitleAlignment ?? Alignment.topLeft,
@@ -176,8 +185,12 @@ class BasicLayout extends StatelessWidget {
                   ],
                 ),
               ),
-            if (trailing != null && (title != null || content != null || leading != null || subtitle != null))
-              SizedBox(width: contentSpacing ?? (16 * scaling)),
+            if (trailing != null &&
+                (title != null ||
+                    content != null ||
+                    leading != null ||
+                    subtitle != null))
+              SizedBox(width: contentSpacing ?? (12 * scaling)),
             if (trailing != null)
               Align(
                 alignment: trailingAlignment ?? Alignment.topCenter,
