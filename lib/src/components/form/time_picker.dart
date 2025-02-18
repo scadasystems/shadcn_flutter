@@ -98,6 +98,7 @@ class _TimePickerDialogState extends State<TimePickerDialog> {
               textAlign: TextAlign.center,
               controller: controller,
               style: theme.typography.x4Large,
+              keyboardType: TextInputType.number,
               inputFormatters: [
                 FilteringTextInputFormatter.digitsOnly,
                 const _TimeFormatter(),
