@@ -54,7 +54,8 @@ class ChipInput<T> extends StatefulWidget {
   State<ChipInput<T>> createState() => ChipInputState();
 }
 
-class ChipInputState<T> extends State<ChipInput<T>> with FormValueSupplier {
+class ChipInputState<T> extends State<ChipInput<T>>
+    with FormValueSupplier<List<T>, ChipInput<T>> {
   late FocusNode _focusNode;
   late TextEditingController _controller;
   late ValueNotifier<List<T>> _suggestions;
@@ -77,6 +78,7 @@ class ChipInputState<T> extends State<ChipInput<T>> with FormValueSupplier {
         _suggestions.value = widget.suggestions;
       });
     }
+    formValue = widget.chips;
   }
 
   void _onFocusChanged() {
@@ -127,17 +129,6 @@ class ChipInputState<T> extends State<ChipInput<T>> with FormValueSupplier {
   }
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    reportNewFormValue(
-      widget.chips,
-      (value) {
-        widget.onChanged?.call(value);
-      },
-    );
-  }
-
-  @override
   void didUpdateWidget(covariant ChipInput<T> oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.controller != oldWidget.controller) {}
@@ -152,12 +143,7 @@ class ChipInputState<T> extends State<ChipInput<T>> with FormValueSupplier {
       });
     }
     if (!listEquals(widget.chips, oldWidget.chips)) {
-      reportNewFormValue(
-        widget.chips,
-        (value) {
-          widget.onChanged?.call(value);
-        },
-      );
+      formValue = widget.chips;
     }
   }
 
@@ -376,6 +362,11 @@ class ChipInputState<T> extends State<ChipInput<T>> with FormValueSupplier {
         ),
       ),
     );
+  }
+
+  @override
+  void didReplaceFormValue(List<T> value) {
+    widget.onChanged?.call(value);
   }
 }
 

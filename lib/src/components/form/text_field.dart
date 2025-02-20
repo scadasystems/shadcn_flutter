@@ -103,7 +103,8 @@ class TextField extends StatefulWidget {
   State<TextField> createState() => _TextFieldState();
 }
 
-class _TextFieldState extends State<TextField> with FormValueSupplier {
+class _TextFieldState extends State<TextField>
+    with FormValueSupplier<String, TextField> {
   late FocusNode _focusNode;
   final GlobalKey _key = GlobalKey();
   late TextEditingController _controller;
@@ -122,18 +123,8 @@ class _TextFieldState extends State<TextField> with FormValueSupplier {
     }
     _focusNode = widget.focusNode ?? FocusNode();
     _focusNode.addListener(_onFocusChanged);
+    formValue = _controller.text;
     _controller.addListener(_onValueChanged);
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    reportNewFormValue(
-      _controller.text,
-      (value) {
-        _controller.text = value;
-      },
-    );
   }
 
   @override
@@ -168,12 +159,13 @@ class _TextFieldState extends State<TextField> with FormValueSupplier {
   }
 
   void _onValueChanged() {
-    reportNewFormValue(
-      _controller.text,
-      (value) {
-        _controller.text = value;
-      },
-    );
+    formValue = _controller.text;
+  }
+
+  @override
+  void didReplaceFormValue(String value) {
+    widget.onChanged?.call(value);
+    _controller.text = value;
   }
 
   @override
