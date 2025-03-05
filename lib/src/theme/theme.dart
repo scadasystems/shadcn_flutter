@@ -89,6 +89,7 @@ class ThemeData {
   final IconThemeProperties iconTheme;
   final double? surfaceOpacity;
   final double? surfaceBlur;
+  final double? scrollbarThickness;
 
   ThemeData({
     required this.colorScheme,
@@ -99,6 +100,7 @@ class ThemeData {
     TargetPlatform? platform,
     this.surfaceOpacity,
     this.surfaceBlur,
+    this.scrollbarThickness,
   }) : _platform = platform;
 
   /// The current platform.
@@ -147,6 +149,7 @@ class ThemeData {
     IconThemeProperties? iconTheme,
     double? surfaceOpacity,
     double? surfaceBlur,
+    double? scrollbarThickness,
   }) {
     return ThemeData(
       colorScheme: colorScheme ?? this.colorScheme,
@@ -157,6 +160,7 @@ class ThemeData {
       iconTheme: iconTheme ?? this.iconTheme,
       surfaceOpacity: surfaceOpacity ?? this.surfaceOpacity,
       surfaceBlur: surfaceBlur ?? this.surfaceBlur,
+      scrollbarThickness: scrollbarThickness ?? this.scrollbarThickness,
     );
   }
 
@@ -174,6 +178,8 @@ class ThemeData {
       iconTheme: IconThemeProperties.lerp(a.iconTheme, b.iconTheme, t),
       surfaceOpacity: lerpDouble(a.surfaceOpacity, b.surfaceOpacity, t),
       surfaceBlur: lerpDouble(a.surfaceBlur, b.surfaceBlur, t),
+      scrollbarThickness:
+          lerpDouble(a.scrollbarThickness, b.scrollbarThickness, t),
     );
   }
 
@@ -188,7 +194,8 @@ class ThemeData {
         other.scaling == scaling &&
         other.iconTheme == iconTheme &&
         other.surfaceOpacity == surfaceOpacity &&
-        other.surfaceBlur == surfaceBlur;
+        other.surfaceBlur == surfaceBlur &&
+        other.scrollbarThickness == scrollbarThickness;
   }
 
   @override
@@ -201,12 +208,13 @@ class ThemeData {
       iconTheme,
       surfaceOpacity,
       surfaceBlur,
+      scrollbarThickness,
     );
   }
 
   @override
   String toString() {
-    return 'ThemeData(colorScheme: $colorScheme, typography: $typography, radius: $radius, scaling: $scaling, iconTheme: $iconTheme, surfaceOpacity: $surfaceOpacity, surfaceBlur: $surfaceBlur)';
+    return 'ThemeData(colorScheme: $colorScheme, typography: $typography, radius: $radius, scaling: $scaling, iconTheme: $iconTheme, surfaceOpacity: $surfaceOpacity, surfaceBlur: $surfaceBlur, scrollbarThickness: $scrollbarThickness)';
   }
 }
 
