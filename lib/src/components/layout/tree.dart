@@ -1276,7 +1276,7 @@ class _TreeItemViewState extends State<TreeItemView> {
                   if (states.contains(WidgetState.selected)) {
                     if (states.contains(WidgetState.focused)) {
                       return BoxDecoration(
-                        color: theme.colorScheme.primary.scaleAlpha(0.1),
+                        color: theme.colorScheme.primary.scaleAlpha(0.5),
                         borderRadius: _borderRadiusFromPosition(
                           data.selectionPosition,
                           theme.radiusMd,
@@ -1284,7 +1284,7 @@ class _TreeItemViewState extends State<TreeItemView> {
                       );
                     }
                     return BoxDecoration(
-                      color: theme.colorScheme.primary.scaleAlpha(0.05),
+                      color: theme.colorScheme.primary.scaleAlpha(0.3),
                       borderRadius: _borderRadiusFromPosition(
                         data.selectionPosition,
                         theme.radiusMd,
