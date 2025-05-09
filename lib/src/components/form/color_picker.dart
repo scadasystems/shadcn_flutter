@@ -1504,7 +1504,7 @@ class ColorInput extends StatelessWidget {
           onChanged?.call(value);
         }
       },
-      density: !showLabel ? ButtonDensity.iconDense : ButtonDensity.normal,
+      density: !showLabel ? ButtonDensity.compact : ButtonDensity.normal,
       builder: (context, value) {
         if (!showLabel) {
           return Container(
