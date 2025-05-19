@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart';
@@ -94,20 +95,86 @@ class _ParamStatedWidget extends StatedWidget {
 
   @override
   Widget build(BuildContext context) {
-    WidgetStatesController? statesController = Data.maybeOf(context);
-    if (statesController == null) {
-      return child ?? const SizedBox();
+    WidgetStatesData? statesData = Data.maybeOf<WidgetStatesData>(context);
+    Set<WidgetState> states = statesData?.states ?? {};
+    final child = _checkByOrder(states, 0);
+    return child ?? const SizedBox();
+  }
+}
+
+class WidgetStatesProvider extends StatelessWidget {
+  final WidgetStatesController? controller;
+  final Set<WidgetState>? states;
+  final Widget child;
+  final bool inherit;
+  final bool boundary;
+
+  const WidgetStatesProvider({
+    super.key,
+    this.controller,
+    required this.child,
+    this.states = const {},
+    this.inherit = true,
+  }) : boundary = false;
+
+  const WidgetStatesProvider.boundary({
+    super.key,
+    required this.child,
+  })  : boundary = true,
+        controller = null,
+        states = null,
+        inherit = false;
+
+  @override
+  Widget build(BuildContext context) {
+    if (boundary) {
+      return Data<WidgetStatesData>.boundary(
+        child: child,
+      );
+    }
+    Set<WidgetState>? parentStates;
+    if (inherit) {
+      WidgetStatesData? parentData = Data.maybeOf<WidgetStatesData>(context);
+      parentStates = parentData?.states;
     }
     return ListenableBuilder(
-      listenable: statesController,
+      listenable: Listenable.merge([
+        if (controller != null) controller!,
+      ]),
       builder: (context, child) {
-        final states = statesController.value;
-        final child = _checkByOrder(states, 0);
-        return child ?? const SizedBox();
+        Set<WidgetState> currentStates = states ?? {};
+        if (controller != null) {
+          currentStates = currentStates.union(controller!.value);
+        }
+        if (parentStates != null) {
+          currentStates = currentStates.union(parentStates);
+        }
+        return Data<WidgetStatesData>.inherit(
+          data: WidgetStatesData(currentStates),
+          child: child!,
+        );
       },
       child: child,
     );
   }
+}
+
+class WidgetStatesData {
+  final Set<WidgetState> states;
+
+  const WidgetStatesData(this.states);
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is WidgetStatesData && setEquals(states, other.states);
+  }
+
+  @override
+  int get hashCode => states.hashCode;
+
+  @override
+  String toString() => 'WidgetStatesData(states: $states)';
 }
 
 class _MapStatedWidget extends StatedWidget {
@@ -123,37 +190,29 @@ class _MapStatedWidget extends StatedWidget {
 
   @override
   Widget build(BuildContext context) {
-    WidgetStatesController? statesController = Data.maybeOf(context);
-    if (statesController == null) {
-      return child ?? const SizedBox();
-    }
-    return ListenableBuilder(
-      listenable: statesController,
-      builder: (context, child) {
-        for (var entry in states.entries) {
-          final keys = entry.key;
-          if (keys is Iterable<WidgetState>) {
-            if (statesController.value.containsAll(keys)) {
-              return entry.value;
-            }
-          } else if (keys is WidgetState) {
-            if (statesController.value.contains(keys)) {
-              return entry.value;
-            }
-          } else if (keys is String) {
-            final state = _mappedNames[keys];
-            if (state != null && statesController.value.contains(state)) {
-              return entry.value;
-            }
-          } else {
-            assert(false,
-                'Invalid key type in states map (${keys.runtimeType}) expected WidgetState, Iterable<WidgetState>, or String');
-          }
+    WidgetStatesData? statesData = Data.maybeOf<WidgetStatesData>(context);
+    Set<WidgetState> widgetStates = statesData?.states ?? {};
+    for (var entry in states.entries) {
+      final keys = entry.key;
+      if (keys is Iterable<WidgetState>) {
+        if (widgetStates.containsAll(keys)) {
+          return entry.value;
         }
-        return child ?? const SizedBox();
-      },
-      child: child,
-    );
+      } else if (keys is WidgetState) {
+        if (widgetStates.contains(keys)) {
+          return entry.value;
+        }
+      } else if (keys is String) {
+        final state = _mappedNames[keys];
+        if (state != null && widgetStates.contains(state)) {
+          return entry.value;
+        }
+      } else {
+        assert(false,
+            'Invalid key type in states map (${keys.runtimeType}) expected WidgetState, Iterable<WidgetState>, or String');
+      }
+    }
+    return child ?? const SizedBox();
   }
 }
 
@@ -167,16 +226,9 @@ class _BuilderStatedWidget extends StatedWidget {
 
   @override
   Widget build(BuildContext context) {
-    WidgetStatesController? statesController = Data.maybeOf(context);
-    if (statesController == null) {
-      return const SizedBox();
-    }
-    return ListenableBuilder(
-      listenable: statesController,
-      builder: (context, child) {
-        return builder(context, statesController.value);
-      },
-    );
+    WidgetStatesData? statesData = Data.maybeOf(context);
+    Set<WidgetState> states = statesData?.states ?? {};
+    return builder(context, states);
   }
 }
 
@@ -342,10 +394,13 @@ class _ClickableState extends State<Clickable> {
       enabled: enabled,
       container: true,
       button: widget.isSemanticButton,
-      child: Data<WidgetStatesController>.inherit(
-        data: _controller,
-        child: AnimatedBuilder(
-          animation: _controller,
+      child: WidgetStatesProvider(
+        controller: _controller,
+        states: {
+          if (!enabled) WidgetState.disabled,
+        },
+        child: ListenableBuilder(
+          listenable: _controller,
           builder: _builder,
         ),
       ),
@@ -355,16 +410,20 @@ class _ClickableState extends State<Clickable> {
   Widget _builder(BuildContext context, Widget? _) {
     final theme = Theme.of(context);
     final enabled = widget.enabled;
-    Decoration? decoration = widget.decoration?.resolve(_controller.value);
+    var widgetStates = Data.maybeOf<WidgetStatesData>(context)?.states ?? {};
+    widgetStates = widgetStates.union(_controller.value);
+    Decoration? decoration = widget.decoration?.resolve(widgetStates);
     BorderRadiusGeometry borderRadius;
     if (decoration is BoxDecoration) {
       borderRadius = decoration.borderRadius ?? theme.borderRadiusMd;
     } else {
       borderRadius = theme.borderRadiusMd;
     }
-    var buttonContainer = _buildContainer(context, decoration);
+    var buttonContainer = _buildContainer(context, decoration, widgetStates);
     return FocusOutline(
-      focused: widget.focusOutline && _controller.value.contains(WidgetState.focused) && !widget.disableFocusOutline,
+      focused: widget.focusOutline &&
+          widgetStates.contains(WidgetState.focused) &&
+          !widget.disableFocusOutline,
       borderRadius: borderRadius,
       child: GestureDetector(
         behavior: widget.behavior,
@@ -390,8 +449,9 @@ class _ClickableState extends State<Clickable> {
                   _controller.update(WidgetState.hovered, true);
                 }
                 _controller.update(WidgetState.pressed, true);
+                widget.onTapDown?.call(details);
               }
-            : null,
+            : widget.onTapDown,
         onTapUp: widget.onPressed != null
             ? (details) {
                 if (widget.enableFeedback) {
@@ -399,8 +459,9 @@ class _ClickableState extends State<Clickable> {
                   _controller.update(WidgetState.hovered, false);
                 }
                 _controller.update(WidgetState.pressed, false);
+                widget.onTapUp?.call(details);
               }
-            : null,
+            : widget.onTapUp,
         onTapCancel: widget.onPressed != null
             ? () {
                 if (widget.enableFeedback) {
@@ -408,8 +469,9 @@ class _ClickableState extends State<Clickable> {
                   _controller.update(WidgetState.hovered, false);
                 }
                 _controller.update(WidgetState.pressed, false);
+                widget.onTapCancel?.call();
               }
-            : null,
+            : widget.onTapCancel,
         child: FocusableActionDetector(
           enabled: enabled,
           focusNode: _focusNode,
@@ -460,16 +522,18 @@ class _ClickableState extends State<Clickable> {
             _controller.update(WidgetState.focused, value);
             widget.onFocus?.call(value);
           },
-          mouseCursor: widget.mouseCursor?.resolve(_controller.value) ?? SystemMouseCursors.click,
+          mouseCursor:
+              widget.mouseCursor?.resolve(widgetStates) ?? MouseCursor.defer,
           child: DefaultTextStyle.merge(
-            style: widget.textStyle?.resolve(_controller.value),
+            style: widget.textStyle?.resolve(widgetStates),
             child: IconTheme.merge(
-              data: widget.iconTheme?.resolve(_controller.value) ?? const IconThemeData(),
+              data: widget.iconTheme?.resolve(widgetStates) ??
+                  const IconThemeData(),
               child: AnimatedBuilder(
                 animation: _controller,
                 builder: (context, child) {
                   return AnimatedValueBuilder(
-                    value: widget.transform?.resolve(_controller.value),
+                    value: widget.transform?.resolve(widgetStates),
                     duration: const Duration(milliseconds: 50),
                     lerp: lerpMatrix4,
                     builder: (context, value, child) {
@@ -502,9 +566,10 @@ class _ClickableState extends State<Clickable> {
     return tween.transform(t);
   }
 
-  Widget _buildContainer(BuildContext context, Decoration? decoration) {
-    var resolvedMargin = widget.margin?.resolve(_controller.value);
-    var resolvedPadding = widget.padding?.resolve(_controller.value);
+  Widget _buildContainer(BuildContext context, Decoration? decoration,
+      Set<WidgetState> widgetStates) {
+    var resolvedMargin = widget.margin?.resolve(widgetStates);
+    var resolvedPadding = widget.padding?.resolve(widgetStates);
     if (widget.disableTransition) {
       Widget container = Container(
         clipBehavior: Clip.antiAlias,

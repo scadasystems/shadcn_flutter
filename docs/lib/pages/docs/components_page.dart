@@ -668,39 +668,37 @@ class _ComponentsPageState extends State<ComponentsPage> {
                           },
                           placeholder: const Text('Select a fruit'),
                           value: 'Apple',
-                          onChanged: (value) {},
-                          children: const [
-                            SelectItemButton(
-                                value: 'Apple', child: Text('Apple')),
-                          ],
+                          enabled: true,
+                          constraints: const BoxConstraints.tightFor(width: 300),
+                          popup: const SelectPopup(),
                         ),
-                        SelectPopup(
-                          margin: const EdgeInsets.symmetric(vertical: 8) *
-                              theme.scaling,
-                          borderRadius: theme.borderRadiusXl,
-                          value: ValueNotifier(['Apple']),
-                          children: ValueNotifier(const [
-                            SelectItemButton(
-                              value: 'Apple',
-                              child: Text('Apple'),
-                            ),
-                            SelectItemButton(
-                              value: 'Banana',
-                              child: Text('Banana'),
-                            ),
-                            SelectItemButton(
-                              value: 'Lemon',
-                              child: Text('Lemon'),
-                            ),
-                            SelectItemButton(
-                              value: 'Tomato',
-                              child: Text('Tomato'),
-                            ),
-                            SelectItemButton(
-                              value: 'Cucumber',
-                              child: Text('Cucumber'),
-                            ),
-                          ]),
+                        Gap(8 * theme.scaling),
+                        const SizedBox(
+                          width: 300,
+                          child: SelectPopup(
+                            items: SelectItemList(children: [
+                              SelectItemButton(
+                                value: 'Apple',
+                                child: Text('Apple'),
+                              ),
+                              SelectItemButton(
+                                value: 'Banana',
+                                child: Text('Banana'),
+                              ),
+                              SelectItemButton(
+                                value: 'Lemon',
+                                child: Text('Lemon'),
+                              ),
+                              SelectItemButton(
+                                value: 'Tomato',
+                                child: Text('Tomato'),
+                              ),
+                              SelectItemButton(
+                                value: 'Cucumber',
+                                child: Text('Cucumber'),
+                              ),
+                            ]),
+                          ),
                         ),
                       ],
                     ),
@@ -1078,26 +1076,29 @@ class _ComponentsPageState extends State<ComponentsPage> {
                 example: Card(
                   child: Column(
                     children: [
-                      Tabs(index: 0, onChanged: (value) {}, tabs: const [
-                        Text('Tab 1'),
-                        Text('Tab 2'),
-                        Text('Tab 3'),
+                      Tabs(index: 0, onChanged: (value) {}, children: const [
+                        // Text('Tab 1'),
+                        // Text('Tab 2'),
+                        // Text('Tab 3'),
+                        TabItem(child: Text('Tab 1')),
+                        TabItem(child: Text('Tab 2')),
+                        TabItem(child: Text('Tab 3')),
                       ]),
-                      Tabs(index: 1, onChanged: (value) {}, tabs: const [
-                        Text('Tab 1'),
-                        Text('Tab 2'),
-                        Text('Tab 3'),
+                      Tabs(index: 1, onChanged: (value) {}, children: const [
+                        TabItem(child: Text('Tab 1')),
+                        TabItem(child: Text('Tab 2')),
+                        TabItem(child: Text('Tab 3')),
                       ]),
-                      Tabs(index: 2, onChanged: (value) {}, tabs: const [
-                        Text('Tab 1'),
-                        Text('Tab 2'),
-                        Text('Tab 3'),
+                      Tabs(index: 2, onChanged: (value) {}, children: const [
+                        TabItem(child: Text('Tab 1')),
+                        TabItem(child: Text('Tab 2')),
+                        TabItem(child: Text('Tab 3')),
                       ]),
                     ],
                   ).gap(8),
                 ),
               ),
-              const ComponentCard(
+              ComponentCard(
                 name: 'tab_list',
                 title: 'Tab List',
                 scale: 1,
@@ -1105,11 +1106,12 @@ class _ComponentsPageState extends State<ComponentsPage> {
                 verticalOffset: 60,
                 example: TabList(
                   index: 0,
-                  children: [
-                    TabButton(child: Text('Preview')),
-                    TabButton(child: Text('Code')),
-                    TabButton(child: Text('Design')),
-                    TabButton(child: Text('Settings')),
+                  onChanged: (value) {},
+                  children: const [
+                    TabItem(child: Text('Preview')),
+                    TabItem(child: Text('Code')),
+                    TabItem(child: Text('Design')),
+                    TabItem(child: Text('Settings')),
                   ],
                 ),
               ),

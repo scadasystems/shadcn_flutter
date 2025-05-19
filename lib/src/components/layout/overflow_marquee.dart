@@ -95,7 +95,6 @@ class _OverflowMarqueeLayout extends SingleChildRenderObjectWidget {
   @override
   RenderObject createRenderObject(BuildContext context) {
     return _RenderOverflowMarqueeLayout(
-      null,
       direction: direction,
       fadePortion: fadePortion,
       duration: duration,
@@ -165,8 +164,7 @@ class _RenderOverflowMarqueeLayout extends RenderShiftedBox
   double step;
   TextDirection textDirection;
 
-  _RenderOverflowMarqueeLayout(
-    super.child, {
+  _RenderOverflowMarqueeLayout({
     required this.direction,
     required this.fadePortion,
     required this.duration,
@@ -175,7 +173,7 @@ class _RenderOverflowMarqueeLayout extends RenderShiftedBox
     required this.elapsed,
     required this.step,
     required this.textDirection,
-  });
+  }) : super(null);
 
   @override
   void setupParentData(RenderBox child) {
@@ -291,7 +289,7 @@ class _RenderOverflowMarqueeLayout extends RenderShiftedBox
     return 0;
   }
 
-  Shader? _createAlphaShader(
+  Shader _createAlphaShader(
       bool fadeStart, bool fadeEnd, Rect bounds, double fadePortion) {
     double portionSize;
     if (direction == Axis.horizontal) {
@@ -303,7 +301,7 @@ class _RenderOverflowMarqueeLayout extends RenderShiftedBox
     List<double> stops = [];
     if (fadeStart) {
       double start = fadeStartProgress;
-      Color startColor = Colors.white.withOpacity(1 - start);
+      Color startColor = Colors.white.withValues(alpha: 1 - start);
       colors.addAll([startColor, Colors.white]);
       stops.addAll([0.0, portionSize]);
     } else {
@@ -312,7 +310,7 @@ class _RenderOverflowMarqueeLayout extends RenderShiftedBox
     }
     if (fadeEnd) {
       double end = fadeEndProgress;
-      Color endColor = Colors.white.withOpacity(1 - end);
+      Color endColor = Colors.white.withValues(alpha: 1 - end);
       colors.addAll([Colors.white, endColor]);
       stops.addAll([1.0 - portionSize, 1.0]);
     } else {
@@ -344,30 +342,32 @@ class _RenderOverflowMarqueeLayout extends RenderShiftedBox
       final parentData = child.parentData as _OverflowMarqueeParentData;
       final sizeDiff = parentData.sizeDiff ?? 0;
       var progress = offsetProgress;
-      Shader? shader = _createAlphaShader(
+      Shader shader = _createAlphaShader(
         progress > 0 && sizeDiff != 0,
         progress < 1 && sizeDiff != 0,
         (Offset.zero & size),
         25,
       );
-      if (shader != null) {
-        assert(needsCompositing);
-        layer!
-          ..shader = shader
-          ..maskRect = (offset & size).inflate(1)
-          ..blendMode = BlendMode.modulate;
-        context.pushLayer(layer!, super.paint, offset);
-        assert(() {
-          layer!.debugCreator = debugCreator;
-          return true;
-        }());
-      } else {
-        layer = null;
-        super.paint(context, offset + parentData.offset);
-      }
+      assert(needsCompositing);
+      layer!
+        ..shader = shader
+        ..maskRect = (offset & size).inflate(1)
+        ..blendMode = BlendMode.modulate;
+      context.pushLayer(layer!, _paintChild, offset);
+      assert(() {
+        layer!.debugCreator = debugCreator;
+        return true;
+      }());
     } else {
       layer = null;
-      super.paint(context, offset);
+    }
+  }
+
+  void _paintChild(PaintingContext context, Offset offset) {
+    final child = this.child;
+    if (child != null) {
+      final parentData = child.parentData as _OverflowMarqueeParentData;
+      context.paintChild(child, offset + parentData.offset);
     }
   }
 
@@ -388,7 +388,7 @@ class _RenderOverflowMarqueeLayout extends RenderShiftedBox
       child.layout(constraints, parentUsesSize: true);
       size = this.constraints.constrain(child.size);
       final sizeDiff = child.size.width - size.width;
-      if (sizeDiff > 0) {
+      if (sizeDiff > 0 && size.width > 0 && size.height > 0) {
         if (!ticker.isActive) {
           ticker.start();
         }
@@ -406,6 +406,9 @@ class _RenderOverflowMarqueeLayout extends RenderShiftedBox
       parentData.offset = offset;
     } else {
       size = constraints.biggest;
+      if (ticker.isActive) {
+        ticker.stop();
+      }
     }
   }
 }

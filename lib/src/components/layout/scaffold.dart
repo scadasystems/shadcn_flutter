@@ -16,6 +16,7 @@ class Scaffold extends StatefulWidget {
   final Color? footerBackgroundColor;
   final Color? backgroundColor;
   final bool showLoadingSparks;
+  final bool? resizeToAvoidBottomInset;
 
   const Scaffold({
     super.key,
@@ -30,6 +31,7 @@ class Scaffold extends StatefulWidget {
     this.headerBackgroundColor,
     this.footerBackgroundColor,
     this.showLoadingSparks = false,
+    this.resizeToAvoidBottomInset,
   });
 
   @override
@@ -50,73 +52,77 @@ class ScaffoldBarData {
 
 class ScaffoldState extends State<Scaffold> {
   Widget buildHeader(BuildContext context) {
-    return Container(
-      color: widget.headerBackgroundColor,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Column(
-            verticalDirection: VerticalDirection.up,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              if (widget.loadingProgress != null ||
-                  widget.loadingProgressIndeterminate)
-                SizedBox(
-                  // to make it float
-                  height: 0,
-                  child: Stack(
-                    clipBehavior: Clip.none,
-                    fit: StackFit.passthrough,
-                    children: [
-                      Positioned(
-                        left: 0,
-                        right: 0,
-                        child: LinearProgressIndicator(
-                          backgroundColor: Colors.transparent,
-                          value: widget.loadingProgressIndeterminate
-                              ? null
-                              : widget.loadingProgress,
-                          showSparks: false,
+    return RepaintBoundary(
+      child: Container(
+        color: widget.headerBackgroundColor,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Column(
+              verticalDirection: VerticalDirection.up,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                if (widget.loadingProgress != null ||
+                    widget.loadingProgressIndeterminate)
+                  SizedBox(
+                    // to make it float
+                    height: 0,
+                    child: Stack(
+                      clipBehavior: Clip.none,
+                      fit: StackFit.passthrough,
+                      children: [
+                        Positioned(
+                          left: 0,
+                          right: 0,
+                          child: LinearProgressIndicator(
+                            backgroundColor: Colors.transparent,
+                            value: widget.loadingProgressIndeterminate
+                                ? null
+                                : widget.loadingProgress,
+                            showSparks: false,
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                ),
-              Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-                for (var i = 0; i < widget.headers.length; i++)
-                  Data.inherit(
-                    data: ScaffoldBarData(
-                      childIndex: i,
-                      childrenCount: widget.headers.length,
-                    ),
-                    child: widget.headers[i],
-                  ),
-              ]),
-            ],
-          ),
-          if (widget.loadingProgress != null && widget.showLoadingSparks)
-            SizedBox(
-              // to make it float
-              height: 0,
-              child: Stack(
-                clipBehavior: Clip.none,
-                fit: StackFit.passthrough,
-                children: [
-                  Positioned(
-                    left: 0,
-                    right: 0,
-                    child: LinearProgressIndicator(
-                      backgroundColor: Colors.transparent,
-                      value: widget.loadingProgressIndeterminate
-                          ? null
-                          : widget.loadingProgress,
-                      showSparks: true,
+                      ],
                     ),
                   ),
-                ],
-              ),
+                Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      for (var i = 0; i < widget.headers.length; i++)
+                        Data.inherit(
+                          data: ScaffoldBarData(
+                            childIndex: i,
+                            childrenCount: widget.headers.length,
+                          ),
+                          child: widget.headers[i],
+                        ),
+                    ]),
+              ],
             ),
-        ],
+            if (widget.loadingProgress != null && widget.showLoadingSparks)
+              SizedBox(
+                // to make it float
+                height: 0,
+                child: Stack(
+                  clipBehavior: Clip.none,
+                  fit: StackFit.passthrough,
+                  children: [
+                    Positioned(
+                      left: 0,
+                      right: 0,
+                      child: LinearProgressIndicator(
+                        backgroundColor: Colors.transparent,
+                        value: widget.loadingProgressIndeterminate
+                            ? null
+                            : widget.loadingProgress,
+                        showSparks: true,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }
@@ -124,21 +130,23 @@ class ScaffoldState extends State<Scaffold> {
   Widget buildFooter(BuildContext context, EdgeInsets viewInsets) {
     return Offstage(
       offstage: viewInsets.bottom > 0,
-      child: Container(
-        color: widget.footerBackgroundColor,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            for (var i = 0; i < widget.footers.length; i++)
-              Data.inherit(
-                data: ScaffoldBarData(
-                  isHeader: false,
-                  childIndex: i,
-                  childrenCount: widget.footers.length,
+      child: RepaintBoundary(
+        child: Container(
+          color: widget.footerBackgroundColor,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              for (var i = 0; i < widget.footers.length; i++)
+                Data.inherit(
+                  data: ScaffoldBarData(
+                    isHeader: false,
+                    childIndex: i,
+                    childrenCount: widget.footers.length,
+                  ),
+                  child: widget.footers[i],
                 ),
-                child: widget.footers[i],
-              ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -156,15 +164,139 @@ class ScaffoldState extends State<Scaffold> {
           floatingFooter: widget.floatingFooter,
           children: [
             buildHeader(context),
-            Container(
-              padding: viewInsets,
-              child: ToastLayer(child: widget.child),
-            ),
+            LayoutBuilder(builder: (context, constraints) {
+              Widget child = (widget.resizeToAvoidBottomInset ?? true)
+                  ? Container(
+                      padding: EdgeInsets.only(
+                        bottom: viewInsets.bottom,
+                      ),
+                      child: MediaQuery(
+                        data: MediaQuery.of(context).copyWith(
+                          viewInsets: viewInsets.copyWith(
+                            bottom: 0,
+                          ),
+                        ),
+                        child: ToastLayer(child: widget.child),
+                      ),
+                    )
+                  : ToastLayer(child: widget.child);
+              if (constraints is ScaffoldBoxConstraints &&
+                  (widget.floatingHeader || widget.floatingFooter)) {
+                final currentMediaQuery = MediaQuery.of(context);
+                EdgeInsets padding = currentMediaQuery.padding;
+                if (widget.floatingHeader) {
+                  padding += EdgeInsets.only(top: constraints.headerHeight);
+                }
+                if (widget.floatingFooter) {
+                  padding += EdgeInsets.only(bottom: constraints.footerHeight);
+                }
+                child = MediaQuery(
+                  data: currentMediaQuery.copyWith(
+                    padding: padding,
+                  ),
+                  child: RepaintBoundary(
+                    child: child,
+                  ),
+                );
+              }
+              return child;
+            }),
             buildFooter(context, viewInsets),
           ],
         ),
       ),
     );
+  }
+}
+
+class ScaffoldPaddingStorage {
+  double top;
+  double left;
+  double right;
+  double bottom;
+
+  ScaffoldPaddingStorage({
+    required this.top,
+    required this.left,
+    required this.right,
+    required this.bottom,
+  });
+}
+
+class ScaffoldBoxConstraints extends BoxConstraints {
+  final double headerHeight;
+  final double footerHeight;
+
+  const ScaffoldBoxConstraints({
+    required this.headerHeight,
+    required this.footerHeight,
+    super.minWidth,
+    super.maxWidth,
+    super.minHeight,
+    super.maxHeight,
+  });
+
+  factory ScaffoldBoxConstraints.fromBoxConstraints({
+    required BoxConstraints constraints,
+    required double headerHeight,
+    required double footerHeight,
+  }) {
+    return ScaffoldBoxConstraints(
+      headerHeight: headerHeight,
+      footerHeight: footerHeight,
+      minWidth: constraints.minWidth,
+      maxWidth: constraints.maxWidth,
+      minHeight: constraints.minHeight,
+      maxHeight: constraints.maxHeight,
+    );
+  }
+
+  @override
+  ScaffoldBoxConstraints copyWith({
+    double? headerHeight,
+    double? footerHeight,
+    double? minWidth,
+    double? maxWidth,
+    double? minHeight,
+    double? maxHeight,
+  }) {
+    return ScaffoldBoxConstraints(
+      headerHeight: headerHeight ?? this.headerHeight,
+      footerHeight: footerHeight ?? this.footerHeight,
+      minWidth: minWidth ?? this.minWidth,
+      maxWidth: maxWidth ?? this.maxWidth,
+      minHeight: minHeight ?? this.minHeight,
+      maxHeight: maxHeight ?? this.maxHeight,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! ScaffoldBoxConstraints) return false;
+    return other.headerHeight == headerHeight &&
+        other.footerHeight == footerHeight &&
+        other.minWidth == minWidth &&
+        other.maxWidth == maxWidth &&
+        other.minHeight == minHeight &&
+        other.maxHeight == maxHeight;
+  }
+
+  @override
+  int get hashCode {
+    return Object.hash(
+      headerHeight,
+      footerHeight,
+      minWidth,
+      maxWidth,
+      minHeight,
+      maxHeight,
+    );
+  }
+
+  @override
+  String toString() {
+    return 'ScaffoldBoxConstraints(headerHeight: $headerHeight, footerHeight: $footerHeight, minWidth: $minWidth, maxWidth: $maxWidth, minHeight: $minHeight, maxHeight: $maxHeight)';
   }
 }
 
@@ -459,7 +591,11 @@ class _ScaffoldRenderFlex extends RenderBox
         contentOffset = Offset(0, headerSize);
         break;
     }
-    content.layout(contentConstraints, parentUsesSize: true);
+    content.layout(ScaffoldBoxConstraints.fromBoxConstraints(
+      constraints: contentConstraints,
+      headerHeight: headerSize,
+      footerHeight: footerSize,
+    ));
     size = constraints.biggest;
     (content.parentData as BoxParentData).offset = contentOffset;
     (footer.parentData as BoxParentData).offset = Offset(

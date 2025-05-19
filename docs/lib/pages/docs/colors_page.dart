@@ -197,7 +197,7 @@ class _ColorsPageState extends State<ColorsPage> {
                         borderRadius: theme.borderRadiusMd,
                         border: shade == 500
                             ? Border.all(
-                                width: 30,
+                                width: 3,
                                 color: theme.colorScheme.foreground,
                                 strokeAlign: BorderSide.strokeAlignOutside)
                             : null,
@@ -323,23 +323,14 @@ class _ColorsPageState extends State<ColorsPage> {
           const Gap(32),
           TabList(
             index: _tabIndex,
-            children: [
-              TabButton(
-                child: const Text('Color'),
-                onPressed: () {
-                  setState(() {
-                    _tabIndex = 0;
-                  });
-                },
-              ),
-              TabButton(
-                child: const Text('Code'),
-                onPressed: () {
-                  setState(() {
-                    _tabIndex = 1;
-                  });
-                },
-              ),
+            onChanged: (value) {
+              setState(() {
+                _tabIndex = value;
+              });
+            },
+            children: const [
+              TabItem(child: Text('Color')),
+              TabItem(child: Text('Code')),
             ],
           ),
           const Gap(12),

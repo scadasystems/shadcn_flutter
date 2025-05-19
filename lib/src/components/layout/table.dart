@@ -354,7 +354,7 @@ class ResizableTable extends StatefulWidget {
   final double? verticalOffset;
   final Size? viewportSize;
 
-  const ResizableTable({
+  const ResizableTable({super.key, 
     required this.rows,
     required this.controller,
     this.theme,
@@ -1095,6 +1095,7 @@ class TableCell {
                 hoverNotifier: resizedState._hoverNotifier,
                 dragNotifier: resizedState._dragNotifier,
                 maxRow: resizedState._maxRow,
+                theme: resizedState.widget.theme,
                 maxColumn: resizedState._maxColumn),
           )
       ],
@@ -1151,7 +1152,7 @@ class TableRow {
       backgroundColor: WidgetStateProperty.resolveWith(
         (states) {
           return states.contains(WidgetState.hovered)
-              ? theme.colorScheme.muted.withOpacity(0.5)
+              ? theme.colorScheme.muted.withValues(alpha: 0.5)
               : null;
         },
       ),
@@ -1198,7 +1199,7 @@ class TableFooter extends TableRow {
         (states) {
           return states.contains(WidgetState.hovered)
               ? theme.colorScheme.muted
-              : theme.colorScheme.muted.withOpacity(0.5);
+              : theme.colorScheme.muted.withValues(alpha: 0.5);
         },
       ),
       textStyle: WidgetStateProperty.resolveWith(
@@ -1239,7 +1240,7 @@ class TableHeader extends TableRow {
         (states) {
           return states.contains(WidgetState.hovered)
               ? theme.colorScheme.muted
-              : theme.colorScheme.muted.withOpacity(0.5);
+              : theme.colorScheme.muted.withValues(alpha: 0.5);
         },
       ),
       textStyle: WidgetStateProperty.resolveWith(
@@ -1346,7 +1347,7 @@ class Table extends StatefulWidget {
   final double? horizontalOffset;
   final double? verticalOffset;
   final Size? viewportSize;
-  const Table({
+  const Table({super.key, 
     required this.rows,
     this.defaultColumnWidth = const FlexTableSize(),
     this.defaultRowHeight = const IntrinsicTableSize(),
@@ -1509,14 +1510,14 @@ class RawCell extends ParentDataWidget<TableParentData> {
   final bool computeSize;
 
   const RawCell({
-    Key? key,
+    super.key,
     required this.column,
     required this.row,
     this.columnSpan,
     this.rowSpan,
     this.computeSize = true,
-    required Widget child,
-  }) : super(key: key, child: child);
+    required super.child,
+  });
 
   @override
   void applyParentData(RenderObject renderObject) {
