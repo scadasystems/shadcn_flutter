@@ -730,11 +730,14 @@ class PopoverController extends ChangeNotifier {
     Duration? hideDuration,
     OverlayBarrier? overlayBarrier,
     OverlayHandler? handler,
+    Function(bool open)? onPopoverListener,
   }) async {
     if (closeOthers) {
       close();
     }
     key ??= GlobalKey<OverlayHandlerStateMixin>(debugLabel: 'PopoverAnchor$hashCode');
+
+    onPopoverListener?.call(true);
 
     OverlayCompleter<T?> res = showPopover<T>(
       context: context,
