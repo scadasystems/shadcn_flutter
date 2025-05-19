@@ -274,7 +274,6 @@ class Select<T> extends StatefulWidget {
   final SearchFilter<T>? searchFilter; // if its not null, then it's a searchable combobox
   final SelectSearch? onSearch;
   final Widget? placeholder; // placeholder when value is null
-  final bool filled;
   final FocusNode? focusNode;
   final BoxConstraints? constraints;
   final BoxConstraints? popupConstraints;
@@ -282,6 +281,7 @@ class Select<T> extends StatefulWidget {
   final List<AbstractSelectItem<T>> children;
   final T? value;
   final Widget Function(BuildContext context, T item) itemBuilder;
+  final bool filled;
   final bool showUnrelatedValues;
   final BorderRadiusGeometry? borderRadius;
   final Widget? searchPlaceholder;
@@ -296,18 +296,22 @@ class Select<T> extends StatefulWidget {
   final bool canUnselect;
   final bool autoClosePopover;
   final bool enableIntrinsicWidth;
+  final bool popoverFilled;
+  final Color? popoverFillColor;
+  final List<BoxShadow>? popoverBoxShadow;
+  final Function(bool open)? onPopoverLisenter;
 
   const Select({
     super.key,
     this.onChanged,
     this.searchFilter,
     this.placeholder,
-    this.filled = false,
     this.focusNode,
     this.constraints,
     this.popupConstraints,
     this.popupWidthConstraint = PopoverConstraint.anchorFixedSize,
     this.value,
+    this.filled = false,
     this.showUnrelatedValues = false,
     this.orderSelectedFirst = true,
     this.disableHoverEffect = false,
@@ -325,14 +329,17 @@ class Select<T> extends StatefulWidget {
     required this.itemBuilder,
     required this.children,
     this.enableIntrinsicWidth = true,
+    this.popoverFilled = false,
+    this.popoverFillColor,
+    this.popoverBoxShadow,
+    this.onPopoverLisenter,
   });
 
   @override
   SelectState<T> createState() => SelectState<T>();
 }
 
-class SelectState<T> extends State<Select<T>>
-    with FormValueSupplier<T, Select<T>> {
+class SelectState<T> extends State<Select<T>> with FormValueSupplier<T, Select<T>> {
   late FocusNode _focusNode;
   final PopoverController _popoverController = PopoverController();
   late ValueNotifier<List<T>> _valueNotifier;
@@ -354,8 +361,7 @@ class SelectState<T> extends State<Select<T>>
     }
     if (widget.value != oldWidget.value) {
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-        _valueNotifier.value =
-            widget.value == null ? const [] : [widget.value as T];
+        _valueNotifier.value = widget.value == null ? const [] : [widget.value as T];
         formValue = widget.value;
       });
     }
@@ -459,6 +465,9 @@ class SelectState<T> extends State<Select<T>>
                         constraints: widget.popupConstraints,
                         value: _valueNotifier,
                         showUnrelatedValues: widget.showUnrelatedValues,
+                        filled: widget.popoverFilled,
+                        fillColor: widget.popoverFillColor,
+                        boxShadow: widget.popoverBoxShadow,
                         onChanged: widget.onChanged == null
                             ? null
                             : (value, selected) {
@@ -474,10 +483,12 @@ class SelectState<T> extends State<Select<T>>
                         children: _childrenNotifier,
                       );
                     },
+                    onPopoverListener: widget.onPopoverLisenter,
                   )
                       .then(
                     (value) {
                       _focusNode.requestFocus();
+                      widget.onPopoverLisenter?.call(false);
                     },
                   );
                 },
@@ -508,6 +519,9 @@ class SelectPopup<T> extends StatefulWidget {
   final EdgeInsetsGeometry margin;
   final BorderRadiusGeometry borderRadius;
   final SelectSearch? onSearch;
+  final bool filled;
+  final Color? fillColor;
+  final List<BoxShadow>? boxShadow;
 
   const SelectPopup({
     super.key,
@@ -526,6 +540,9 @@ class SelectPopup<T> extends StatefulWidget {
     required this.margin,
     required this.borderRadius,
     required this.children,
+    this.filled = false,
+    this.fillColor,
+    this.boxShadow,
   });
 
   @override
@@ -576,6 +593,9 @@ class SelectPopupState<T> extends State<SelectPopup<T>> {
           surfaceOpacity: surfaceOpacity,
           borderRadius: widget.borderRadius,
           padding: EdgeInsets.zero,
+          filled: widget.filled,
+          fillColor: widget.fillColor,
+          boxShadow: widget.boxShadow,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             mainAxisSize: MainAxisSize.min,
@@ -888,8 +908,7 @@ class MultiSelect<T> extends StatefulWidget {
   State<MultiSelect<T>> createState() => MultiSelectState<T>();
 }
 
-class MultiSelectState<T> extends State<MultiSelect<T>>
-    with FormValueSupplier<List<T>, MultiSelect<T>> {
+class MultiSelectState<T> extends State<MultiSelect<T>> with FormValueSupplier<List<T>, MultiSelect<T>> {
   late FocusNode _focusNode;
   final PopoverController _popoverController = PopoverController();
   late ValueNotifier<List<T>> _valueNotifier;
