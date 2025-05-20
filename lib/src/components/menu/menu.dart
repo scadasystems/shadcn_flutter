@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart';
 
 class MenuShortcut extends StatelessWidget {
@@ -101,7 +102,7 @@ class MenuRadio<T> extends StatelessWidget {
                 width: 16 * scaling,
                 height: 16 * scaling,
                 child: const Icon(
-                  RadixIcons.dotFilled,
+                  LucideIcons.dot,
                 ).iconSmall(),
               )
             : SizedBox(width: 16 * scaling),
@@ -290,7 +291,7 @@ class MenuCheckbox extends StatelessWidget implements MenuItem {
               width: 16 * scaling,
               height: 16 * scaling,
               child: const Icon(
-                RadixIcons.check,
+                LucideIcons.check,
               ).iconSmall(),
             )
           : SizedBox(width: 16 * scaling),
@@ -428,7 +429,7 @@ class _MenuButtonState extends State<MenuButton> {
                                   widget.trailing!
                                 else if (widget.subMenu != null && menuBarData == null)
                                   const Icon(
-                                    RadixIcons.chevronRight,
+                                    LucideIcons.chevronRight,
                                   ).iconXSmall(),
                               ],
                             ).gap(8 * scaling)

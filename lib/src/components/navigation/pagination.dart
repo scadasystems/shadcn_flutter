@@ -1,3 +1,4 @@
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart';
 
 class Pagination extends StatelessWidget {
@@ -37,8 +38,7 @@ class Pagination extends StatelessWidget {
       if (start < 1) {
         yield* List.generate(maxPages, (index) => index + 1);
       } else if (end > totalPages) {
-        yield* List.generate(
-            maxPages, (index) => totalPages - maxPages + index + 1);
+        yield* List.generate(maxPages, (index) => totalPages - maxPages + index + 1);
       } else {
         yield* List.generate(maxPages, (index) => start + index);
       }
@@ -70,13 +70,13 @@ class Pagination extends StatelessWidget {
     if (showLabel) {
       return GhostButton(
         onPressed: hasPrevious ? () => onPageChanged(page - 1) : null,
-        leading: const Icon(RadixIcons.chevronLeft).iconXSmall(),
+        leading: const Icon(LucideIcons.chevronLeft).iconXSmall(),
         child: Text(localizations.buttonPrevious),
       );
     }
     return GhostButton(
       onPressed: hasPrevious ? () => onPageChanged(page - 1) : null,
-      child: const Icon(RadixIcons.chevronLeft).iconXSmall(),
+      child: const Icon(LucideIcons.chevronLeft).iconXSmall(),
     );
   }
 
@@ -84,13 +84,13 @@ class Pagination extends StatelessWidget {
     if (showLabel) {
       return GhostButton(
         onPressed: hasNext ? () => onPageChanged(page + 1) : null,
-        trailing: const Icon(RadixIcons.chevronRight).iconXSmall(),
+        trailing: const Icon(LucideIcons.chevronRight).iconXSmall(),
         child: Text(localizations.buttonNext),
       );
     }
     return GhostButton(
       onPressed: hasNext ? () => onPageChanged(page + 1) : null,
-      child: const Icon(RadixIcons.chevronRight).iconXSmall(),
+      child: const Icon(LucideIcons.chevronRight).iconXSmall(),
     );
   }
 
@@ -104,8 +104,7 @@ class Pagination extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          if (!hidePreviousOnFirstPage || hasPrevious)
-            _buildPreviousLabel(localizations),
+          if (!hidePreviousOnFirstPage || hasPrevious) _buildPreviousLabel(localizations),
           if (hasMorePreviousPages) ...[
             if (showSkipToFirstPage && firstShownPage - 1 > 1)
               GhostButton(

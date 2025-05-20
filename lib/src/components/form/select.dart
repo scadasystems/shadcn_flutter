@@ -1,9 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart';
 import 'package:shadcn_flutter/src/components/control/hover.dart';
-import 'package:shadcn_flutter/src/icons/lucide_icons.dart';
 
 class SelectController<T> extends ValueNotifier<T?> with ComponentController<T?> {
   SelectController([super.value]);
@@ -1150,7 +1150,7 @@ class _SelectPopupState<T> extends State<SelectPopup<T>> with SelectPopupHandle 
                                                           child: Container(
                                                             padding: const EdgeInsets.symmetric(vertical: 4) * scaling,
                                                             child: const Icon(
-                                                              RadixIcons.chevronUp,
+                                                              LucideIcons.chevronUp,
                                                             ).iconX3Small(),
                                                           ),
                                                         ),
@@ -1187,7 +1187,7 @@ class _SelectPopupState<T> extends State<SelectPopup<T>> with SelectPopupHandle 
                                                           child: Container(
                                                             padding: const EdgeInsets.symmetric(vertical: 4) * scaling,
                                                             child: const Icon(
-                                                              RadixIcons.chevronDown,
+                                                              LucideIcons.chevronDown,
                                                             ).iconX3Small(),
                                                           ),
                                                         ),

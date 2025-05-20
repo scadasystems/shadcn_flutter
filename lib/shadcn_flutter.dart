@@ -183,8 +183,6 @@ export 'src/components/overlay/toast.dart';
 export 'src/components/overlay/tooltip.dart';
 export 'src/components/text/selectable.dart';
 export 'src/components/text/text.dart';
-export 'src/icons/bootstrap_icons.dart';
-export 'src/icons/radix_icons.dart';
 export 'src/shadcn_app.dart';
 export 'src/theme/color_scheme.dart';
 export 'src/theme/generated_colors.dart';
