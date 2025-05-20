@@ -1,11 +1,10 @@
 import 'package:flutter/services.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart';
+import 'package:shadcn_flutter/src/icons/lucide_icons.dart';
 
-typedef CommandBuilder = Stream<List<Widget>> Function(
-    BuildContext context, String? query);
+typedef CommandBuilder = Stream<List<Widget>> Function(BuildContext context, String? query);
 
-typedef ErrorWidgetBuilder = Widget Function(
-    BuildContext context, Object error, StackTrace? stackTrace);
+typedef ErrorWidgetBuilder = Widget Function(BuildContext context, Object error, StackTrace? stackTrace);
 
 class CommandEmpty extends StatelessWidget {
   const CommandEmpty({super.key});
@@ -13,9 +12,7 @@ class CommandEmpty extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final localizations = ShadcnLocalizations.of(context);
-    return Center(
-        child:
-            Text(localizations.commandEmpty).withPadding(vertical: 24).small());
+    return Center(child: Text(localizations.commandEmpty).withPadding(vertical: 24).small());
   }
 }
 
@@ -39,8 +36,7 @@ Future<T?> showCommandDialog<T>({
       surfaceOpacity ??= theme.surfaceOpacity;
       surfaceBlur ??= theme.surfaceBlur;
       return ConstrainedBox(
-        constraints: constraints ??
-            const BoxConstraints.tightFor(width: 510, height: 349) * scaling,
+        constraints: constraints ?? const BoxConstraints.tightFor(width: 510, height: 349) * scaling,
         child: ModalBackdrop(
           borderRadius: subtractByBorder(theme.borderRadiusXxl, 1 * scaling),
           surfaceClip: ModalBackdrop.shouldClipSurface(surfaceOpacity),
@@ -63,8 +59,7 @@ Future<T?> showCommandDialog<T>({
 class Command extends StatefulWidget {
   final bool autofocus;
   final CommandBuilder builder;
-  final Duration
-      debounceDuration; // debounce is used to prevent too many requests
+  final Duration debounceDuration; // debounce is used to prevent too many requests
   final WidgetBuilder? emptyBuilder;
   final ErrorWidgetBuilder? errorBuilder;
   final WidgetBuilder? loadingBuilder;
@@ -146,8 +141,7 @@ class _CommandState extends State<Command> {
                       controller: _controller,
                       border: false,
                       // focusNode: _textFieldFocus,
-                      placeholder: widget.searchPlaceholder ??
-                          Text(ShadcnLocalizations.of(context).commandSearch),
+                      placeholder: widget.searchPlaceholder ?? Text(ShadcnLocalizations.of(context).commandSearch),
                     ),
                   ),
                   if (canPop)
@@ -172,23 +166,19 @@ class _CommandState extends State<Command> {
                         builder: (context, snapshot) {
                           if (snapshot.hasData) {
                             List<Widget> items = List.of(snapshot.data!);
-                            if (snapshot.connectionState ==
-                                ConnectionState.active) {
+                            if (snapshot.connectionState == ConnectionState.active) {
                               items.add(IconTheme.merge(
                                 data: IconThemeData(
                                   color: theme.colorScheme.mutedForeground,
                                 ),
-                                child: const Center(
-                                        child: CircularProgressIndicator())
+                                child: const Center(child: CircularProgressIndicator())
                                     .withPadding(vertical: theme.scaling * 24),
                               ));
                             } else if (items.isEmpty) {
-                              return widget.emptyBuilder?.call(context) ??
-                                  const CommandEmpty();
+                              return widget.emptyBuilder?.call(context) ?? const CommandEmpty();
                             }
                             return ListView.separated(
-                              separatorBuilder: (context, index) =>
-                                  const Divider(),
+                              separatorBuilder: (context, index) => const Divider(),
                               shrinkWrap: true,
                               itemCount: items.length,
                               itemBuilder: (context, index) => items[index],
@@ -227,12 +217,7 @@ class CommandCategory extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         if (title != null)
-          title!
-              .withPadding(
-                  horizontal: theme.scaling * 8, vertical: theme.scaling * 6)
-              .medium()
-              .xSmall()
-              .muted(),
+          title!.withPadding(horizontal: theme.scaling * 8, vertical: theme.scaling * 6).medium().xSmall().muted(),
         ...children,
       ],
     ).withPadding(all: theme.scaling * 4);
@@ -297,26 +282,19 @@ class _CommandItemState extends State<CommandItem> {
         },
         shortcuts: {
           LogicalKeySet(LogicalKeyboardKey.enter): const ActivateIntent(),
-          LogicalKeySet(LogicalKeyboardKey.arrowUp):
-              const DirectionalFocusIntent(TraversalDirection.up),
-          LogicalKeySet(LogicalKeyboardKey.arrowDown):
-              const DirectionalFocusIntent(TraversalDirection.down),
-          LogicalKeySet(LogicalKeyboardKey.arrowLeft):
-              const DirectionalFocusIntent(TraversalDirection.left),
-          LogicalKeySet(LogicalKeyboardKey.arrowRight):
-              const DirectionalFocusIntent(TraversalDirection.right),
+          LogicalKeySet(LogicalKeyboardKey.arrowUp): const DirectionalFocusIntent(TraversalDirection.up),
+          LogicalKeySet(LogicalKeyboardKey.arrowDown): const DirectionalFocusIntent(TraversalDirection.down),
+          LogicalKeySet(LogicalKeyboardKey.arrowLeft): const DirectionalFocusIntent(TraversalDirection.left),
+          LogicalKeySet(LogicalKeyboardKey.arrowRight): const DirectionalFocusIntent(TraversalDirection.right),
         },
         child: AnimatedContainer(
           duration: kDefaultDuration,
           decoration: BoxDecoration(
-            color: _focusNode.hasFocus
-                ? themeData.colorScheme.accent
-                : themeData.colorScheme.accent.withValues(alpha: 0),
+            color:
+                _focusNode.hasFocus ? themeData.colorScheme.accent : themeData.colorScheme.accent.withValues(alpha: 0),
             borderRadius: BorderRadius.circular(themeData.radiusSm),
           ),
-          padding: EdgeInsets.symmetric(
-              horizontal: themeData.scaling * 8,
-              vertical: themeData.scaling * 6),
+          padding: EdgeInsets.symmetric(horizontal: themeData.scaling * 8, vertical: themeData.scaling * 6),
           child: IconTheme(
             data: themeData.iconTheme.small.copyWith(
               color: widget.onTap != null
@@ -335,8 +313,7 @@ class _CommandItemState extends State<CommandItem> {
                   if (widget.leading != null) Gap(themeData.scaling * 8),
                   Expanded(child: widget.title),
                   if (widget.trailing != null) Gap(themeData.scaling * 8),
-                  if (widget.trailing != null)
-                    widget.trailing!.muted().xSmall(),
+                  if (widget.trailing != null) widget.trailing!.muted().xSmall(),
                 ],
               ).small(),
             ),

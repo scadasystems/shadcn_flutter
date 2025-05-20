@@ -305,4 +305,71 @@ class EnglishShadcnLocalizations extends ShadcnLocalizations {
 
   @override
   String dataTableSelectedRows(int count, int total) => '$count of $total row(s) selected.';
+
+  @override
+  String get dateDayAbbreviation => 'DD';
+
+  @override
+  String get dateMonthAbbreviation => 'MM';
+
+  @override
+  List<DatePart> get datePartsOrder => const [
+        // MM/DD/YYYY
+        DatePart.month,
+        DatePart.day,
+        DatePart.year,
+      ];
+
+  @override
+  String get dateYearAbbreviation => 'YYYY';
+
+  @override
+  String get durationDay => 'Day';
+
+  @override
+  String get durationHour => 'Hour';
+
+  @override
+  String get durationMinute => 'Minute';
+
+  @override
+  String get durationSecond => 'Second';
+
+  @override
+  String formatDuration(Duration duration,
+      {bool showDays = true, bool showHours = true, bool showMinutes = true, bool showSeconds = true}) {
+    final days = duration.inDays;
+    final hours = duration.inHours % Duration.hoursPerDay;
+    final minutes = duration.inMinutes % Duration.minutesPerHour;
+    final seconds = duration.inSeconds % Duration.secondsPerMinute;
+    final parts = <String>[];
+    if (showDays && days > 0) {
+      parts.add('${days}d');
+    }
+    if (showHours && hours > 0) {
+      parts.add('${hours}h');
+    }
+    if (showMinutes && minutes > 0) {
+      parts.add('${minutes}m');
+    }
+    if (showSeconds && seconds > 0) {
+      parts.add('${seconds}s');
+    }
+    return parts.join(' ');
+  }
+
+  @override
+  String get placeholderDurationPicker => 'Select a duration';
+
+  @override
+  String get timeDaysAbbreviation => 'DD';
+
+  @override
+  String get timeHoursAbbreviation => 'HH';
+
+  @override
+  String get timeMinutesAbbreviation => 'MM';
+
+  @override
+  String get timeSecondsAbbreviation => 'SS';
 }

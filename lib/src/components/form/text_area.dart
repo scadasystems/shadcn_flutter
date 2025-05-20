@@ -4,6 +4,7 @@ import 'package:shadcn_flutter/shadcn_flutter.dart';
 class TextArea extends StatefulWidget {
   final TextEditingController? controller;
   final bool filled;
+  final Color? fillColor;
   final Widget? placeholder;
   final AlignmentGeometry? placeholderAlignment;
   final bool border;
@@ -56,6 +57,7 @@ class TextArea extends StatefulWidget {
     this.onWidthChanged,
     this.controller,
     this.filled = false,
+    this.fillColor,
     this.placeholder,
     this.placeholderAlignment,
     this.border = true,
@@ -150,7 +152,7 @@ class _TextAreaState extends State<TextArea> {
                 border: widget.border,
                 filled: widget.filled,
                 placeholder: widget.placeholder,
-                placeholderAlignment: widget.placeholderAlignment,
+                // placeholderAlignment: widget.placeholderAlignment,
                 leading: widget.leading,
                 trailing: widget.trailing,
                 padding: widget.padding,

@@ -305,4 +305,71 @@ class JapaneseShadcnLocalizations extends ShadcnLocalizations {
 
   @override
   String dataTableSelectedRows(int count, int total) => '$total行中$count行選択済み';
+
+  @override
+  String get dateDayAbbreviation => 'DD';
+
+  @override
+  String get dateMonthAbbreviation => 'MM';
+
+  @override
+  List<DatePart> get datePartsOrder => const [
+        // YYYY/MM/DD
+        DatePart.year,
+        DatePart.month,
+        DatePart.day,
+      ];
+
+  @override
+  String get dateYearAbbreviation => 'YYYY';
+
+  @override
+  String get durationDay => '日';
+
+  @override
+  String get durationHour => '時間';
+
+  @override
+  String get durationMinute => '分';
+
+  @override
+  String get durationSecond => '秒';
+
+  @override
+  String formatDuration(Duration duration,
+      {bool showDays = true, bool showHours = true, bool showMinutes = true, bool showSeconds = true}) {
+    final days = duration.inDays;
+    final hours = duration.inHours % Duration.hoursPerDay;
+    final minutes = duration.inMinutes % Duration.minutesPerHour;
+    final seconds = duration.inSeconds % Duration.secondsPerMinute;
+    final parts = <String>[];
+    if (showDays && days > 0) {
+      parts.add('$days日');
+    }
+    if (showHours && hours > 0) {
+      parts.add('$hours時間');
+    }
+    if (showMinutes && minutes > 0) {
+      parts.add('$minutes分');
+    }
+    if (showSeconds && seconds > 0) {
+      parts.add('$seconds秒');
+    }
+    return parts.join(' ');
+  }
+
+  @override
+  String get placeholderDurationPicker => '期間を選択してください';
+
+  @override
+  String get timeDaysAbbreviation => 'DD';
+
+  @override
+  String get timeHoursAbbreviation => 'HH';
+
+  @override
+  String get timeMinutesAbbreviation => 'MM';
+
+  @override
+  String get timeSecondsAbbreviation => 'SS';
 }

@@ -39,10 +39,8 @@ class Typography {
   final TextStyle textMuted;
 
   const Typography.geist({
-    this.sans =
-        const TextStyle(fontFamily: 'GeistSans', package: 'shadcn_flutter'),
-    this.mono =
-        const TextStyle(fontFamily: 'GeistMono', package: 'shadcn_flutter'),
+    this.sans = const TextStyle(fontFamily: 'GeistSans'),
+    this.mono = const TextStyle(fontFamily: 'GeistMono'),
     this.xSmall = const TextStyle(fontSize: 12),
     this.small = const TextStyle(fontSize: 14),
     this.base = const TextStyle(fontSize: 16),
@@ -71,10 +69,8 @@ class Typography {
     this.h3 = const TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
     this.h4 = const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
     this.p = const TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
-    this.blockQuote = const TextStyle(
-        fontSize: 16, fontWeight: FontWeight.w400, fontStyle: FontStyle.italic),
-    this.inlineCode = const TextStyle(
-        fontFamily: 'GeistMono', fontSize: 14, fontWeight: FontWeight.w600),
+    this.blockQuote = const TextStyle(fontSize: 16, fontWeight: FontWeight.w400, fontStyle: FontStyle.italic),
+    this.inlineCode = const TextStyle(fontFamily: 'GeistMono', fontSize: 14, fontWeight: FontWeight.w600),
     this.lead = const TextStyle(fontSize: 20),
     this.textLarge = const TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
     this.textSmall = const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
@@ -200,112 +196,45 @@ class Typography {
 
   Typography scale(double factor) {
     return Typography(
-      sans: sans.fontSize == null
-          ? sans
-          : sans.copyWith(fontSize: sans.fontSize! * factor),
-      mono: mono.fontSize == null
-          ? mono
-          : mono.copyWith(fontSize: mono.fontSize! * factor),
-      xSmall: xSmall.fontSize == null
-          ? xSmall
-          : xSmall.copyWith(fontSize: xSmall.fontSize! * factor),
-      small: small.fontSize == null
-          ? small
-          : small.copyWith(fontSize: small.fontSize! * factor),
-      base: base.fontSize == null
-          ? base
-          : base.copyWith(fontSize: base.fontSize! * factor),
-      large: large.fontSize == null
-          ? large
-          : large.copyWith(fontSize: large.fontSize! * factor),
-      xLarge: xLarge.fontSize == null
-          ? xLarge
-          : xLarge.copyWith(fontSize: xLarge.fontSize! * factor),
-      x2Large: x2Large.fontSize == null
-          ? x2Large
-          : x2Large.copyWith(fontSize: x2Large.fontSize! * factor),
-      x3Large: x3Large.fontSize == null
-          ? x3Large
-          : x3Large.copyWith(fontSize: x3Large.fontSize! * factor),
-      x4Large: x4Large.fontSize == null
-          ? x4Large
-          : x4Large.copyWith(fontSize: x4Large.fontSize! * factor),
-      x5Large: x5Large.fontSize == null
-          ? x5Large
-          : x5Large.copyWith(fontSize: x5Large.fontSize! * factor),
-      x6Large: x6Large.fontSize == null
-          ? x6Large
-          : x6Large.copyWith(fontSize: x6Large.fontSize! * factor),
-      x7Large: x7Large.fontSize == null
-          ? x7Large
-          : x7Large.copyWith(fontSize: x7Large.fontSize! * factor),
-      x8Large: x8Large.fontSize == null
-          ? x8Large
-          : x8Large.copyWith(fontSize: x8Large.fontSize! * factor),
-      x9Large: x9Large.fontSize == null
-          ? x9Large
-          : x9Large.copyWith(fontSize: x9Large.fontSize! * factor),
-      thin: thin.fontSize == null
-          ? thin
-          : thin.copyWith(fontSize: thin.fontSize! * factor),
-      light: light.fontSize == null
-          ? light
-          : light.copyWith(fontSize: light.fontSize! * factor),
-      extraLight: extraLight.fontSize == null
-          ? extraLight
-          : extraLight.copyWith(fontSize: extraLight.fontSize! * factor),
-      normal: normal.fontSize == null
-          ? normal
-          : normal.copyWith(fontSize: normal.fontSize! * factor),
-      medium: medium.fontSize == null
-          ? medium
-          : medium.copyWith(fontSize: medium.fontSize! * factor),
-      semiBold: semiBold.fontSize == null
-          ? semiBold
-          : semiBold.copyWith(fontSize: semiBold.fontSize! * factor),
-      bold: bold.fontSize == null
-          ? bold
-          : bold.copyWith(fontSize: bold.fontSize! * factor),
-      extraBold: extraBold.fontSize == null
-          ? extraBold
-          : extraBold.copyWith(fontSize: extraBold.fontSize! * factor),
-      black: black.fontSize == null
-          ? black
-          : black.copyWith(fontSize: black.fontSize! * factor),
-      italic: italic.fontSize == null
-          ? italic
-          : italic.copyWith(fontSize: italic.fontSize! * factor),
-      h1: h1.fontSize == null
-          ? h1
-          : h1.copyWith(fontSize: h1.fontSize! * factor),
-      h2: h2.fontSize == null
-          ? h2
-          : h2.copyWith(fontSize: h2.fontSize! * factor),
-      h3: h3.fontSize == null
-          ? h3
-          : h3.copyWith(fontSize: h3.fontSize! * factor),
-      h4: h4.fontSize == null
-          ? h4
-          : h4.copyWith(fontSize: h4.fontSize! * factor),
+      sans: sans.fontSize == null ? sans : sans.copyWith(fontSize: sans.fontSize! * factor),
+      mono: mono.fontSize == null ? mono : mono.copyWith(fontSize: mono.fontSize! * factor),
+      xSmall: xSmall.fontSize == null ? xSmall : xSmall.copyWith(fontSize: xSmall.fontSize! * factor),
+      small: small.fontSize == null ? small : small.copyWith(fontSize: small.fontSize! * factor),
+      base: base.fontSize == null ? base : base.copyWith(fontSize: base.fontSize! * factor),
+      large: large.fontSize == null ? large : large.copyWith(fontSize: large.fontSize! * factor),
+      xLarge: xLarge.fontSize == null ? xLarge : xLarge.copyWith(fontSize: xLarge.fontSize! * factor),
+      x2Large: x2Large.fontSize == null ? x2Large : x2Large.copyWith(fontSize: x2Large.fontSize! * factor),
+      x3Large: x3Large.fontSize == null ? x3Large : x3Large.copyWith(fontSize: x3Large.fontSize! * factor),
+      x4Large: x4Large.fontSize == null ? x4Large : x4Large.copyWith(fontSize: x4Large.fontSize! * factor),
+      x5Large: x5Large.fontSize == null ? x5Large : x5Large.copyWith(fontSize: x5Large.fontSize! * factor),
+      x6Large: x6Large.fontSize == null ? x6Large : x6Large.copyWith(fontSize: x6Large.fontSize! * factor),
+      x7Large: x7Large.fontSize == null ? x7Large : x7Large.copyWith(fontSize: x7Large.fontSize! * factor),
+      x8Large: x8Large.fontSize == null ? x8Large : x8Large.copyWith(fontSize: x8Large.fontSize! * factor),
+      x9Large: x9Large.fontSize == null ? x9Large : x9Large.copyWith(fontSize: x9Large.fontSize! * factor),
+      thin: thin.fontSize == null ? thin : thin.copyWith(fontSize: thin.fontSize! * factor),
+      light: light.fontSize == null ? light : light.copyWith(fontSize: light.fontSize! * factor),
+      extraLight:
+          extraLight.fontSize == null ? extraLight : extraLight.copyWith(fontSize: extraLight.fontSize! * factor),
+      normal: normal.fontSize == null ? normal : normal.copyWith(fontSize: normal.fontSize! * factor),
+      medium: medium.fontSize == null ? medium : medium.copyWith(fontSize: medium.fontSize! * factor),
+      semiBold: semiBold.fontSize == null ? semiBold : semiBold.copyWith(fontSize: semiBold.fontSize! * factor),
+      bold: bold.fontSize == null ? bold : bold.copyWith(fontSize: bold.fontSize! * factor),
+      extraBold: extraBold.fontSize == null ? extraBold : extraBold.copyWith(fontSize: extraBold.fontSize! * factor),
+      black: black.fontSize == null ? black : black.copyWith(fontSize: black.fontSize! * factor),
+      italic: italic.fontSize == null ? italic : italic.copyWith(fontSize: italic.fontSize! * factor),
+      h1: h1.fontSize == null ? h1 : h1.copyWith(fontSize: h1.fontSize! * factor),
+      h2: h2.fontSize == null ? h2 : h2.copyWith(fontSize: h2.fontSize! * factor),
+      h3: h3.fontSize == null ? h3 : h3.copyWith(fontSize: h3.fontSize! * factor),
+      h4: h4.fontSize == null ? h4 : h4.copyWith(fontSize: h4.fontSize! * factor),
       p: p.fontSize == null ? p : p.copyWith(fontSize: p.fontSize! * factor),
-      blockQuote: blockQuote.fontSize == null
-          ? blockQuote
-          : blockQuote.copyWith(fontSize: blockQuote.fontSize! * factor),
-      inlineCode: inlineCode.fontSize == null
-          ? inlineCode
-          : inlineCode.copyWith(fontSize: inlineCode.fontSize! * factor),
-      lead: lead.fontSize == null
-          ? lead
-          : lead.copyWith(fontSize: lead.fontSize! * factor),
-      textLarge: textLarge.fontSize == null
-          ? textLarge
-          : textLarge.copyWith(fontSize: textLarge.fontSize! * factor),
-      textSmall: textSmall.fontSize == null
-          ? textSmall
-          : textSmall.copyWith(fontSize: textSmall.fontSize! * factor),
-      textMuted: textMuted.fontSize == null
-          ? textMuted
-          : textMuted.copyWith(fontSize: textMuted.fontSize! * factor),
+      blockQuote:
+          blockQuote.fontSize == null ? blockQuote : blockQuote.copyWith(fontSize: blockQuote.fontSize! * factor),
+      inlineCode:
+          inlineCode.fontSize == null ? inlineCode : inlineCode.copyWith(fontSize: inlineCode.fontSize! * factor),
+      lead: lead.fontSize == null ? lead : lead.copyWith(fontSize: lead.fontSize! * factor),
+      textLarge: textLarge.fontSize == null ? textLarge : textLarge.copyWith(fontSize: textLarge.fontSize! * factor),
+      textSmall: textSmall.fontSize == null ? textSmall : textSmall.copyWith(fontSize: textSmall.fontSize! * factor),
+      textMuted: textMuted.fontSize == null ? textMuted : textMuted.copyWith(fontSize: textMuted.fontSize! * factor),
     );
   }
 

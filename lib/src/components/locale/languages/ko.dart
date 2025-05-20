@@ -303,4 +303,76 @@ class KoreanShadcnLocalizations extends ShadcnLocalizations {
 
   @override
   String dataTableSelectedRows(int count, int total) => '$total개 중 $count개 선택됨';
+
+  @override
+  String get dateDayAbbreviation => 'DD';
+
+  @override
+  String get dateMonthAbbreviation => 'MM';
+
+  @override
+  List<DatePart> get datePartsOrder => const [
+        // MM/DD/YYYY
+        DatePart.month,
+        DatePart.day,
+        DatePart.year,
+      ];
+
+  @override
+  String get dateYearAbbreviation => 'YYYY';
+
+  @override
+  String get durationDay => '일';
+
+  @override
+  String get durationHour => '시간';
+
+  @override
+  String get durationMinute => '분';
+
+  @override
+  String get durationSecond => '초';
+
+  @override
+  String formatDuration(Duration duration,
+      {bool showDays = true, bool showHours = true, bool showMinutes = true, bool showSeconds = true}) {
+    final days = duration.inDays;
+    final hours = duration.inHours % Duration.hoursPerDay;
+    final minutes = duration.inMinutes % Duration.minutesPerHour;
+    final seconds = duration.inSeconds % Duration.secondsPerMinute;
+    final parts = <String>[];
+    if (showDays && days > 0) {
+      parts.add('$days일');
+    }
+    if (showHours && hours > 0) {
+      parts.add('$hours시');
+    }
+    if (showMinutes && minutes > 0) {
+      parts.add('$minutes분');
+    }
+    if (showSeconds && seconds > 0) {
+      parts.add('$seconds초');
+    }
+    return parts.join(' ');
+  }
+
+  @override
+  // TODO: implement placeholderDurationPicker
+  String get placeholderDurationPicker => '지속시간을 선택하세요';
+
+  @override
+  // TODO: implement timeDaysAbbreviation
+  String get timeDaysAbbreviation => 'DD';
+
+  @override
+  // TODO: implement timeHoursAbbreviation
+  String get timeHoursAbbreviation => 'HH';
+
+  @override
+  // TODO: implement timeMinutesAbbreviation
+  String get timeMinutesAbbreviation => 'MM';
+
+  @override
+  // TODO: implement timeSecondsAbbreviation
+  String get timeSecondsAbbreviation => 'SS';
 }

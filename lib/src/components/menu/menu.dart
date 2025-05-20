@@ -184,6 +184,7 @@ class MenuButton extends StatefulWidget implements MenuItem {
   final bool autoClose;
   @override
   final PopoverController? popoverController;
+
   const MenuButton({
     super.key,
     required this.child,
@@ -419,14 +420,16 @@ class _MenuButtonState extends State<MenuButton> {
                   ),
                   trailing: menuBarData != null
                       ? widget.trailing
-                      : widget.trailing != null || (widget.subMenu != null && menuBarData == null)
+                      : widget.subMenu != null && menuBarData == null
                           ? Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
                               children: [
-                                if (widget.trailing != null) widget.trailing!,
-                                if (widget.subMenu != null && menuBarData == null)
+                                if (widget.trailing != null)
+                                  widget.trailing!
+                                else if (widget.subMenu != null && menuBarData == null)
                                   const Icon(
                                     RadixIcons.chevronRight,
-                                  ).iconSmall(),
+                                  ).iconXSmall(),
                               ],
                             ).gap(8 * scaling)
                           : null,
@@ -763,34 +766,34 @@ class MenuOverlayHandler extends OverlayHandler {
   const MenuOverlayHandler(this.manager);
 
   @override
-  OverlayCompleter<T?> show<T>(
-      {required BuildContext context,
-      required AlignmentGeometry alignment,
-      required WidgetBuilder builder,
-      Offset? position,
-      AlignmentGeometry? anchorAlignment,
-      PopoverConstraint widthConstraint = PopoverConstraint.flexible,
-      PopoverConstraint heightConstraint = PopoverConstraint.flexible,
-      Key? key,
-      bool rootOverlay = true,
-      bool modal = true,
-      bool barrierDismissable = true,
-      Clip clipBehavior = Clip.none,
-      Object? regionGroupId,
-      Offset? offset,
-      AlignmentGeometry? transitionAlignment,
-      EdgeInsetsGeometry? margin,
-      bool follow = true,
-      bool consumeOutsideTaps = true,
-      ValueChanged<PopoverOverlayWidgetState>? onTickFollow,
-      bool allowInvertHorizontal = true,
-      bool allowInvertVertical = true,
-      bool dismissBackdropFocus = true,
-      Duration? showDuration,
-      Duration? dismissDuration,
-      OverlayBarrier? overlayBarrier,
-        LayerLink? layerLink,
-      }) {
+  OverlayCompleter<T?> show<T>({
+    required BuildContext context,
+    required AlignmentGeometry alignment,
+    required WidgetBuilder builder,
+    Offset? position,
+    AlignmentGeometry? anchorAlignment,
+    PopoverConstraint widthConstraint = PopoverConstraint.flexible,
+    PopoverConstraint heightConstraint = PopoverConstraint.flexible,
+    Key? key,
+    bool rootOverlay = true,
+    bool modal = true,
+    bool barrierDismissable = true,
+    Clip clipBehavior = Clip.none,
+    Object? regionGroupId,
+    Offset? offset,
+    AlignmentGeometry? transitionAlignment,
+    EdgeInsetsGeometry? margin,
+    bool follow = true,
+    bool consumeOutsideTaps = true,
+    ValueChanged<PopoverOverlayWidgetState>? onTickFollow,
+    bool allowInvertHorizontal = true,
+    bool allowInvertVertical = true,
+    bool dismissBackdropFocus = true,
+    Duration? showDuration,
+    Duration? dismissDuration,
+    OverlayBarrier? overlayBarrier,
+    LayerLink? layerLink,
+  }) {
     return manager.showMenu(
       context: context,
       alignment: alignment,
