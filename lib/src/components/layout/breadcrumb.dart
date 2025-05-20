@@ -1,4 +1,5 @@
 import 'package:flutter/gestures.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../../../shadcn_flutter.dart';
 
@@ -12,7 +13,7 @@ class _ArrowSeparator extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 12 * scaling),
       child: const Icon(
-        RadixIcons.chevronRight,
+        LucideIcons.chevronRight,
       ).iconXSmall().muted(),
     );
   }

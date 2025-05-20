@@ -1,4 +1,4 @@
-import 'package:shadcn_flutter/src/icons/lucide_icons.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../../../shadcn_flutter.dart';
 

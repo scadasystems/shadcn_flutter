@@ -1,33 +1,34 @@
+import 'package:bootstrap_icons/bootstrap_icons.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart';
 
 Widget _buildFileIcon(String extension) {
   switch (extension) {
     case 'pdf':
-      return const Icon(BootstrapIcons.filetypePdf);
+      return const Icon(BootstrapIcons.filetype_pdf);
     case 'doc':
     case 'docx':
-      return const Icon(BootstrapIcons.fileWord);
+      return const Icon(BootstrapIcons.file_word);
     case 'xls':
     case 'xlsx':
-      return const Icon(BootstrapIcons.fileExcel);
+      return const Icon(BootstrapIcons.file_excel);
     case 'ppt':
     case 'pptx':
-      return const Icon(BootstrapIcons.filePpt);
+      return const Icon(BootstrapIcons.file_ppt);
     case 'zip':
     case 'rar':
-      return const Icon(BootstrapIcons.fileZip);
+      return const Icon(BootstrapIcons.file_zip);
     case 'jpg':
     case 'jpeg':
     case 'png':
     case 'gif':
-      return const Icon(BootstrapIcons.fileImage);
+      return const Icon(BootstrapIcons.file_image);
     case 'mp3':
     case 'wav':
-      return const Icon(BootstrapIcons.fileMusic);
+      return const Icon(BootstrapIcons.file_music);
     case 'mp4':
     case 'avi':
     case 'mkv':
-      return const Icon(BootstrapIcons.filePlay);
+      return const Icon(BootstrapIcons.file_play);
     default:
       return const Icon(BootstrapIcons.file);
   }
@@ -44,13 +45,13 @@ class FileIconProvider extends StatelessWidget {
     super.key,
     FileIconBuilder this.builder = _buildFileIcon,
     required this.child,
-  })  : icons = null;
+  }) : icons = null;
 
   const FileIconProvider({
     super.key,
     required this.icons,
     required this.child,
-  })  : builder = null;
+  }) : builder = null;
 
   @override
   Widget build(BuildContext context) {

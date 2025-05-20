@@ -25,7 +25,7 @@ class AlertDialog extends StatefulWidget {
   });
 
   @override
-  _AlertDialogState createState() => _AlertDialogState();
+  State<AlertDialog> createState() => _AlertDialogState();
 }
 
 class _AlertDialogState extends State<AlertDialog> {
@@ -36,8 +36,7 @@ class _AlertDialogState extends State<AlertDialog> {
     return ModalBackdrop(
       borderRadius: themeData.borderRadiusXxl,
       barrierColor: widget.barrierColor ?? Colors.black.withValues(alpha: 0.8),
-      surfaceClip: ModalBackdrop.shouldClipSurface(
-          widget.surfaceOpacity ?? themeData.surfaceOpacity),
+      surfaceClip: ModalBackdrop.shouldClipSurface(widget.surfaceOpacity ?? themeData.surfaceOpacity),
       child: ModalContainer(
         fillColor: themeData.colorScheme.popover,
         filled: true,
@@ -56,23 +55,20 @@ class _AlertDialogState extends State<AlertDialog> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  if (widget.leading != null)
-                    widget.leading!.iconXLarge().iconMutedForeground(),
+                  if (widget.leading != null) widget.leading!.iconXLarge().iconMutedForeground(),
                   if (widget.title != null || widget.content != null)
                     Flexible(
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.start,
+                        spacing: 18 * scaling,
                         children: [
-                          if (widget.title != null)
-                            widget.title!.large().semiBold(),
-                          if (widget.content != null)
-                            widget.content!.small().muted(),
+                          if (widget.title != null) widget.title!.large().semiBold(),
+                          if (widget.content != null) widget.content!.small().muted(),
                         ],
-                      ).gap(8 * scaling),
+                      ),
                     ),
-                  if (widget.trailing != null)
-                    widget.trailing!.iconXLarge().iconMutedForeground(),
+                  if (widget.trailing != null) widget.trailing!.iconXLarge().iconMutedForeground(),
                 ],
               ).gap(16 * scaling),
             ),
@@ -81,8 +77,7 @@ class _AlertDialogState extends State<AlertDialog> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 mainAxisSize: MainAxisSize.min,
                 // children: widget.actions!,
-                children: join(widget.actions!, SizedBox(width: 8 * scaling))
-                    .toList(),
+                children: join(widget.actions!, SizedBox(width: 8 * scaling)).toList(),
               ),
           ],
         ).gap(16 * scaling),

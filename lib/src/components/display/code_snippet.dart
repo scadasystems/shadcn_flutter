@@ -1,5 +1,5 @@
 import 'package:flutter/services.dart';
-import 'package:shadcn_flutter/src/icons/lucide_icons.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:syntax_highlight/syntax_highlight.dart';
 
 import '../../../shadcn_flutter.dart';

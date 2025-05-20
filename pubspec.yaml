@@ -16,7 +16,7 @@ dependencies:
   
   # Icons
   bootstrap_icons: ^1.11.3
-  lucide_icons_flutter: ^3.0.3
+  lucide_icons_flutter:
   radix_icons: ^1.0.1
 
 

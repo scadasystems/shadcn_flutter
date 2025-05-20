@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart' hide TextInput;
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart';
-import 'package:shadcn_flutter/src/icons/lucide_icons.dart';
 
 typedef ChipWidgetBuilder<T> = Widget Function(BuildContext context, T chip);
 

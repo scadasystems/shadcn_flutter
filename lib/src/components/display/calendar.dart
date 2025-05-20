@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart';
-import 'package:shadcn_flutter/src/icons/lucide_icons.dart';
 
 enum CalendarViewType {
   date,
