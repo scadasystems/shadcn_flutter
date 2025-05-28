@@ -670,13 +670,7 @@ class SelectState<T> extends State<Select<T>> with FormValueSupplier<T, Select<T
                     ),
                   ),
                   SizedBox(width: 8 * scaling),
-                  IconTheme.merge(
-                    data: IconThemeData(
-                      color: theme.colorScheme.foreground,
-                      opacity: 0.5,
-                    ),
-                    child: const Icon(LucideIcons.chevronsUpDown).iconSmall(),
-                  ),
+                  const Icon(LucideIcons.chevronsUpDown, size: 12),
                 ],
               ),
             ),

@@ -424,7 +424,7 @@ class _MenuButtonState extends State<MenuButton> {
                   ),
                   trailing: menuBarData != null
                       ? widget.trailing
-                      : widget.subMenu != null && menuBarData == null
+                      : widget.trailing != null || (widget.subMenu != null && menuBarData == null)
                           ? Row(
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [

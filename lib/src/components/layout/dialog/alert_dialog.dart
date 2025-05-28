@@ -64,7 +64,8 @@ class _AlertDialogState extends State<AlertDialog> {
                         spacing: 18 * scaling,
                         children: [
                           if (widget.title != null) widget.title!.large().semiBold(),
-                          if (widget.content != null) widget.content!.small().muted(),
+                          // if (widget.content != null) widget.content!.small().muted(),
+                          if (widget.content != null) widget.content!,
                         ],
                       ),
                     ),
