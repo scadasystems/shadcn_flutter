@@ -36,7 +36,8 @@ Future<T?> showCommandDialog<T>({
       surfaceOpacity ??= theme.surfaceOpacity;
       surfaceBlur ??= theme.surfaceBlur;
       return ConstrainedBox(
-        constraints: constraints ?? const BoxConstraints.tightFor(width: 510, height: 349) * scaling,
+        constraints: constraints ??
+            const BoxConstraints.tightFor(width: 510, height: 349) * scaling,
         child: ModalBackdrop(
           borderRadius: subtractByBorder(theme.borderRadiusXxl, 1 * scaling),
           surfaceClip: ModalBackdrop.shouldClipSurface(surfaceOpacity),
@@ -290,8 +291,9 @@ class _CommandItemState extends State<CommandItem> {
         child: AnimatedContainer(
           duration: kDefaultDuration,
           decoration: BoxDecoration(
-            color:
-                _focusNode.hasFocus ? themeData.colorScheme.accent : themeData.colorScheme.accent.withValues(alpha: 0),
+            color: _focusNode.hasFocus
+                ? themeData.colorScheme.accent
+                : themeData.colorScheme.accent.withValues(alpha: 0),
             borderRadius: BorderRadius.circular(themeData.radiusSm),
           ),
           padding: EdgeInsets.symmetric(horizontal: themeData.scaling * 8, vertical: themeData.scaling * 6),

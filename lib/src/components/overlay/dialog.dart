@@ -215,7 +215,9 @@ class DialogRoute<T> extends RawDialogRoute<T> {
                 final scaling = theme.scaling;
 
                 return Padding(
-                  padding: fullScreen ? EdgeInsets.zero : const EdgeInsets.all(16) * scaling,
+                  padding: fullScreen
+                      ? EdgeInsets.zero
+                      : const EdgeInsets.all(16) * scaling,
                   child: builder(context),
                 );
               },
@@ -524,8 +526,10 @@ class FullScreenDialogOverlayHandler extends OverlayHandler {
       context,
       rootNavigator: rootOverlay,
     );
-    final CapturedThemes themes = InheritedTheme.capture(from: context, to: navigatorState.context);
-    final CapturedData data = Data.capture(from: context, to: navigatorState.context);
+    final CapturedThemes themes =
+        InheritedTheme.capture(from: context, to: navigatorState.context);
+    final CapturedData data =
+        Data.capture(from: context, to: navigatorState.context);
     var dialogRoute = DialogRoute<T>(
       context: context,
       fullScreen: true,
@@ -548,7 +552,8 @@ class FullScreenDialogOverlayHandler extends OverlayHandler {
               surfaceClip: ModalBackdrop.shouldClipSurface(surfaceOpacity),
               borderRadius: overlayBarrier.borderRadius,
               padding: overlayBarrier.padding,
-              barrierColor: overlayBarrier.barrierColor ?? const Color.fromRGBO(0, 0, 0, 0.8),
+              barrierColor: overlayBarrier.barrierColor ??
+                  const Color.fromRGBO(0, 0, 0, 0.8),
               child: child,
             ),
           );
@@ -562,7 +567,9 @@ class FullScreenDialogOverlayHandler extends OverlayHandler {
       },
       themes: themes,
       barrierDismissible: barrierDismissable,
-      barrierColor: overlayBarrier == null ? const Color.fromRGBO(0, 0, 0, 0.8) : Colors.transparent,
+      barrierColor: overlayBarrier == null
+          ? const Color.fromRGBO(0, 0, 0, 0.8)
+          : Colors.transparent,
       barrierLabel: 'Dismiss',
       useSafeArea: true,
       data: data,

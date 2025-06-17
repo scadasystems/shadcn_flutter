@@ -161,14 +161,17 @@ class _DatePickerDialogState extends State<DatePickerDialog> {
                               }
                             });
                           },
-                          child: const Icon(LucideIcons.arrowRight).iconXSmall(),
+                          child:
+                              const Icon(LucideIcons.arrowRight).iconXSmall(),
                         ),
                     ],
                   ),
                 ),
-                if (_viewType == CalendarViewType.date && viewMode == CalendarSelectionMode.range)
+                if (_viewType == CalendarViewType.date &&
+                    viewMode == CalendarSelectionMode.range)
                   Gap(theme.scaling * 16),
-                if (_viewType == CalendarViewType.date && viewMode == CalendarSelectionMode.range)
+                if (_viewType == CalendarViewType.date &&
+                    viewMode == CalendarSelectionMode.range)
                   Expanded(
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
@@ -223,7 +226,8 @@ class _DatePickerDialogState extends State<DatePickerDialog> {
                               }
                             });
                           },
-                          child: const Icon(LucideIcons.arrowRight).iconXSmall(),
+                          child:
+                              const Icon(LucideIcons.arrowRight).iconXSmall(),
                         ),
                       ],
                     ),
@@ -264,9 +268,11 @@ class _DatePickerDialogState extends State<DatePickerDialog> {
                     });
                   },
                 ),
-                if (_viewType == CalendarViewType.date && viewMode == CalendarSelectionMode.range)
+                if (_viewType == CalendarViewType.date &&
+                    viewMode == CalendarSelectionMode.range)
                   Gap(theme.scaling * 16),
-                if (_viewType == CalendarViewType.date && viewMode == CalendarSelectionMode.range)
+                if (_viewType == CalendarViewType.date &&
+                    viewMode == CalendarSelectionMode.range)
                   buildView(
                     context,
                     _yearSelectStart,
@@ -732,14 +738,17 @@ class _CalendarState extends State<Calendar> {
   @override
   void initState() {
     super.initState();
-    _gridData = CalendarGridData(month: widget.view.month, year: widget.view.year);
+    _gridData =
+        CalendarGridData(month: widget.view.month, year: widget.view.year);
   }
 
   @override
   void didUpdateWidget(covariant Calendar oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.view.year != widget.view.year || oldWidget.view.month != widget.view.month) {
-      _gridData = CalendarGridData(month: widget.view.month, year: widget.view.year);
+    if (oldWidget.view.year != widget.view.year ||
+        oldWidget.view.month != widget.view.month) {
+      _gridData =
+          CalendarGridData(month: widget.view.month, year: widget.view.year);
     }
   }
 
@@ -749,7 +758,8 @@ class _CalendarState extends State<Calendar> {
       return;
     }
     if (widget.selectionMode == CalendarSelectionMode.single) {
-      if (calendarValue is SingleCalendarValue && date.isAtSameMomentAs(calendarValue.date)) {
+      if (calendarValue is SingleCalendarValue &&
+          date.isAtSameMomentAs(calendarValue.date)) {
         widget.onChanged?.call(null);
         return;
       }
@@ -825,7 +835,9 @@ class _CalendarState extends State<Calendar> {
       data: _gridData,
       itemBuilder: (item) {
         DateTime date = item.date;
-        CalendarValueLookup lookup = widget.value?.lookup(date.year, date.month, date.day) ?? CalendarValueLookup.none;
+        CalendarValueLookup lookup =
+            widget.value?.lookup(date.year, date.month, date.day) ??
+                CalendarValueLookup.none;
         CalendarItemType type = CalendarItemType.none;
         switch (lookup) {
           case CalendarValueLookup.none:
@@ -1334,7 +1346,8 @@ class CalendarGridData {
     int daysInMonth = DateTime(year, month == 12 ? 1 : month + 1, 0).day;
 
     int prevMonthDays = firstDayOfMonth.weekday;
-    DateTime prevMonthLastDay = firstDayOfMonth.subtract(Duration(days: prevMonthDays));
+    DateTime prevMonthLastDay =
+        firstDayOfMonth.subtract(Duration(days: prevMonthDays));
 
     List<CalendarGridItem> items = [];
 
@@ -1387,7 +1400,10 @@ class CalendarGridData {
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
 
-    return other is CalendarGridData && other.month == month && other.year == year && listEquals(other.items, items);
+    return other is CalendarGridData &&
+        other.month == month &&
+        other.year == year &&
+        listEquals(other.items, items);
   }
 
   @override
@@ -1400,11 +1416,14 @@ class CalendarGridItem {
   final int rowIndex;
   final bool fromAnotherMonth;
 
-  CalendarGridItem(this.date, this.indexInRow, this.fromAnotherMonth, this.rowIndex);
+  CalendarGridItem(
+      this.date, this.indexInRow, this.fromAnotherMonth, this.rowIndex);
 
   bool get isToday {
     DateTime now = DateTime.now();
-    return date.year == now.year && date.month == now.month && date.day == now.day;
+    return date.year == now.year &&
+        date.month == now.month &&
+        date.day == now.day;
   }
 
   @override
@@ -1462,7 +1481,9 @@ class CalendarGrid extends StatelessWidget {
           width: theme.scaling * 32,
           height: theme.scaling * 32,
           alignment: Alignment.center,
-          child: Text(localizations.getAbbreviatedWeekday(weekday)).muted().xSmall(),
+          child: Text(localizations.getAbbreviatedWeekday(weekday))
+              .muted()
+              .xSmall(),
         ),
       );
     }

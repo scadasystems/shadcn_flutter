@@ -1,15 +1,16 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart' hide TextInput;
-import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart';
 
 typedef ChipWidgetBuilder<T> = Widget Function(BuildContext context, T chip);
 
-class ChipInputController<T> extends ValueNotifier<List<T>> with ComponentController<List<T>> {
+class ChipInputController<T> extends ValueNotifier<List<T>>
+    with ComponentController<List<T>> {
   ChipInputController([super.value = const []]);
 }
 
-class ControlledChipInput<T> extends StatelessWidget with ControlledComponent<List<T>> {
+class ControlledChipInput<T> extends StatelessWidget
+    with ControlledComponent<List<T>> {
   @override
   final List<T> initialValue;
   @override

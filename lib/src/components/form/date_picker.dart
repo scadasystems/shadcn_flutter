@@ -1,12 +1,13 @@
-import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../../../shadcn_flutter.dart';
 
-class DatePickerController extends ValueNotifier<DateTime?> with ComponentController<DateTime?> {
+class DatePickerController extends ValueNotifier<DateTime?>
+    with ComponentController<DateTime?> {
   DatePickerController(super.value);
 }
 
-class ControlledDatePicker extends StatelessWidget with ControlledComponent<DateTime?> {
+class ControlledDatePicker extends StatelessWidget
+    with ControlledComponent<DateTime?> {
   @override
   final DateTime? initialValue;
   @override

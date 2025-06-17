@@ -8,11 +8,13 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../../../shadcn_flutter.dart';
 
-class ColorInputController extends ValueNotifier<ColorDerivative> with ComponentController<ColorDerivative> {
+class ColorInputController extends ValueNotifier<ColorDerivative>
+    with ComponentController<ColorDerivative> {
   ColorInputController(super.value);
 }
 
-class ControlledColorInput extends StatelessWidget with ControlledComponent<ColorDerivative> {
+class ControlledColorInput extends StatelessWidget
+    with ControlledComponent<ColorDerivative> {
   @override
   final ColorDerivative initialValue;
 
@@ -39,7 +41,8 @@ class ControlledColorInput extends StatelessWidget with ControlledComponent<Colo
 
   const ControlledColorInput({
     super.key,
-    this.initialValue = const ColorDerivative.fromHSV(HSVColor.fromAHSV(0, 0, 0, 0)),
+    this.initialValue =
+        const ColorDerivative.fromHSV(HSVColor.fromAHSV(0, 0, 0, 0)),
     this.onChanged,
     this.controller,
     this.enabled = true,
