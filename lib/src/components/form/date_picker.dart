@@ -1,3 +1,4 @@
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../../../shadcn_flutter.dart';
 
@@ -123,9 +124,12 @@ class DatePicker extends StatelessWidget {
           initialView: initialView ?? CalendarView.now(),
           initialViewType: initialViewType ?? CalendarViewType.date,
           selectionMode: CalendarSelectionMode.single,
-          initialValue: handler.value == null ? null : CalendarValue.single(handler.value!),
+          initialValue: handler.value == null
+              ? null
+              : CalendarValue.single(handler.value!),
           onChanged: (value) {
-            handler.value = value == null ? null : (value as SingleCalendarValue).date;
+            handler.value =
+                value == null ? null : (value as SingleCalendarValue).date;
           },
           stateBuilder: stateBuilder,
         );
@@ -217,8 +221,12 @@ class DateRangePicker extends StatelessWidget {
             initialView: initialView,
             initialViewType: initialViewType ?? CalendarViewType.date,
             selectionMode: CalendarSelectionMode.range,
-            viewMode: constraints.biggest.width < 500 ? CalendarSelectionMode.single : CalendarSelectionMode.range,
-            initialValue: value == null ? null : CalendarValue.range(value.start, value.end),
+            viewMode: constraints.biggest.width < 500
+                ? CalendarSelectionMode.single
+                : CalendarSelectionMode.range,
+            initialValue: value == null
+                ? null
+                : CalendarValue.range(value.start, value.end),
             onChanged: (value) {
               if (value == null) {
                 handler.value = null;

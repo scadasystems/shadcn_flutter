@@ -7,17 +7,16 @@ import 'package:flutter/cupertino.dart'
     show
         CupertinoSpellCheckSuggestionsToolbar,
         cupertinoDesktopTextSelectionHandleControls;
+import 'package:flutter/cupertino.dart' as cupertino;
 import 'package:flutter/foundation.dart'
     show IterableProperty, defaultTargetPlatform;
 import 'package:flutter/gestures.dart';
+import 'package:flutter/material.dart' as material;
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:shadcn_flutter/src/components/layout/hidden.dart';
 
 import '../../../shadcn_flutter.dart';
-
-import 'package:flutter/material.dart' as material;
-import 'package:flutter/cupertino.dart' as cupertino;
 
 export 'package:flutter/services.dart'
     show
@@ -521,6 +520,7 @@ mixin TextInput on Widget {
   bool get border;
   BorderRadiusGeometry? get borderRadius;
   bool get filled;
+  Color? get fillColor;
   WidgetStatesController? get statesController;
   TextMagnifierConfiguration? get magnifierConfiguration;
   SpellCheckConfiguration? get spellCheckConfiguration;
@@ -669,6 +669,7 @@ class TextField extends StatefulWidget with TextInput {
     this.border = true,
     this.borderRadius,
     this.filled = false,
+    this.fillColor,
     this.statesController,
     this.features = const [],
     this.submitFormatters = const [],
@@ -910,6 +911,9 @@ class TextField extends StatefulWidget with TextInput {
 
   @override
   final bool filled;
+
+  @override
+  final Color? fillColor;
 
   @override
   final WidgetStatesController? statesController;
@@ -1171,6 +1175,7 @@ class TextField extends StatefulWidget with TextInput {
     bool? border,
     BorderRadiusGeometry? borderRadius,
     bool? filled,
+    Color? fillColor,
     WidgetStatesController? statesController,
     TextMagnifierConfiguration? magnifierConfiguration,
     SpellCheckConfiguration? spellCheckConfiguration,
@@ -1251,6 +1256,7 @@ class TextField extends StatefulWidget with TextInput {
       border: border ?? this.border,
       borderRadius: borderRadius ?? this.borderRadius,
       filled: filled ?? this.filled,
+      fillColor: fillColor ?? this.fillColor,
       statesController: statesController ?? this.statesController,
       magnifierConfiguration:
           magnifierConfiguration ?? this.magnifierConfiguration,
@@ -1512,7 +1518,7 @@ class TextFieldState extends State<TextField>
       return false;
     }
 
-    if (cause == SelectionChangedCause.scribble) {
+    if (cause == SelectionChangedCause.stylusHandwriting) {
       return true;
     }
 
@@ -1923,7 +1929,8 @@ class TextFieldState extends State<TextField>
           borderRadius:
               optionallyResolveBorderRadius(context, widget.borderRadius) ??
                   BorderRadius.circular(theme.radiusMd),
-          color: widget.filled ? theme.colorScheme.muted : null,
+          color: widget.fillColor ??
+              (widget.filled ? theme.colorScheme.muted : null),
           border: widget.border
               ? Border.all(
                   color: _effectiveFocusNode.hasFocus && widget.enabled

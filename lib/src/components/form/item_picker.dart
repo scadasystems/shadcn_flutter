@@ -138,7 +138,14 @@ class ListItemPickerLayout extends ItemPickerLayout {
 
 class GridItemPickerLayout extends ItemPickerLayout {
   final int crossAxisCount;
-  const GridItemPickerLayout({this.crossAxisCount = 4});
+  final double childAspectRatio;
+  final double? mainAxisExtent;
+
+  const GridItemPickerLayout({
+    this.crossAxisCount = 4,
+    this.childAspectRatio = 1.0,
+    this.mainAxisExtent,
+  });
 
   ItemPickerLayout call({int crossAxisCount = 4}) {
     return GridItemPickerLayout(crossAxisCount: crossAxisCount);
@@ -160,6 +167,8 @@ class GridItemPickerLayout extends ItemPickerLayout {
           crossAxisCount: crossAxisCount,
           mainAxisSpacing: 4.0 * theme.scaling,
           crossAxisSpacing: 4.0 * theme.scaling,
+          childAspectRatio: childAspectRatio,
+          mainAxisExtent: mainAxisExtent,
         ),
         padding: padding,
         itemCount: items.itemCount,
