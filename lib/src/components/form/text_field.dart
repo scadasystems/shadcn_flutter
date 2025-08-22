@@ -1628,12 +1628,9 @@ class TextFieldState extends State<TextField>
                 child: SizedBox(
                   width: double.infinity,
                   child: DefaultTextStyle(
-                    style: textStyle
-                        .merge(theme.typography.small)
-                        .merge(theme.typography.normal)
-                        .copyWith(
-                          color: theme.colorScheme.mutedForeground,
-                        ),
+                    style: textStyle.copyWith(
+                      color: theme.colorScheme.mutedForeground,
+                    ),
                     textAlign: widget.textAlign,
                     maxLines: widget.maxLines,
                     child: widget.placeholder!,
@@ -1901,18 +1898,12 @@ class TextFieldState extends State<TextField>
     if (widget.style != null) {
       defaultTextStyle = DefaultTextStyle.of(context)
           .style
-          .merge(theme.typography.small)
-          .merge(theme.typography.normal)
           .copyWith(
             color: theme.colorScheme.foreground,
           )
           .merge(widget.style);
     } else {
-      defaultTextStyle = DefaultTextStyle.of(context)
-          .style //
-          .merge(theme.typography.small)
-          .merge(theme.typography.normal)
-          .copyWith(
+      defaultTextStyle = DefaultTextStyle.of(context).style.copyWith(
             color: theme.colorScheme.foreground,
           );
     }

@@ -1772,13 +1772,13 @@ class FormField<T> extends StatelessWidget {
               child!,
               if (hint != null) ...[
                 Gap(theme.scaling * 8),
-                hint!.xSmall().muted(),
+                hint!.muted,
               ],
               if (error is InvalidResult) ...[
                 Gap(theme.scaling * 8),
                 DefaultTextStyle.merge(
                   style: TextStyle(color: theme.colorScheme.destructive),
-                  child: Text(error.message).xSmall().medium(),
+                  child: Text(error.message).small().medium(),
                 ),
               ],
             ],
