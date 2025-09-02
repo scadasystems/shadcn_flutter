@@ -22,7 +22,8 @@ export 'package:flutter/widgets.dart'
         Table,
         TableRow,
         TableCell,
-        FormField;
+        FormField,
+        RadioGroup;
 // bundle from gap
 export 'package:gap/gap.dart';
 // hide pixel_snap overriden widgets
@@ -134,6 +135,7 @@ export 'src/components/form/item_picker.dart';
 export 'src/components/form/number_input.dart';
 export 'src/components/form/object_input.dart';
 export 'src/components/form/phone_input.dart';
+// export 'src/components/form/radio_group.dart';
 export 'src/components/form/radio_group.dart';
 export 'src/components/form/select.dart';
 export 'src/components/form/slider.dart';

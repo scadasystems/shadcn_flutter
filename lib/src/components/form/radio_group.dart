@@ -1,4 +1,4 @@
-import '../../../shadcn_flutter.dart';
+import 'package:shadcn_flutter/shadcn_flutter.dart';
 
 class Radio extends StatelessWidget {
   final bool value;
